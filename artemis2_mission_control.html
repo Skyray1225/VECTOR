@@ -528,8 +528,8 @@ header {
 #canvas3d  { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
 #attr3d {
   position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
-  z-index: 3; pointer-events: none;
+  display: flex; flex-wrap: nowrap; justify-content: center; gap: 6px;
+  z-index: 3; pointer-events: none; white-space: nowrap;
 }
 .attr3d-tag {
   display: inline-flex; align-items: center; gap: 4px;
