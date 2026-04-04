@@ -824,7 +824,7 @@ header {
         </div>
       </div>
       <div class="mission-mini-timeline">
-        <div class="mini-tl-hdr">Séquence Mission</div>
+        <div class="mini-tl-hdr">Séquence Mission <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent);text-decoration:none;float:right">NASA TIMELINE PDF</a></div>
         <div class="mini-tl-track">
           <div class="mini-tl-step past">
             <div class="mini-tl-kicker">Étape Précédente</div>
@@ -972,7 +972,7 @@ header {
 <!-- ════ TIMELINE TAB ════ -->
 <div id="tab-chronologie" class="tab-content">
   <div id="tl-progress-wrap">
-    <div class="tl-prog-label">PROGRESSION DE LA MISSION</div>
+    <div class="tl-prog-label">PROGRESSION DE LA MISSION <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent);text-decoration:none;float:right">NASA TIMELINE PDF</a></div>
     <div class="tl-prog-track"><div class="tl-prog-fill" id="tl-prog-fill" style="width:0%"></div></div>
   </div>
   <div id="tl-list"></div>
@@ -2588,64 +2588,60 @@ function resetView2D() { cam2={ox:0,oy:0,zoom:1}; draw2D(); }
 // TIMELINE
 // ════════════════════════════════════════════════════════════════
 function getMissionEvents() {
+  // Source : NASA "Artemis II Overview Timeline — FINAL" (01/08/2026, public release)
+  // https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf
   const L = LAUNCH_UTC;
   const T = (d=0, h=0, m=0, s=0) => new Date(L.getTime() + (((d*24 + h)*60 + m)*60 + s) * 1000);
   return [
-    { phase:'FD01 — ASCENSION & ORBITE HAUTE', events:[
-      { t:T(0,0,0,0),   label:'Décollage SLS / Orion',             detail:'Début mission Artemis II — LC-39B' },
-      { t:T(0,0,30,0),  label:'Début dépressurisation cabine',     detail:'Start Cabin Depress DFTO 3/2' },
-      { t:T(0,0,50,0),  label:'ICPS PRM',                          detail:'Perigee Raise Maneuver de l’ICPS' },
-      { t:T(0,1,48,0),  label:'ARB TIG',                           detail:'Allumage ARB selon la timeline de mission' },
-      { t:T(0,3,24,0),  label:'Séparation ressort Orion / ICPS',   detail:'Orion se désolidarise du stack ICPS' },
-      { t:T(0,4,52,0),  label:'Orion USS',                         detail:'Umbilical Separation Sequence / transition autonome' },
-      { t:T(0,4,57,0),  label:'Dock Cam Bearing',                  detail:'Acquisition instrument docking camera' },
-      { t:T(0,5,2,0),   label:'ICPS Disposal Burn',                detail:'Manœuvre d’éloignement et de disposal de l’ICPS' },
-      { t:T(0,5,27,0),  label:'Déploiement panneaux solaires',     detail:'Déploiement des ailes solaires de l’ESM' },
-      { t:T(0,8,40,0),  label:'Dock Cam Misalign',                 detail:'Objectif / cas de test DFTO-EM2-03' },
-      { t:T(0,10,6,0),  label:'Activation initiale OpComm',        detail:'Mise en service des communications opérationnelles' },
-      { t:T(0,13,45,0), label:'Orion PRB',                         detail:'Powered raise burn Orion en orbite haute' },
-      { t:T(0,13,56,0), label:'OpNav C/O',                         detail:'Passage en configuration Optical Navigation' },
+    { phase:’FD01 — ASCENSION & ORBITE HAUTE’, events:[
+      { t:T(0, 0,  0, 0), label:’Décollage SLS / Orion’,           detail:’Lancement depuis LC-39B, KSC — début Artemis II’ },
+      { t:T(0, 0, 30, 0), label:’Dépressurisation cabine’,         detail:’Start Cabin Depress DFTO 3/2’ },
+      { t:T(0, 0, 50, 0), label:’ICPS PRM’,                        detail:’Perigee Raise Maneuver — élève le périgée orbital’ },
+      { t:T(0, 1, 48, 0), label:’ARB TIG’,                         detail:’Apogee Raise Burn — injection en orbite haute’ },
+      { t:T(0, 3, 24, 0), label:’Séparation Orion / ICPS’,         detail:’Orion se sépare de l\’étage ICPS par ressort’ },
+      { t:T(0, 4, 52, 0), label:’Séparation étage supérieur’,      detail:’Upper Stage Separation — Orion autonome’ },
+      { t:T(0, 5,  2, 0), label:’ICPS Disposal Burn’,              detail:’Manœuvre de mise à l\’écart de l\’ICPS’ },
+      { t:T(0, 5, 27, 0), label:’Déploiement panneaux solaires’,   detail:’Déploiement des ailes solaires de l\’ESM’ },
+      { t:T(0,10,  6, 0), label:’Activation communications’,       detail:’OpComm Initial Activation — liaison opérationnelle’ },
+      { t:T(0,13, 45, 0), label:’Orion PRB’,                       detail:’Perigee Raise Burn — circularisation en orbite haute’ },
+      { t:T(0,13, 56, 0), label:’Config. navigation optique’,      detail:’OpNav C/O — passage en mode navigation optique’ },
     ]},
-    { phase:'FD02 — INJECTION TRANS-LUNAIRE', events:[
-      { t:T(1,1,37,0),  label:'Orion TLI',                          detail:'Trans-Lunar Injection — départ vers la Lune' },
-      { t:T(1,4,57,0),  label:'Installation dock cam & bracket',    detail:'Configuration instrumentation transit cislunaire' },
-      { t:T(1,8,0,0),   label:'Config transit dock cam / bracket',  detail:'Bracket and Dock Cam config transit' },
-      { t:T(1,12,0,0),  label:'CM/SM Survey',                       detail:'Inspection Crew Module / Service Module' },
-      { t:T(1,13,0,0),  label:'HERA Command / support ops',         detail:'Commande et vérifications associées selon le plan FD02' },
+    { phase:’FD02 — INJECTION TRANS-LUNAIRE’, events:[
+      { t:T(1, 1, 37, 0), label:’TLI — Injection trans-lunaire’,   detail:’Trans-Lunar Injection — allumage moteur ESM, cap Lune’ },
+      { t:T(1,12,  0, 0), label:’Inspection CM / SM’,              detail:’CM/SM Survey — contrôle état du vaisseau après TLI’ },
     ]},
-    { phase:'FD03 À FD05 — TRANSIT CISLUNAIRE', events:[
-      { t:T(2,0,7,0),   label:'OTC-1',                             detail:'Outbound Trajectory Correction 1' },
-      { t:T(2,8,0,0),   label:'OpComm activation',                 detail:'Activation OpComm et démonstrations de communication' },
-      { t:T(2,12,0,0),  label:'Début acoustique 24 h',             detail:'Start 24 Hr Acoustic DFTO 7' },
-      { t:T(3,0,12,0),  label:'OTC-2',                             detail:'Outbound Trajectory Correction 2' },
-      { t:T(3,15,30,0), label:'Dock Cam Stray Light / Misalign',   detail:'Séquence DFTO-EM-04 / DFTO-EM2-03' },
-      { t:T(4,0,0,0),   label:'Fin acoustique 24 h',               detail:'End 24 Hr Acoustic DFTO 7' },
-      { t:T(4,21,2,0),  label:'Distance Apollo 13 dépassée',       detail:'Apollo 13 Max Distance milestone' },
-      { t:T(4,5,23,0),  label:'OTC-3',                             detail:'Outbound Trajectory Correction 3' },
-      { t:T(4,6,59,0),  label:'Entrée en SOI lunaire',             detail:'Lunar Sphere of Influence Entry' },
+    { phase:’FD03 — TRANSIT CISLUNAIRE’, events:[
+      { t:T(2, 0,  7, 0), label:’OTC-1’,                           detail:’Outbound Trajectory Correction 1 — ajustement trajectoire’ },
     ]},
-    { phase:'FD06 — SURVOL LUNAIRE & RETOUR LIBRE', events:[
-      { t:T(5,1,23,20), label:'Approche lunaire minimale',        detail:'Lunar Close Approach' },
-      { t:T(5,1,26,57), label:'Distance maximale à la Terre',     detail:'Maximum Earth Distance' },
-      { t:T(5,7,5,0),   label:'SAT Mode Test',                    detail:'Essai mode satellite après le survol lunaire' },
-      { t:T(5,12,45,0), label:'CM/SM Survey post-lunaire',        detail:'Inspection Crew Module / Service Module après flyby' },
-      { t:T(5,19,47,0), label:'Sortie de SOI lunaire',            detail:'Lunar Sphere of Influence Exit' },
-      { t:T(6,4,23,0),  label:'RTC-1',                            detail:'Return Trajectory Correction 1' },
-      { t:T(6,12,0,0),  label:'Exercice ECLSS minimal',           detail:'Min ECLSS Exercise — DFTO-EM2-16' },
+    { phase:’FD04 — TRANSIT CISLUNAIRE’, events:[
+      { t:T(3, 0, 12, 0), label:’OTC-2’,                           detail:’Outbound Trajectory Correction 2 — ajustement trajectoire’ },
     ]},
-    { phase:'FD07 À FD09 — TRANSIT RETOUR TERRE', events:[
-      { t:T(7,17,30,0), label:'FCS Checkouts',                    detail:'Vérifications Flight Control System avant retour final' },
-      { t:T(8,4,33,0),  label:'RTC-2',                            detail:'Return Trajectory Correction 2' },
-      { t:T(8,12,0,0),  label:'Entry Stow / Entry Pad',           detail:'Préparation cabine et rangement pour la rentrée' },
-      { t:T(8,20,33,0), label:'RTC-3',                            detail:'Return Trajectory Correction 3' },
-      { t:T(8,23,0,0),  label:'EI - 32h',                         detail:'Jalon à 32 heures de l’Entry Interface' },
+    { phase:’FD05 — APPROCHE SPHÈRE D\’INFLUENCE LUNAIRE’, events:[
+      { t:T(4, 5, 23, 0), label:’OTC-3’,                           detail:’Outbound Trajectory Correction 3 — correction finale avant SOI’ },
+      { t:T(4, 6, 59, 0), label:’Entrée SOI lunaire’,              detail:’Entrée dans la sphère d\’influence gravitationnelle de la Lune’ },
+      { t:T(4,21,  2, 0), label:’Record Apollo 13 dépassé’,        detail:’Distance maximale atteinte par Apollo 13 franchie — nouveau record humain’ },
     ]},
-    { phase:'FD10 — RENTRÉE & RÉCUPÉRATION', events:[
-      { t:T(9,0,30,0),  label:'+X Leak Detection',                detail:'Contrôle final avant séparation CM/SM' },
-      { t:T(9,1,13,0),  label:'Séparation CM / SM',                detail:'Crew Module / Service Module Separation' },
-      { t:T(9,1,33,0),  label:'Entry Interface',                   detail:'Entrée atmosphérique' },
-      { t:T(9,1,38,0),  label:'Entry checklist / config EDL',      detail:'Cabin Config et Entry C/L' },
-      { t:T(9,1,46,0),  label:'Amerrissage',                       detail:'Splashdown et début des opérations de récupération' },
+    { phase:’FD06 — SURVOL LUNAIRE & RETOUR LIBRE’, events:[
+      { t:T(5, 1, 23,20), label:’Approche minimale de la Lune’,    detail:’Lunar Close Approach — point le plus proche de la surface lunaire’ },
+      { t:T(5, 1, 26,57), label:’Distance maximale à la Terre’,    detail:’Max Earth Distance — point le plus éloigné de la Terre dans l\’histoire habitée’ },
+      { t:T(5, 7,  5, 0), label:’Test mode SAT’,                   detail:’SAT Mode Test — essai en configuration satellite post-survol’ },
+      { t:T(5,12, 45, 0), label:’Inspection CM / SM’,              detail:’CM/SM Survey post-flyby — contrôle intégrité après survol lunaire’ },
+      { t:T(5,19, 47, 0), label:’Sortie SOI lunaire’,              detail:’Orion quitte la sphère d\’influence lunaire, cap Terre’ },
+    ]},
+    { phase:’FD07 — TRANSIT RETOUR TERRE’, events:[
+      { t:T(6, 4, 23, 0), label:’RTC-1’,                           detail:’Return Trajectory Correction 1 — corrections de trajectoire retour’ },
+    ]},
+    { phase:’FD08 — TRANSIT RETOUR TERRE’, events:[
+      { t:T(7,17, 30, 0), label:’Vérifications FCS’,               detail:’FCS Checkouts — contrôle du système de contrôle de vol pré-rentrée’ },
+    ]},
+    { phase:’FD09 — PRÉPARATION RENTRÉE’, events:[
+      { t:T(8, 4, 33, 0), label:’RTC-2’,                           detail:’Return Trajectory Correction 2 — affinage trajectoire rentrée’ },
+      { t:T(8,20, 33, 0), label:’RTC-3’,                           detail:’Return Trajectory Correction 3 — correction finale pré-rentrée’ },
+    ]},
+    { phase:’FD10 — RENTRÉE & RÉCUPÉRATION’, events:[
+      { t:T(9, 1, 13, 0), label:’Séparation CM / SM’,              detail:’Command Module / Service Module Separation — avant rentrée atmosphérique’ },
+      { t:T(9, 1, 33, 0), label:’Entry Interface’,                  detail:’Entrée dans l\’atmosphère à ~122 km d\’altitude’ },
+      { t:T(9, 1, 46, 0), label:’Amerrissage’,                      detail:’Splashdown — atterrissage océanique, début récupération’ },
     ]},
   ];
 }
