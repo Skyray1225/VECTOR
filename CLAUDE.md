@@ -19,11 +19,23 @@ node proxy.js
 
 Starts on port 3001. Endpoints: `/horizons` → JPL Horizons API, `/oem` → NASA OEM ZIP (tries 8 date candidates, extracts first file), `/orion-model` → serves local `orion_artemistracker.glb`.
 
+## Vercel Deployment
+
+The project is deployed at **https://artemis-ii-phi.vercel.app** via GitHub auto-deploy (push to `main` triggers redeploy).
+
+- `vercel.json` — rewrites `/` → `artemis2_mission_control.html`; sets `maxDuration: 30` for `api/oem.js`
+- `api/horizons.js` — serverless CORS proxy → JPL Horizons API
+- `api/oem.js` — serverless proxy → NASA OEM ZIP (tries 8 date candidates, extracts + returns plain text)
+
+In production, `HORIZONS_PROXY = '/api/horizons'` and `OEM_PROXY = '/api/oem'`. For local dev with live data, use `vercel dev` instead of `node proxy.js`.
+
+**Excluded from repo** (too large for GitHub): `WebBuildMar27.data` (60 MB), `orion_artemistracker_embed.js` (11 MB).
+
 ## Other Files
 
 - `artemistracker.html` + `artemistracker_custom.js` — secondary, independent tracker view (separate codebase, ~161 KB + ~103 KB)
-- `proxy.js` — Node.js CORS proxy (port 3001)
-- `orion_artemistracker.glb` — Orion 3D model asset
+- `proxy.js` — Node.js CORS proxy for local dev without `vercel dev` (port 3001, legacy)
+- `orion_artemistracker.glb` — Orion 3D model asset (served as static file on Vercel at `/orion_artemistracker.glb`)
 
 ## Architecture
 
@@ -85,6 +97,19 @@ J2000 (Earth-centered inertial), positions in km. Three.js uses `(x, z, -y)` map
 
 ### Timeline — `getMissionEvents()`
 Returns array of phases with sub-events keyed by absolute `Date` objects. `buildTimeline()` classifies each event as `past`/`current`/`future` and renders countdown timers.
+
+### Live View Switcher
+Two YouTube streams toggled via `switchLive(idx)`:
+```js
+LIVE_STREAMS = [
+  { id: '6RwfNBtepa4', label: 'Orion live view' },
+  { id: 'm3kR2KK8TEs', label: 'Live mission coverage' }
+]
+```
+Buttons `.live-btn` / `.live-btn.active` in `.live-switcher`. `initOrionLiveView()` calls `switchLive(0)` on startup (skipped on `file:` protocol).
+
+### Simulation Banner
+`#sim-banner` (amber, pulsing) shown automatically by `updateNav()` whenever `state.posSource !== 'JPL HORIZONS'`. Hidden as soon as real Horizons data arrives.
 
 ### State Objects
 ```js
