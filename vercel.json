@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/", "destination": "/artemis2_mission_control.html" }
+  ],
   "functions": {
     "api/oem.js": { "maxDuration": 30 }
   }
