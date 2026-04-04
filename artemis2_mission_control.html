@@ -357,6 +357,13 @@ header {
   font-family: var(--heading);
 }
 .panel-hdr .upd { float: right; font-size: 10px; color: var(--muted); font-weight: 300; font-family: var(--mono); }
+.panel-src {
+  float: right; clear: right;
+  font-size: 9px; font-weight: 600; letter-spacing: .08em;
+  font-family: var(--mono); text-transform: uppercase;
+  padding: 1px 5px; border-radius: 2px; margin-left: 8px;
+  border: 1px solid currentColor; opacity: .7;
+}
 .panel-body { padding: 11px 13px; flex: 1; overflow: visible; }
 
 .panel-nav  { flex: 1 1 auto; min-height: 0; }
@@ -767,7 +774,7 @@ header {
   <div class="mission-grid">
     <div class="mission-left">
       <div class="panel panel-nav">
-        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span></div>
+        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><span class="panel-src" id="nav-src-badge" style="color:var(--warn)">SIMULATION</span></div>
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit">km</span></span></div>
           <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit">km</span></span></div>
@@ -782,7 +789,7 @@ header {
       </div>
 
       <div class="panel panel-dsn">
-        <div class="panel-hdr">RÉSEAU D'ESPACE PROFOND (DSN) <span class="upd" id="upd-dsn">---</span></div>
+        <div class="panel-hdr">RÉSEAU D'ESPACE PROFOND (DSN) <span class="upd" id="upd-dsn">---</span><span class="panel-src" style="color:var(--accent)">NASA DSN NOW</span></div>
         <div class="panel-body" id="dsn-body">
           <div style="color:var(--muted);font-size:11px">Connexion en cours...</div>
         </div>
@@ -932,7 +939,7 @@ header {
       </div>
 
       <div class="panel panel-swpc">
-        <div class="panel-hdr">MÉTÉO SPATIALE — NOAA SWPC <span class="upd" id="upd-swpc">---</span></div>
+        <div class="panel-hdr">MÉTÉO SPATIALE — NOAA SWPC <span class="upd" id="upd-swpc">---</span><span class="panel-src" style="color:var(--accent)">NOAA SWPC</span></div>
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Indice Kp</span><span><span class="dvalue" id="v-kp">---</span></span></div>
           <div class="bar-row">
@@ -953,7 +960,7 @@ header {
       </div>
 
       <div class="panel panel-log">
-        <div class="panel-hdr">JOURNAL D'ACQUISITION</div>
+        <div class="panel-hdr">JOURNAL D'ACQUISITION <span class="panel-src" style="color:var(--muted)">INTERNE</span></div>
         <div class="panel-body" style="padding:6px 8px;">
           <div id="log-feed"></div>
         </div>
@@ -2775,6 +2782,12 @@ function updateNav() {
   setVal('v-z',          fmt_km(state.pos.z));
   setVal('v-src',        state.posSource, state.posSource==='JPL HORIZONS'?'ok':'warn');
   document.getElementById('sim-banner').classList.toggle('visible', state.posSource !== 'JPL HORIZONS');
+  const navBadge = document.getElementById('nav-src-badge');
+  if (navBadge) {
+    const isReal = state.posSource === 'JPL HORIZONS';
+    navBadge.textContent = isReal ? 'JPL HORIZONS' : 'SIMULATION';
+    navBadge.style.color = isReal ? 'var(--accent)' : 'var(--warn)';
+  }
   updateMiniTimeline();
   document.getElementById('upd-nav').textContent = 'MàJ ' + new Date().toISOString().slice(11,19) + ' UTC';
 }
