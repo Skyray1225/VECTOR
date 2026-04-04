@@ -401,6 +401,23 @@ header {
   color: var(--muted);
   display: none;
 }
+.live-switcher {
+  display: flex; gap: 6px; margin-bottom: 8px;
+}
+.live-btn {
+  flex: 1; padding: 6px 8px;
+  background: #18222e; border: 1px solid var(--border);
+  border-radius: 3px; cursor: pointer;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .07em;
+  color: var(--muted); text-transform: uppercase;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.live-btn:hover { color: var(--text); border-color: var(--accent); }
+.live-btn.active {
+  background: rgba(0,210,255,.1);
+  border-color: var(--accent); color: var(--accent);
+}
 
 .drow { display: flex; justify-content: space-between; align-items: baseline; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.04); }
 .drow:last-child { border: none; }
@@ -895,6 +912,10 @@ header {
       <div class="panel panel-live">
         <div class="panel-hdr">LIVE VIEW FROM ORION</div>
         <div class="panel-body">
+          <div class="live-switcher">
+            <button class="live-btn active" id="live-btn-0" onclick="switchLive(0)">Orion live view</button>
+            <button class="live-btn"        id="live-btn-1" onclick="switchLive(1)">Live mission coverage</button>
+          </div>
           <div class="live-frame">
             <iframe
               id="orion-live-frame"
@@ -905,7 +926,7 @@ header {
               allowfullscreen></iframe>
           </div>
           <div class="live-note" id="orion-live-note"></div>
-          <a class="live-fallback" href="https://www.youtube.com/watch?v=6RwfNBtepa4" target="_blank" rel="noopener noreferrer">OUVRIR LE DIRECT NASA SUR YOUTUBE</a>
+          <a class="live-fallback" id="orion-live-link" href="https://www.youtube.com/watch?v=6RwfNBtepa4" target="_blank" rel="noopener noreferrer">OUVRIR SUR YOUTUBE</a>
         </div>
       </div>
 
@@ -2925,9 +2946,27 @@ function switchTab(name) {
   if (name==='chronologie') buildTimeline();
 }
 
+const LIVE_STREAMS = [
+  { id: '6RwfNBtepa4', label: 'Orion live view',       watch: 'https://www.youtube.com/watch?v=6RwfNBtepa4' },
+  { id: 'm3kR2KK8TEs', label: 'Live mission coverage', watch: 'https://www.youtube.com/watch?v=m3kR2KK8TEs' }
+];
+let liveIndex = 0;
+
+function switchLive(idx) {
+  liveIndex = idx;
+  const frame = document.getElementById('orion-live-frame');
+  const link  = document.getElementById('orion-live-link');
+  if (frame) frame.src = 'https://www.youtube.com/embed/' + LIVE_STREAMS[idx].id + '?autoplay=1';
+  if (link)  { link.href = LIVE_STREAMS[idx].watch; }
+  LIVE_STREAMS.forEach((_, i) => {
+    const btn = document.getElementById('live-btn-' + i);
+    if (btn) btn.classList.toggle('active', i === idx);
+  });
+}
+
 function initOrionLiveView() {
   const frame = document.getElementById('orion-live-frame');
-  const note = document.getElementById('orion-live-note');
+  const note  = document.getElementById('orion-live-note');
   if (!frame || !note) return;
 
   if (location.protocol === 'file:') {
@@ -2937,8 +2976,7 @@ function initOrionLiveView() {
   }
 
   frame.style.display = 'block';
-  frame.src = 'https://www.youtube.com/embed/6RwfNBtepa4';
-  note.textContent = '';
+  switchLive(0);
 }
 
 // ════════════════════════════════════════════════════════════════
