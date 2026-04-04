@@ -730,7 +730,7 @@ header {
   </div>
   <div class="hd-met">
     <div class="hd-met-label">MISSION ELAPSED TIME</div>
-    <div id="met">000+00:00:00</div>
+    <div id="met">00+00:00:00</div>
   </div>
   <div class="hd-right">
     <span id="mission-phase">INITIALISATION</span>
@@ -2933,7 +2933,7 @@ function metStr() {
   const neg = ms < 0;
   const s   = Math.abs(ms/1000)|0;
   const D   = (s/86400)|0, H=(s%86400/3600)|0, M=(s%3600/60)|0, S=s%60;
-  return (neg?'-':'')+`${String(D).padStart(3,'0')}+${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(S).padStart(2,'0')}`;
+  return (neg?'-':'')+`${String(D).padStart(2,'0')}+${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(S).padStart(2,'0')}`;
 }
 
 function tickClock() {
