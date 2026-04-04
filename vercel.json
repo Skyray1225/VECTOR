@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/oem.js": { "maxDuration": 30 }
+  }
+}

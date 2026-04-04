@@ -9,7 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
-<script src="./orion_artemistracker_embed.js"></script>
 <style>
 :root {
   --bg:       #0b1119;
@@ -1159,8 +1158,8 @@ function simulateOrion(date) {
 // ════════════════════════════════════════════════════════════════
 // DATA SOURCE — JPL HORIZONS
 // ════════════════════════════════════════════════════════════════
-const HORIZONS_PROXY = 'http://localhost:3001/horizons';
-const OEM_PROXY      = 'http://localhost:3001/oem';
+const HORIZONS_PROXY = '/api/horizons';
+const OEM_PROXY      = '/api/oem';
 
 const horizonsSrc = {
   status: 'INIT',
@@ -2034,8 +2033,11 @@ function buildOrionModel() {
     }
   }
 
-  loader.load('https://artemistracker.com/wp-content/uploads/orion.glb', applyLoadedModel, undefined, () => {
-    appLog('Modèle Orion Artemis Tracker indisponible — fallback local', 'warn');
+  // Try local GLB (served as static file on Vercel), then remote fallback
+  loader.load('/orion_artemistracker.glb', applyLoadedModel, undefined, () => {
+    loader.load('https://artemistracker.com/wp-content/uploads/orion.glb', applyLoadedModel, undefined, () => {
+      appLog('Modèle Orion indisponible — fallback procédural actif', 'warn');
+    });
   });
 
   return root;
