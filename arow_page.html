@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-NLJ258M');</script>
+<!-- End Google Tag Manager -->
+
+<title>NASA: Artemis II</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/w3-theme-dark-grey.css">
+<link rel="stylesheet" href="css/share.css">
+<link rel="stylesheet" href="css/stylesheet.css" type="text/css" charset="utf-8" />
+<link rel="stylesheet" href="css/artemis-blog.css" type="text/css" charset="utf-8" />
+
+<link rel="shortcut icon" href="TemplateData/favicon.ico">
+<link rel="stylesheet" href="TemplateData/style.css">
+	
+<style>
+body,h2,h3,h4,h5,h6 {font-family: 'Inter', sans-serif;}
+h1 {font-family: 'artemis_interregular', sans-serif;}
+.w3-bar-block .w3-bar-item {padding:10px}
+
+.mySlides3 {display:none}
+.w3-left, .w3-right, .w3-badge {cursor:pointer}
+.w3-badge {height:13px;width:13px;padding:0}
+
+body, html {
+    height: 100%;
+    color: #000;
+    line-height: 1.5;
+	scroll-behavior:smooth;
+	overflow-x:hidden;
+}
+.logo {
+  height: 20px;
+}
+
+/* down arrow animation */
+.darrow {
+  width: 100px;
+   position :relative;
+   animation: arrowmove 1.5s infinite;
+   animation-timing-function:ease;
+}
+
+/* Standard syntax for amination of downarrow */
+@keyframes arrowmove {
+    0% {top: -10px;}
+    25% {top: 0px;}
+	50% {top: -5px;}
+    75% {top: 0px;}
+	100% {top: -10px;}
+   
+}
+
+/* Create a Parallax Effect */
+.bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4, .bgimg-5 {
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* First image () */
+.bgimg-1 {
+    background-image: url('img/foo-01.jpg');
+    min-height: 500px;
+}
+
+/* Second image (Portfolio) */
+.bgimg-2 {
+    background-image: url("img/foo-02.jpg");
+    min-height: 500px;
+}
+
+/* Third image (Contact) */
+.bgimg-3 {
+    background-image: url("img/foo-03.jpg");
+    min-height: 500px;
+}
+
+/* forth image (Contact) */
+.bgimg-4 {
+    background-image: url("img/foo-04.jpg");
+    min-height: 500px;
+}
+
+/* fifth image (Contact) */
+.bgimg-5 {
+    background-image: url("img/foo-05.jpg");
+    min-height: 500px;
+}
+
+.w3-wide {letter-spacing: 10px;}
+.w3-hover-opacity {cursor: pointer;}
+
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1024px) {
+    .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4, .bgimg-5 {
+        background-attachment: scroll;
+        min-height: 400px;
+    }
+}
+
+/* focus-visible for screen readers*/
+.w3-button:focus-visible {
+  outline: 3px solid red;
+  outline-offset: -2px;
+}
+a:focus-visible {
+  outline: 3px solid red;
+  outline-offset: -2px;
+}
+svg a:focus-visible path {
+  outline: 3px solid red;
+}
+
+
+</style>
+
+
+
+<!-- favicons
+  ================================================== -->		
+		<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+		<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+		<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+		<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="manifest.json">
+		<meta name="msapplication-TileColor" content="#da532c">
+		<meta name="msapplication-TileImage" content="mstile-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+		
+		<!-- from www.nasa.gov for sharing
+  ================================================== -->	
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="og:site_name" content="NASA" />
+<meta property="twitter:site" content="@NASA" />
+<meta property="twitter:site:id" content="11348282" />
+<meta property="twitter:image" content="https://www.nasa.gov/specials/artemis-i/img/artemis-i.jpg" />
+<meta property="twitter:description" content="Artemis I will be the first in a series of increasingly complex missions to build a sustained human presence at the Moon for decades to come." />
+<meta property="twitter:url" content="https://www.nasa.gov/specials/artemis-i/index.html" />
+<meta property="twitter:title" content="NASA: Artemis II" />
+<meta property="og:title" content="NASA: Artemis II" />
+<meta property="og:image" content="https://www.nasa.gov/specials/artemis-i/img/artemis-i.jpg" />
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Artemis I will be the first in a series of increasingly complex missions to build a sustained human presence at the Moon for decades to come. " />
+<meta property="og:url" content="https://www.nasa.gov/specials/artemis-i/index.html" />
+<meta name="description" content="Artemis I will be the first in a series of increasingly complex missions to build a sustained human presence at the Moon for decades to come." />
+
+</head>
+
+<body class="w3-theme-dark">
+
+<!-- Google Tag Manager (noscript) -->
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NLJ258M"height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<!-- End Google Tag Manager (noscript) -->
+<!--
+<a href="#top" id="skiplink" tabindex="0" class="skip-link">Skip to main content</a>
+
+
+<div class="w3-top">
+  <div class="w3-bar w3-theme-dark w3-card">
+    <a class="w3-bar-item w3-button w3-padding w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars" style="font-size: 15px; padding: 1px;"></i></a>
+    <a href="https://www.nasa.gov/specials/artemis-1/index.html#top" class="w3-bar-item w3-button w3-padding">Start</a>
+	 <div class="w3-dropdown-hover w3-hide-small">
+      <button class="w3-button">Artemis I&nbsp;&#9662;</button>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+        <a href="https://www.nasa.gov/specials/artemis-1/index.html#two" class="w3-bar-item w3-button">About the Mission</a>
+        <a href="https://www.nasa.gov/specials/artemis-1/index.html#2a" class="w3-bar-item w3-button">Press Kit</a>
+		</div>
+		</div>
+	
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#one" class="w3-bar-item w3-button w3-padding w3-hide-small">Explore the System</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#six" class="w3-bar-item w3-button w3-padding w3-hide-small">Get Involved</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#three" class="w3-bar-item w3-button w3-padding w3-hide-small">Building & Testing</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#four" class="w3-bar-item w3-button w3-padding w3-hide-small">Follow Our Progress</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#five" class="w3-bar-item w3-button w3-padding w3-hide-small">Share</a>
+	
+	</div>
+  </div>
+</div>
+
+
+<div id="navDemo" class="w3-bar-block w3-theme-dark w3-hide w3-hide-large w3-hide-medium w3-top w3-center" style="margin-top:43px">
+   
+   <a href="https://www.nasa.gov/specials/artemis-1/index.html#two" class="w3-bar-item w3-button w3-padding">About the Mission</a>
+    <a href="https://www.nasa.gov/specials/artemis-1/index.html#2a" class="w3-bar-item w3-button w3-padding">Press Kit</a>
+    <a href="https://www.nasa.gov/specials/artemis-1/index.html#one" class="w3-bar-item w3-button w3-padding">Explore the System</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#six" class="w3-bar-item w3-button w3-padding">Get Involved</a>
+    <a href="https://www.nasa.gov/specials/artemis-1/index.html#three" class="w3-bar-item w3-button w3-padding">Building & Testing</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#four" class="w3-bar-item w3-button w3-padding">Follow Our Progress</a>
+	<a href="https://www.nasa.gov/specials/artemis-1/index.html#five" class="w3-bar-item w3-button w3-padding">Share</a>
+	
+</div>-->
+  
+<!-- !PAGE CONTENT! -->
+<div class="w3-main w3-theme-dark" id="top">
+
+
+
+    <!-- AROW Tracker  -->
+
+
+
+
+    <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas"></canvas>
+        <div id="unity-loading-bar">
+            <div id="unity-logo"></div>
+            <div id="unity-progress-bar-empty">
+                <div id="unity-progress-bar-full"></div>
+            </div>
+        </div>
+        <div id="unity-warning"> </div>
+        <div id="unity-footer">
+            <div id="unity-fullscreen-button"></div>
+            <div id="unity-build-title" style="vertical-align: middle;" nowrap>Artemis Real-time Orbit Website</div>
+            <div id="unity-build-title-2"><a href="https://nasa.gov" target="_blank"><img src="img/nasa-logo.png" alt="nasa-logo"></a> <span style="font-size: smaller; position: absolute; top: 0%;transform: translate(0%, 50%);" nowrap>NASA Official: Michelle Wolverton<br></span></div>
+            <div id="AccessibilityOutput"></div>
+        </div>
+        
+    </div>
+    <script>
+        var container = document.querySelector("#unity-container");
+        var canvas = document.querySelector("#unity-canvas");
+        var loadingBar = document.querySelector("#unity-loading-bar");
+        var progressBarFull = document.querySelector("#unity-progress-bar-full");
+        var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+        var warningBanner = document.querySelector("#unity-warning");
+
+        // Shows a temporary message banner/ribbon for a few seconds, or
+        // a permanent error message on top of the canvas if type=='error'.
+        // If type=='warning', a yellow highlight color is used.
+        // Modify or remove this function to customize the visually presented
+        // way that non-critical warnings and error messages are presented to the
+        // user.
+        function unityShowBanner(msg, type) {
+            function updateBannerVisibility() {
+                warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+            }
+            var div = document.createElement('div');
+            div.innerHTML = msg;
+            warningBanner.appendChild(div);
+            if (type == 'error') div.style = 'background: red; padding: 10px;';
+            else {
+                if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+                setTimeout(function () {
+                    warningBanner.removeChild(div);
+                    updateBannerVisibility();
+                }, 5000);
+            }
+            updateBannerVisibility();
+        }
+
+        var buildUrl = "Build";
+        var loaderUrl = buildUrl + "/WebBuildMar27.loader.js";
+        var config = {
+            dataUrl: buildUrl + "/WebBuildMar27.data",
+            frameworkUrl: buildUrl + "/WebBuildMar27.framework.js",
+            codeUrl: buildUrl + "/WebBuildMar27.wasm",
+        streamingAssetsUrl: "StreamingAssets",
+            companyName: "NASA",
+            productName: "AROW - Artemis Realtime Orbital Website",
+            productVersion: "1.1.7",
+            showBanner: unityShowBanner,
+        };
+
+        // By default Unity keeps WebGL canvas render target size matched with
+        // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+        // Set this to false if you want to decouple this synchronization from
+        // happening inside the engine, and you would instead like to size up
+        // the canvas DOM size and WebGL render target sizes yourself.
+        // config.matchWebGLToCanvasSize = false;
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))
+        {
+            container.className = "unity-mobile";
+
+            //var navBanner = document.querySelector(".w3-top");
+            //canvas.style.height = window.innerHeight - navBanner.style.height+"";
+            //console.log(screen.height - navBanner.style.height);
+            //console.log(navBanner.style.height + "");
+        }
+
+        //if (container.className == "unity-desktop")
+        //{
+        //    var canvas = document.querySelector("#unity-canvas");
+        //    var navBanner = document.querySelector(".w3-top");
+        //    canvas.style.height = (window.innerHeight / 2);
+        //}
+
+
+
+        //function windowResize()
+        //{
+        //    
+        //    
+        //    var container = document.querySelector("#unity-container");
+        //    if (container.className == "unity-desktop")
+        //    {
+        //        var canvas = document.querySelector("#unity-canvas");
+        //        var navBanner = document.querySelector(".w3-top");
+        //        var navHeight = navBanner.style.height;
+        //        navHeight = navHeight.substring(0, navHeight.length - 2);
+        //        console.log(navHeight);
+        //        canvas.style.height = (window.innerHeight - (navBanner.style.height) - 69) + "px";
+        //        
+        //    }
+        //}
+        //
+        //
+        //window.onresize = windowResize;
+        
+
+        loadingBar.style.display = "block";
+
+        var script = document.createElement("script");
+        script.src = loaderUrl;
+        script.onload = () => {
+            createUnityInstance(canvas, config, (progress) => {
+                progressBarFull.style.width = 100 * progress + "%";
+            }).then((unityInstance) => {
+                loadingBar.style.display = "none";
+                fullscreenButton.onclick = () => {
+                    unityInstance.SetFullscreen(1);
+                };
+            }).catch((message) => {
+                alert(message);
+            });
+        };
+        document.body.appendChild(script);</script>
+
+
+
+
+
+    <!-- Footer -->
+    <footer class="w3-container  w3-padding-16 w3-center" id="bottom">
+        <br><br>
+        <div style="position:relative;bottom:55px;" class="w3-tooltip w3-right">
+
+        </div>
+    </footer>
+
+    <!-- End page content -->
+</div>
+
+<!-- google analytics code -->
+<script language="javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=NASA"></script>
+
+<!-- Font Awsome 5 kit -->
+<script src="https://kit.fontawesome.com/37d05f09b2.js"></script>
+
+
+
+
+
+
+</body>
+</html>
+
