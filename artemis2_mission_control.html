@@ -377,6 +377,50 @@ header {
 a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 .panel-body { padding: 11px 13px; flex: 1; overflow: visible; }
 
+/* ── UNIT PICKER ── */
+.unit-btn {
+  float: right; clear: right; margin-top: 3px;
+  background: rgba(0,210,255,.08); border: 1px solid rgba(0,210,255,.28);
+  border-radius: 3px; padding: 2px 8px; font-size: 9px; font-weight: 700;
+  letter-spacing: .1em; color: var(--accent); cursor: pointer;
+  font-family: var(--heading); transition: background .15s;
+}
+.unit-btn:hover { background: rgba(0,210,255,.18); }
+#unit-popup {
+  display: none; position: absolute; z-index: 50;
+  background: #0d1824; border: 1px solid rgba(0,210,255,.35);
+  border-radius: 5px; padding: 14px 16px; min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+}
+#unit-popup.open { display: block; }
+.up-section {
+  font-family: var(--heading); font-size: 9px; font-weight: 700;
+  letter-spacing: .14em; color: var(--accent); margin: 10px 0 6px;
+}
+.up-section:first-child { margin-top: 0; }
+.up-row {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.up-opt {
+  display: flex; align-items: center; gap: 5px; cursor: pointer;
+  padding: 4px 10px; border-radius: 3px; border: 1px solid rgba(255,255,255,.1);
+  font-family: var(--mono); font-size: 12px; color: var(--text);
+  transition: background .12s, border-color .12s; user-select: none;
+}
+.up-opt input { display: none; }
+.up-opt:has(input:checked) {
+  background: rgba(0,210,255,.15); border-color: var(--accent); color: var(--accent);
+}
+.up-opt:hover { background: rgba(255,255,255,.06); }
+.up-close {
+  display: block; width: 100%; margin-top: 12px;
+  background: rgba(0,210,255,.1); border: 1px solid rgba(0,210,255,.3);
+  border-radius: 3px; padding: 5px; font-family: var(--heading);
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--accent); cursor: pointer; transition: background .15s;
+}
+.up-close:hover { background: rgba(0,210,255,.2); }
+
 .panel-nav  { flex: 1 1 auto; min-height: 0; }
 .panel-live { flex: 0 0 auto; }
 .panel-swpc { flex: 0 0 auto; }
@@ -801,12 +845,28 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <div class="mission-grid">
     <div class="mission-left">
       <div class="panel panel-nav">
-        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><a id="nav-src-badge" class="panel-src" style="color:var(--warn);text-decoration:none">SIMULATION</a></div>
+        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><a id="nav-src-badge" class="panel-src" style="color:var(--warn);text-decoration:none">SIMULATION</a><button class="unit-btn panel-src" onclick="toggleUnitPopup(event)">UNITÉ ▾</button></div>
+        <div id="unit-popup">
+          <div class="up-section">DISTANCE</div>
+          <div class="up-row">
+            <label class="up-opt"><input type="radio" name="u-dist" value="km" checked onchange="applyUnits()"> km</label>
+            <label class="up-opt"><input type="radio" name="u-dist" value="sm" onchange="applyUnits()"> SM</label>
+            <label class="up-opt"><input type="radio" name="u-dist" value="nm" onchange="applyUnits()"> NM</label>
+          </div>
+          <div class="up-section">VITESSE</div>
+          <div class="up-row">
+            <label class="up-opt"><input type="radio" name="u-speed" value="kms" checked onchange="applyUnits()"> km/s</label>
+            <label class="up-opt"><input type="radio" name="u-speed" value="kmh" onchange="applyUnits()"> km/h</label>
+            <label class="up-opt"><input type="radio" name="u-speed" value="mph" onchange="applyUnits()"> mph</label>
+            <label class="up-opt"><input type="radio" name="u-speed" value="kts" onchange="applyUnits()"> kts</label>
+          </div>
+          <button class="up-close" onclick="toggleUnitPopup()">FERMER</button>
+        </div>
         <div class="panel-body">
-          <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit">km</span></span></div>
-          <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit">km</span></span></div>
-          <div class="drow"><span class="dlabel">Altitude s/sol</span><span><span class="dvalue" id="v-alt">---</span><span class="dunit">km</span></span></div>
-          <div class="drow"><span class="dlabel">Vitesse scalaire</span><span><span class="dvalue" id="v-speed">---</span><span class="dunit">km/s</span></span></div>
+          <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit" id="dunit-earth">km</span></span></div>
+          <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit" id="dunit-moon">km</span></span></div>
+          <div class="drow"><span class="dlabel">Altitude s/sol</span><span><span class="dvalue" id="v-alt">---</span><span class="dunit" id="dunit-alt">km</span></span></div>
+          <div class="drow"><span class="dlabel">Vitesse scalaire</span><span><span class="dvalue" id="v-speed">---</span><span class="dunit" id="dunit-speed">km/s</span></span></div>
           <div class="drow"><span class="dlabel">Vx / Vy / Vz</span><span><span class="dvalue" id="v-vel" style="font-size:11px">--- / --- / ---</span></span></div>
           <div class="drow"><span class="dlabel">X (J2000)</span><span><span class="dvalue" id="v-x">---</span><span class="dunit">km</span></span></div>
           <div class="drow"><span class="dlabel">Y (J2000)</span><span><span class="dvalue" id="v-y">---</span><span class="dunit">km</span></span></div>
@@ -2826,10 +2886,11 @@ function updateNav() {
   const alt  = dE - R_EARTH;
   const spd  = Math.sqrt(state.vel.x**2+state.vel.y**2+state.vel.z**2);
 
-  setVal('v-dist-earth', fmt_km(dE));
-  setVal('v-dist-moon',  fmt_km(dM));
-  setVal('v-alt',        fmt_km(alt));
-  setVal('v-speed',      spd.toFixed(3));
+  const cE = convDist(dE),  cM = convDist(dM), cA = convDist(alt), cS = convSpeed(spd);
+  setVal('v-dist-earth', fmt_km(cE.val)); document.getElementById('dunit-earth').textContent = cE.unit;
+  setVal('v-dist-moon',  fmt_km(cM.val)); document.getElementById('dunit-moon').textContent  = cM.unit;
+  setVal('v-alt',        fmt_km(cA.val)); document.getElementById('dunit-alt').textContent   = cA.unit;
+  setVal('v-speed',      cS.val.toFixed(cS.dec)); document.getElementById('dunit-speed').textContent = cS.unit;
   setVal('v-vel',        `${state.vel.x.toFixed(2)} / ${state.vel.y.toFixed(2)} / ${state.vel.z.toFixed(2)}`);
   setVal('v-x',          fmt_km(state.pos.x));
   setVal('v-y',          fmt_km(state.pos.y));
@@ -2976,6 +3037,54 @@ function tickClock() {
 function pushHistory() {
   state.history.push({ x:state.pos.x, y:state.pos.y, z:state.pos.z });
   if (state.history.length > MAX_HIST) state.history.shift();
+}
+
+// ════════════════════════════════════════════════════════════════
+// UNIT PICKER
+// ════════════════════════════════════════════════════════════════
+const navUnits = { dist: 'km', speed: 'kms' };
+
+function toggleUnitPopup(e) {
+  if (e) e.stopPropagation();
+  const pop = document.getElementById('unit-popup');
+  pop.classList.toggle('open');
+  if (pop.classList.contains('open')) {
+    // Position below button
+    const btn = e ? e.currentTarget : null;
+    if (btn) {
+      const r = btn.closest('.panel-nav').getBoundingClientRect();
+      pop.style.top  = (btn.getBoundingClientRect().bottom - r.top + 4) + 'px';
+      pop.style.right = '8px';
+      pop.style.left  = 'auto';
+    }
+    document.addEventListener('click', closeUnitPopup, { once: true });
+  }
+}
+function closeUnitPopup(e) {
+  const pop = document.getElementById('unit-popup');
+  if (pop && !pop.contains(e.target)) pop.classList.remove('open');
+}
+function applyUnits() {
+  const distSel  = document.querySelector('input[name="u-dist"]:checked');
+  const speedSel = document.querySelector('input[name="u-speed"]:checked');
+  if (distSel)  navUnits.dist  = distSel.value;
+  if (speedSel) navUnits.speed = speedSel.value;
+  updateNav();
+}
+function convDist(km) {
+  switch (navUnits.dist) {
+    case 'sm': return { val: km * 0.621371,  unit: 'SM' };
+    case 'nm': return { val: km * 0.539957,  unit: 'NM' };
+    default:   return { val: km,             unit: 'km' };
+  }
+}
+function convSpeed(kms) {
+  switch (navUnits.speed) {
+    case 'kmh': return { val: kms * 3600,    unit: 'km/h', dec: 0 };
+    case 'mph': return { val: kms * 2236.94, unit: 'mph',  dec: 1 };
+    case 'kts': return { val: kms * 1943.84, unit: 'kts',  dec: 1 };
+    default:    return { val: kms,           unit: 'km/s', dec: 3 };
+  }
 }
 
 // ════════════════════════════════════════════════════════════════
