@@ -33,6 +33,111 @@ body {
 }
 
 /* ═══════════════════════════════════════
+   BOOT SCREEN
+═══════════════════════════════════════ */
+#boot-screen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #030810;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 0;
+  transition: opacity .6s ease;
+}
+#boot-screen.fade-out { opacity: 0; pointer-events: none; }
+
+/* scanline overlay */
+#boot-screen::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,.07) 3px, rgba(0,0,0,.07) 4px
+  );
+  z-index: 1;
+}
+
+.boot-inner {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; width: 100%; max-width: 580px;
+  padding: 0 24px;
+}
+
+/* logo zone */
+.boot-logo-wrap {
+  width: 100%; display: flex; justify-content: center;
+  margin-bottom: 40px; opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+.boot-logo-wrap.visible { opacity: 1; transform: translateY(0); }
+.boot-logo-img {
+  width: 380px; max-width: 90vw; height: auto;
+  filter: drop-shadow(0 0 28px rgba(0,170,220,.22));
+}
+
+/* divider */
+.boot-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,210,255,.3), transparent);
+  margin-bottom: 28px; opacity: 0;
+  transition: opacity .4s ease;
+}
+.boot-divider.visible { opacity: 1; }
+
+/* terminal log */
+.boot-log {
+  width: 100%; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .06em; line-height: 2;
+  color: var(--muted);
+  min-height: 160px;
+}
+.boot-line {
+  display: flex; gap: 12px; opacity: 0;
+  animation: line-appear .18s ease forwards;
+}
+@keyframes line-appear {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.bl-time  { color: var(--dim); flex-shrink: 0; }
+.bl-ok    { color: var(--ok); flex-shrink: 0; }
+.bl-warn  { color: var(--warn); flex-shrink: 0; }
+.bl-msg   { color: var(--muted); }
+.bl-msg em { color: var(--text); font-style: normal; }
+
+/* cursor blink */
+.boot-cursor {
+  display: inline-block; width: 7px; height: 13px;
+  background: var(--accent); margin-left: 4px;
+  vertical-align: middle;
+  animation: cursor-blink .7s step-end infinite;
+}
+@keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* progress bar */
+.boot-progress-wrap {
+  width: 100%; margin-top: 24px;
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .15em;
+  color: var(--dim); text-transform: uppercase;
+  opacity: 0; transition: opacity .3s ease;
+}
+.boot-progress-wrap.visible { opacity: 1; }
+.boot-bar {
+  flex: 1; height: 2px; background: rgba(255,255,255,.06);
+  border-radius: 1px; overflow: hidden;
+}
+.boot-bar-fill {
+  height: 100%; width: 0%;
+  background: var(--accent);
+  box-shadow: 0 0 6px rgba(0,210,255,.5);
+  transition: width .18s linear;
+}
+.boot-pct { flex-shrink: 0; min-width: 32px; text-align: right; color: var(--accent); }
+
+/* ═══════════════════════════════════════
    TOPBAR
 ═══════════════════════════════════════ */
 .topbar {
@@ -322,6 +427,22 @@ footer a:hover { color: var(--muted); }
 </head>
 <body>
 
+<!-- ═══════════ BOOT SCREEN ═══════════ -->
+<div id="boot-screen">
+  <div class="boot-inner">
+    <div class="boot-logo-wrap" id="boot-logo">
+      <img class="boot-logo-img" src="/vector_logo.png" alt="VECTOR">
+    </div>
+    <div class="boot-divider" id="boot-div"></div>
+    <div class="boot-log" id="boot-log"></div>
+    <div class="boot-progress-wrap" id="boot-progress">
+      INITIALISATION
+      <div class="boot-bar"><div class="boot-bar-fill" id="boot-fill"></div></div>
+      <div class="boot-pct" id="boot-pct">0%</div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════ TOPBAR ═══════════ -->
 <div class="topbar">
   <a href="/"><img class="topbar-logo" src="/vector_logo.png" alt="VECTOR"></a>
@@ -493,6 +614,97 @@ footer a:hover { color: var(--muted); }
 </div><!-- /page-wrap -->
 
 <script>
+/* ── BOOT SEQUENCE ── */
+(function () {
+  const screen   = document.getElementById('boot-screen');
+  const logEl    = document.getElementById('boot-log');
+  const fill     = document.getElementById('boot-fill');
+  const pct      = document.getElementById('boot-pct');
+  const progress = document.getElementById('boot-progress');
+  const logoWrap = document.getElementById('boot-logo');
+  const divEl    = document.getElementById('boot-div');
+
+  const now = () => {
+    const d = new Date(), p = v => String(v).padStart(2,'0');
+    return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
+  };
+
+  const LINES = [
+    { delay:  120, status:'ok',   msg: 'VECTOR CORE v1.0 — <em>DÉMARRAGE</em>' },
+    { delay:  300, status:'ok',   msg: 'CHARGEMENT DES MODULES SYSTÈME' },
+    { delay:  520, status:'ok',   msg: 'INTERFACE RÉSEAU — <em>INITIALISÉE</em>' },
+    { delay:  750, status:'ok',   msg: 'CONNEXION JPL HORIZONS — <em>OK</em>' },
+    { delay:  980, status:'ok',   msg: 'CONNEXION NASA DSN — <em>OK</em>' },
+    { delay: 1200, status:'ok',   msg: 'NOAA SWPC FEED — <em>ACTIF</em>' },
+    { delay: 1420, status:'ok',   msg: 'EPHÉMÉRIDES LUNE / SOLEIL — <em>CHARGÉES</em>' },
+    { delay: 1650, status:'warn', msg: 'MISSIONS EN DÉVELOPPEMENT — <em>2 NON DISPONIBLES</em>' },
+    { delay: 1880, status:'ok',   msg: 'MISSION ACTIVE DÉTECTÉE — <em>ARTEMIS II</em>' },
+    { delay: 2100, status:'ok',   msg: 'REGISTRE DE MISSIONS — <em>PRÊT</em>' },
+  ];
+
+  const PROGRESS_STEPS = [
+    { at:  300, v: 10 }, { at:  520, v: 24 }, { at:  750, v: 38 },
+    { at:  980, v: 52 }, { at: 1200, v: 63 }, { at: 1420, v: 74 },
+    { at: 1650, v: 83 }, { at: 1880, v: 91 }, { at: 2100, v: 100 },
+  ];
+
+  function addLine(status, msg) {
+    const div = document.createElement('div');
+    div.className = 'boot-line';
+    const statusMap = { ok: '[ OK ]', warn: '[WARN]' };
+    const classMap  = { ok: 'bl-ok', warn: 'bl-warn' };
+    div.innerHTML = `
+      <span class="bl-time">${now()}</span>
+      <span class="${classMap[status]}">${statusMap[status]}</span>
+      <span class="bl-msg">${msg}</span>`;
+    logEl.appendChild(div);
+    // keep last 6 lines visible
+    const lines = logEl.querySelectorAll('.boot-line');
+    if (lines.length > 6) lines[0].remove();
+  }
+
+  function setProgress(v) {
+    fill.style.width = v + '%';
+    pct.textContent = v + '%';
+  }
+
+  // show logo first
+  setTimeout(() => { logoWrap.classList.add('visible'); }, 80);
+  setTimeout(() => { divEl.classList.add('visible'); progress.classList.add('visible'); }, 300);
+
+  // schedule lines
+  LINES.forEach(({ delay, status, msg }) => {
+    setTimeout(() => addLine(status, msg), delay);
+  });
+
+  // schedule progress
+  PROGRESS_STEPS.forEach(({ at, v }) => {
+    setTimeout(() => setProgress(v), at);
+  });
+
+  // add cursor after last line
+  setTimeout(() => {
+    const cursor = document.createElement('span');
+    cursor.className = 'boot-cursor';
+    logEl.appendChild(cursor);
+  }, 2200);
+
+  // dismiss
+  function dismiss() {
+    screen.classList.add('fade-out');
+    setTimeout(() => screen.remove(), 650);
+    document.removeEventListener('keydown', dismiss);
+    screen.removeEventListener('click', dismiss);
+  }
+  setTimeout(dismiss, 3000);
+  setTimeout(() => {
+    screen.style.cursor = 'pointer';
+    screen.title = 'Cliquer pour passer';
+    screen.addEventListener('click', dismiss);
+    document.addEventListener('keydown', dismiss);
+  }, 800);
+})();
+
 /* ── UTC CLOCK ── */
 (function () {
   const el = document.getElementById('hub-clock');
