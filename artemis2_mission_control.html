@@ -2624,8 +2624,18 @@ function swapLayout() {
   layoutSwapped = !layoutSwapped;
   // Resize Three.js renderer après le repaint
   setTimeout(onResize3, 80);
-  // Animer la caméra vers la position par défaut de la nouvelle disposition
-  if (threeInited) setCamMode('system');
+  // Positionner la caméra sur la vue de la nouvelle disposition
+  if (threeInited && camera3 && controls3) {
+    if (layoutSwapped) {
+      camera3.position.set(304.3, 213.4, 540.1);
+      controls3.target.set(-57.8, -250.9, 139.5);
+    } else {
+      camera3.position.set(112.6, 9.3, 511.1);
+      controls3.target.set(-110.3, -135.1, 140.1);
+    }
+    controls3.update();
+    setCamMode('system');
+  }
 }
 
 function setCamMode(mode) {
