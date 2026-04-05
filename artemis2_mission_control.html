@@ -1755,34 +1755,11 @@ function initThree() {
 
   window.addEventListener('resize', onResize3);
 
-  // ── Default camera: frame the full Earth-Moon system ─────────────────────
-  (function defaultCameraView() {
-    const moon  = getMoonJ2000(new Date());
-    const mp    = toScene(moon.x, moon.y, moon.z);   // Moon in Three.js space
-    const d     = mp.length();                         // ≈ 384 units
-
-    // Look at a point 35% of the way from Earth toward the Moon
-    const target = mp.clone().multiplyScalar(0.35);
-
-    // Direction perpendicular to Earth-Moon axis, in the "up" plane
-    const moonDir = mp.clone().normalize();
-    const worldUp = new THREE.Vector3(0, 1, 0);
-    // Side axis (perpendicular to both moonDir and up)
-    const side = new THREE.Vector3().crossVectors(moonDir, worldUp).normalize();
-    // Component of worldUp perpendicular to moonDir (true "above orbital plane")
-    const aboveDir = worldUp.clone()
-      .sub(moonDir.clone().multiplyScalar(moonDir.dot(worldUp))).normalize();
-
-    // Camera: above + slight pull-back along opposite side
-    const camPos = target.clone()
-      .addScaledVector(aboveDir, d * 0.65)
-      .addScaledVector(side, -d * 0.25);
-
-    camera3.position.copy(camPos);
-    controls3.target.copy(target);
-    camera3.lookAt(target);
-    controls3.update();
-  })();
+  // ── Default camera position (user-defined) ───────────────────────────────
+  camera3.position.set(112.6, 9.3, 511.1);
+  controls3.target.set(-110.3, -135.1, 140.1);
+  camera3.lookAt(controls3.target);
+  controls3.update();
 
   animateThree();
   buildPrediction();
@@ -2337,8 +2314,8 @@ function updateThree() {
     controls3.target.lerp(opos, 0.05);
   } else if (camMode === 'system') {
     controls3.minDistance = 8;
-    camera3.position.lerp(new THREE.Vector3(0, D_MOON/SCALE*0.8, D_MOON/SCALE*1.2), 0.02);
-    controls3.target.lerp(new THREE.Vector3(0,0,0), 0.05);
+    camera3.position.lerp(new THREE.Vector3(112.6, 9.3, 511.1), 0.02);
+    controls3.target.lerp(new THREE.Vector3(-110.3, -135.1, 140.1), 0.05);
   } else {
     controls3.minDistance = 8;
   }
