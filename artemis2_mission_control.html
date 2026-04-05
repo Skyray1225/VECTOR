@@ -433,7 +433,8 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 .panel-live { flex: 0 0 auto; }
 .panel-swpc { flex: 0 0 auto; }
 .panel-dsn  { flex: 1 1 auto; min-height: 0; }
-.panel-log  { flex: 0 0 auto; min-height: 96px; max-height: none; }
+.panel-log  { flex: 0 0 auto; min-height: 96px; max-height: none; display: none; }
+.panel-log.log-visible { display: flex; flex-direction: column; }
 .panel-vecs { flex: 1 1 300px; }
 
 .live-frame {
@@ -828,6 +829,18 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
       <label class="sp-opt"><input type="radio" name="u-speed" value="kmh" onchange="applyUnits()"> km/h</label>
       <label class="sp-opt"><input type="radio" name="u-speed" value="mph" onchange="applyUnits()"> mph</label>
       <label class="sp-opt"><input type="radio" name="u-speed" value="kts" onchange="applyUnits()"> kts</label>
+    </div>
+
+    <div class="sp-section">JOURNAL D'ACQUISITION</div>
+    <div class="sp-row">
+      <label class="sp-opt">
+        <input type="radio" name="log-display" value="hidden" checked onchange="applyLogDisplay()">
+        Masqué <span class="sp-hint">Par défaut</span>
+      </label>
+      <label class="sp-opt">
+        <input type="radio" name="log-display" value="visible" onchange="applyLogDisplay()">
+        Affiché
+      </label>
     </div>
 
     <div class="sp-section">RÉSEAU DSN — AFFICHAGE</div>
@@ -3092,6 +3105,12 @@ function pushHistory() {
 // ════════════════════════════════════════════════════════════════
 const navUnits = { dist: 'km', speed: 'kms' };
 let dsnFilter = 'all'; // 'all' | 'orion'
+
+function applyLogDisplay() {
+  const sel = document.querySelector('input[name="log-display"]:checked');
+  const panel = document.querySelector('.panel-log');
+  if (panel) panel.classList.toggle('log-visible', sel && sel.value === 'visible');
+}
 
 function applyDSNFilter() {
   const sel = document.querySelector('input[name="dsn-filter"]:checked');
