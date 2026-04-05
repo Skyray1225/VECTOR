@@ -54,15 +54,10 @@ header {
 .hd-logo {
   display: flex; align-items: center; gap: 14px; flex-shrink: 0;
 }
-.hd-emblem { width: 50px; height: 50px; flex-shrink: 0; }
-.hd-brand { display: flex; flex-direction: column; gap: 3px; }
-.hd-brand-name {
-  font-family: var(--heading); font-size: 22px; font-weight: 700;
-  letter-spacing: .12em; color: #fff; text-transform: uppercase; line-height: 1;
-}
-.hd-brand-sub {
-  font-family: var(--heading); font-size: 8.5px; font-weight: 400;
-  letter-spacing: .18em; color: var(--muted); text-transform: uppercase;
+.hd-logo-img {
+  height: 54px; width: auto; flex-shrink: 0;
+  mix-blend-mode: screen;
+  filter: brightness(1.05);
 }
 .hd-mission-chip {
   display: flex; align-items: center; gap: 7px;
@@ -798,47 +793,8 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 <!-- HEADER -->
 <header>
   <div class="hd-logo">
-    <!-- VECTOR emblem — SVG inline -->
-    <svg class="hd-emblem" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="vbg" cx="40%" cy="35%" r="68%">
-          <stop offset="0%" stop-color="#0e2540"/>
-          <stop offset="100%" stop-color="#040c18"/>
-        </radialGradient>
-        <radialGradient id="vsph" cx="35%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#b8f0ff"/>
-          <stop offset="55%" stop-color="#00d2ff"/>
-          <stop offset="100%" stop-color="#005f80"/>
-        </radialGradient>
-        <filter id="vglow" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
-      <!-- Outer rim -->
-      <circle cx="50" cy="50" r="49" fill="none" stroke="#1e3a58" stroke-width="0.8"/>
-      <!-- Background -->
-      <circle cx="50" cy="50" r="48" fill="url(#vbg)"/>
-      <!-- Orbital ring — back half (dim) -->
-      <ellipse cx="50" cy="50" rx="43" ry="15" fill="none"
-               stroke="#005577" stroke-width="2.2" transform="rotate(-18 50 50)"/>
-      <!-- V chevron -->
-      <polygon points="15,17 33,17 50,65 67,17 85,17 50,80" fill="white"/>
-      <!-- Orbital ring — front arc (bright, drawn over V) -->
-      <ellipse cx="50" cy="50" rx="43" ry="15" fill="none"
-               stroke="#00d2ff" stroke-width="2.5"
-               stroke-dasharray="104 104" transform="rotate(-18 50 50)"/>
-      <!-- Sphere halo -->
-      <circle cx="77" cy="30" r="9" fill="#00d2ff" opacity="0.18" filter="url(#vglow)"/>
-      <!-- Sphere -->
-      <circle cx="77" cy="30" r="5" fill="url(#vsph)"/>
-      <circle cx="75" cy="28" r="1.8" fill="white" opacity="0.55"/>
-    </svg>
-
-    <div class="hd-brand">
-      <div class="hd-brand-name">VECTOR</div>
-      <div class="hd-brand-sub">Vehicle Ephemeris &amp; Telemetry Observation</div>
-    </div>
+    <!-- VECTOR logo -->
+    <img class="hd-logo-img" src="/vector_logo.svg" alt="VECTOR">
 
     <div class="hd-mission-chip">
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
