@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VECTOR — Mission Hub</title>
+<link rel="icon" type="image/png" href="/vector_favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #060c18;
+  --panel:  #0d1724;
+  --border: rgba(255,255,255,.07);
+  --text:   #e2eaf2;
+  --muted:  #7a9ab0;
+  --accent: #00d2ff;
+  --ok:     #4cffab;
+  --warn:   #ffb300;
+  --heading:'Barlow Condensed', sans-serif;
+  --body:   'Barlow', sans-serif;
+  --mono:   'Share Tech Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--body); font-size: 15px; line-height: 1.7;
+  min-height: 100vh; overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 70px; background: #0d1520;
+  border-bottom: 1px solid var(--border);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  font-family: var(--heading); letter-spacing: .06em;
+}
+.hd-logo { display: flex; align-items: center; text-decoration: none; }
+.hd-logo-img { height: 54px; width: auto; }
+.hd-nav { display: flex; align-items: center; gap: 8px; }
+.hd-nav a {
+  padding: 4px 12px; border: 1px solid rgba(0,210,255,.3); border-radius: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
+  text-decoration: none; text-transform: uppercase; font-family: var(--heading);
+  transition: background .15s, border-color .15s;
+}
+.hd-nav a:hover { background: rgba(0,210,255,.1); border-color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  position: relative; height: 100vh; min-height: 600px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow: hidden; padding-top: 70px;
+}
+#stars-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.hero-scan {
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,.04) 3px, rgba(0,0,0,.04) 4px
+  );
+}
+.hero-glow {
+  position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%);
+  width: 700px; height: 400px;
+  background: radial-gradient(ellipse, rgba(0,90,180,.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 26px;
+  text-align: center; padding: 0 24px;
+}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .22em;
+  color: var(--accent); text-transform: uppercase;
+  display: flex; align-items: center; gap: 12px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: ''; display: block; width: 36px; height: 1px;
+  background: rgba(0,210,255,.35);
+}
+.hero-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok); box-shadow: 0 0 8px var(--ok);
+  animation: dot-pulse 2s ease-in-out infinite;
+  display: inline-block; margin-right: -4px;
+}
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.8); }
+}
+.hero-logo {
+  max-width: 440px; width: 80%;
+  filter: drop-shadow(0 0 70px rgba(0,170,210,.28));
+  animation: logo-float 7s ease-in-out infinite;
+}
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.hero-tagline {
+  font-family: var(--mono); font-size: 12px; letter-spacing: .14em;
+  color: rgba(160,200,220,.5); text-transform: uppercase;
+}
+.hero-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 30px; margin-top: 6px;
+  border: 1px solid rgba(0,210,255,.38); border-radius: 3px;
+  font-family: var(--heading); font-size: 12px; font-weight: 700;
+  letter-spacing: .15em; color: var(--accent); text-decoration: none;
+  text-transform: uppercase; background: rgba(0,210,255,.04);
+  transition: background .2s, border-color .2s, gap .2s;
+}
+.hero-cta:hover {
+  background: rgba(0,210,255,.1); border-color: var(--accent); gap: 14px;
+}
+.hero-cta svg { flex-shrink: 0; animation: cta-bounce 2.4s ease-in-out infinite; }
+@keyframes cta-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+.hero-scroll {
+  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
+  color: rgba(160,200,220,.3); text-transform: uppercase; pointer-events: none;
+}
+.hero-scroll-line {
+  width: 1px; height: 36px;
+  background: linear-gradient(to bottom, rgba(0,210,255,.4), transparent);
+  animation: scroll-pulse 2.2s ease-in-out infinite;
+}
+@keyframes scroll-pulse {
+  0%, 100% { opacity: .4; }
+  50% { opacity: 1; }
+}
+
+/* ── STATUS BAR ── */
+.status-bar {
+  background: #07101e; border-bottom: 1px solid var(--border);
+  padding: 10px 32px; display: flex; align-items: center;
+  flex-wrap: wrap; gap: 0;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--muted); padding: 0 20px; border-right: 1px solid var(--border);
+}
+.sb-item:first-child { padding-left: 0; }
+.sb-item:last-child { border-right: none; margin-left: auto; padding-right: 0; }
+.sb-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.sb-dot.ok  { background: var(--ok);  box-shadow: 0 0 6px var(--ok);  animation: dot-pulse 2s ease-in-out infinite; }
+.sb-dot.warn{ background: var(--warn); box-shadow: 0 0 6px rgba(255,179,0,.4); }
+.sb-val { color: var(--text); }
+
+/* ── MISSIONS SECTION ── */
+#missions {
+  max-width: 1160px; margin: 0 auto;
+  padding: 72px 32px 100px;
+}
+.section-eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .25em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 10px;
+}
+.section-title {
+  font-family: var(--heading); font-size: clamp(28px, 4vw, 40px); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px;
+}
+.section-sub { color: var(--muted); font-size: 14px; margin-bottom: 48px; max-width: 520px; }
+
+.missions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ── MISSION CARD ── */
+.mission-card {
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  background: var(--panel);
+  transition: transform .25s ease, border-color .25s, box-shadow .25s;
+}
+.mission-card.live:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0,210,255,.38);
+  box-shadow: 0 20px 60px rgba(0,0,0,.55), 0 0 0 1px rgba(0,210,255,.08);
+}
+
+/* Card media area */
+.mc-media {
+  position: relative; height: 220px; overflow: hidden; flex-shrink: 0;
+}
+.mc-media-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center 25%;
+  transition: transform .4s ease;
+}
+.mission-card.live:hover .mc-media-bg { transform: scale(1.04); }
+.mc-media-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(4,9,20,.25) 0%,
+    rgba(4,9,20,.55) 60%,
+    rgba(4,9,20,.92) 100%
+  );
+}
+.mc-media-locked {
+  height: 220px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #08111f 0%, #040910 100%);
+}
+.mc-media-locked::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,210,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,210,255,.025) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.mc-lock-icon {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  color: rgba(120,160,190,.25);
+  font-family: var(--mono); font-size: 10px; letter-spacing: .2em;
+  text-transform: uppercase;
+}
+
+/* Card top bar (patch + badge), overlaid on media */
+.mc-top {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding: 16px 18px 0;
+}
+.mc-patch { width: 50px; height: auto; filter: drop-shadow(0 2px 8px rgba(0,0,0,.7)); }
+.mc-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 2px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.mc-badge.active { background: rgba(76,255,171,.1); color: var(--ok); border: 1px solid rgba(76,255,171,.22); }
+.mc-badge.active .badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok); animation: dot-pulse 1.5s ease-in-out infinite;
+}
+.mc-badge.locked-badge { background: rgba(122,154,176,.07); color: var(--muted); border: 1px solid rgba(122,154,176,.18); }
+
+/* Card content */
+.mc-content {
+  padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1;
+}
+.mc-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+  color: var(--accent); text-transform: uppercase;
+  margin-bottom: 6px; opacity: .6;
+}
+.mc-name {
+  font-family: var(--heading); font-size: 30px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; line-height: 1;
+  margin-bottom: 10px;
+}
+.mc-desc {
+  font-size: 13px; color: #8aafc3; line-height: 1.6;
+  margin-bottom: 22px; flex: 1;
+}
+.mc-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  align-self: flex-start;
+  padding: 9px 18px; border-radius: 3px;
+  background: rgba(0,210,255,.07); border: 1px solid rgba(0,210,255,.32);
+  font-family: var(--heading); font-size: 11px; font-weight: 700;
+  letter-spacing: .12em; color: var(--accent); text-decoration: none;
+  text-transform: uppercase;
+  transition: background .15s, border-color .15s, gap .15s;
+}
+.mc-btn:hover { background: rgba(0,210,255,.14); border-color: var(--accent); gap: 12px; }
+.mc-btn.disabled {
+  opacity: .25; pointer-events: none; cursor: default;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  font-family: var(--mono); font-size: 10px; color: rgba(122,154,176,.5);
+  letter-spacing: .08em;
+}
+.footer-logo { height: 26px; width: auto; opacity: .28; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { color: inherit; text-decoration: none; transition: opacity .15s; }
+.footer-links a:hover { opacity: 1; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <a href="/" class="hd-logo">
+    <img class="hd-logo-img" src="/vector_logo.png" alt="VECTOR">
+  </a>
+  <nav class="hd-nav">
+    <a href="/about.html">À propos</a>
+  </nav>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <canvas id="stars-canvas"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-scan"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <span class="hero-dot"></span>
+      SYSTÈME OPÉRATIONNEL
+    </div>
+    <img class="hero-logo" src="/vector_logo.png" alt="VECTOR — Vehicle Ephemeris &amp; Telemetry Observation">
+    <p class="hero-tagline">SURVEILLANCE ORBITALE &nbsp;·&nbsp; TEMPS RÉEL &nbsp;·&nbsp; MISSIONS HABITÉES</p>
+    <a href="#missions" class="hero-cta">
+      EXPLORER LES MISSIONS
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/>
+      </svg>
+    </a>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    DÉFILER
+  </div>
+</section>
+
+<!-- ── STATUS BAR ── -->
+<div class="status-bar">
+  <div class="sb-item">
+    <div class="sb-dot ok"></div>
+    SYSTÈME <span class="sb-val">&nbsp;EN LIGNE</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot ok"></div>
+    MISSIONS ACTIVES <span class="sb-val">&nbsp;01</span>
+  </div>
+  <div class="sb-item">
+    <div class="sb-dot warn"></div>
+    EN DÉVELOPPEMENT <span class="sb-val">&nbsp;02</span>
+  </div>
+  <div class="sb-item">
+    <span id="hub-clock">--:--:-- UTC</span>
+  </div>
+</div>
+
+<!-- ── MISSIONS ── -->
+<section id="missions">
+  <div class="section-eyebrow">TABLEAU DE BORD</div>
+  <h2 class="section-title">MISSIONS DISPONIBLES</h2>
+  <p class="section-sub">Sélectionnez une mission pour accéder au tableau de bord de suivi en temps réel.</p>
+
+  <div class="missions-grid">
+
+    <!-- ── ARTEMIS II · ACTIVE ── -->
+    <article class="mission-card live">
+      <div class="mc-media">
+        <div class="mc-media-bg" style="background-image:url('https://images-assets.nasa.gov/image/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED~medium.jpg')"></div>
+        <div class="mc-media-overlay"></div>
+        <div class="mc-top">
+          <img class="mc-patch" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Patch Artemis II">
+          <div class="mc-badge active"><div class="badge-dot"></div>EN COURS</div>
+        </div>
+      </div>
+      <div class="mc-content">
+        <div class="mc-label">Programme Artemis · NASA</div>
+        <h3 class="mc-name">ARTEMIS II</h3>
+        <p class="mc-desc">Premier vol habité du programme Artemis. Quatre astronautes à bord d'Orion en transit trans-lunaire, propulsé par le SLS Block 1.</p>
+        <a href="/artemis2_mission_control.html" class="mc-btn">
+          TABLEAU DE BORD
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+      </div>
+    </article>
+
+    <!-- ── ARTEMIS III · À VENIR ── -->
+    <article class="mission-card">
+      <div class="mc-media-locked">
+        <div class="mc-lock-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          PROCHAINEMENT
+        </div>
+        <div class="mc-top" style="position:absolute">
+          <div style="width:50px"></div>
+          <div class="mc-badge locked-badge">À VENIR</div>
+        </div>
+      </div>
+      <div class="mc-content">
+        <div class="mc-label">Programme Artemis · NASA</div>
+        <h3 class="mc-name" style="color:rgba(226,234,242,.4)">ARTEMIS III</h3>
+        <p class="mc-desc">Première mission lunaire avec alunissage depuis Apollo 17. Retour de l'humanité sur la surface de la Lune.</p>
+        <span class="mc-btn disabled">NON DISPONIBLE</span>
+      </div>
+    </article>
+
+    <!-- ── PLACEHOLDER · FUTUR ── -->
+    <article class="mission-card">
+      <div class="mc-media-locked">
+        <div class="mc-lock-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          EN DÉVELOPPEMENT
+        </div>
+        <div class="mc-top" style="position:absolute">
+          <div style="width:50px"></div>
+          <div class="mc-badge locked-badge">FUTUR</div>
+        </div>
+      </div>
+      <div class="mc-content">
+        <div class="mc-label">Programme · TBD</div>
+        <h3 class="mc-name" style="color:rgba(226,234,242,.25)">— — —</h3>
+        <p class="mc-desc">Nouvelle mission en cours de planification. Les détails seront communiqués ultérieurement.</p>
+        <span class="mc-btn disabled">NON DISPONIBLE</span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <img class="footer-logo" src="/vector_logo.png" alt="VECTOR">
+  <div class="footer-links">
+    <a href="/about.html">À PROPOS</a>
+    <span>VECTOR — VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION</span>
+  </div>
+</footer>
+
+<script>
+/* ── STARFIELD ── */
+(function () {
+  const canvas = document.getElementById('stars-canvas');
+  const ctx    = canvas.getContext('2d');
+  let   stars  = [];
+
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildStars();
+  }
+
+  function buildStars() {
+    stars = [];
+    const n = Math.round((canvas.width * canvas.height) / 4800);
+    for (let i = 0; i < n; i++) {
+      stars.push({
+        x:     Math.random() * canvas.width,
+        y:     Math.random() * canvas.height,
+        r:     Math.random() * 1.0 + 0.15,
+        a:     Math.random() * 0.65 + 0.2,
+        phase: Math.random() * Math.PI * 2,
+        spd:   Math.random() * 0.5 + 0.2,
+      });
+    }
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    /* subtle nebula glow */
+    const g = ctx.createRadialGradient(
+      canvas.width * .48, canvas.height * .42, 0,
+      canvas.width * .48, canvas.height * .42, canvas.width * .55
+    );
+    g.addColorStop(0, 'rgba(0,50,120,.13)');
+    g.addColorStop(1, 'transparent');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    /* stars */
+    for (const s of stars) {
+      const a = s.a * (.75 + .25 * Math.sin(ts * .001 * s.spd + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(210,230,255,${a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* ── UTC CLOCK ── */
+(function () {
+  const el = document.getElementById('hub-clock');
+  function tick() {
+    const n = new Date();
+    const p = v => String(v).padStart(2, '0');
+    el.textContent = `${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())} UTC`;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>

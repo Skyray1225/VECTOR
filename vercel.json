@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/artemis2_mission_control.html" }
+    { "source": "/", "destination": "/index.html" }
   ],
   "functions": {
     "api/oem.js": { "maxDuration": 30 }
