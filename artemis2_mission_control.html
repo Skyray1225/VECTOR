@@ -2512,10 +2512,10 @@ function updateThree() {
   } else if (camMode === 'system') {
     controls3.minDistance = 8;
     const sysPos = layoutSwapped
-      ? new THREE.Vector3(304.3, 213.4, 540.1)
+      ? new THREE.Vector3(125.4, 76.3, 418.4)
       : new THREE.Vector3(112.6, 9.3, 511.1);
     const sysTgt = layoutSwapped
-      ? new THREE.Vector3(-57.8, -250.9, 139.5)
+      ? new THREE.Vector3(-111.8, -162.7, 90.5)
       : new THREE.Vector3(-110.3, -135.1, 140.1);
     camera3.position.lerp(sysPos, 0.02);
     controls3.target.lerp(sysTgt, 0.05);
@@ -2629,8 +2629,8 @@ function swapLayout() {
     onResize3();
     if (!camera3 || !controls3) return;
     if (layoutSwapped) {
-      controls3.target.set(-57.8, -250.9, 139.5);
-      camera3.position.set(304.3, 213.4, 540.1);
+      controls3.target.set(-111.8, -162.7, 90.5);
+      camera3.position.set(125.4, 76.3, 418.4);
     } else {
       controls3.target.set(-110.3, -135.1, 140.1);
       camera3.position.set(112.6, 9.3, 511.1);
