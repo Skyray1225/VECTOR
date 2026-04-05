@@ -1043,7 +1043,12 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
           <div class="ctrl-group">
             <div class="ctrl-group-label">CAMÉRA</div>
             <button class="ctrl-btn active" id="cam-free" onclick="setCamMode('free')" title="Caméra libre">
-              <svg class="ctrl-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2l-6 6"/><path d="M21.5 8V2h-6"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>
+              <svg class="ctrl-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="3"/><polyline points="9 5 12 2 15 5"/>
+                <line x1="12" y1="19" x2="12" y2="21"/><polyline points="15 19 12 22 9 19"/>
+                <line x1="5" y1="12" x2="3" y2="12"/><polyline points="5 9 2 12 5 15"/>
+                <line x1="19" y1="12" x2="21" y2="12"/><polyline points="19 15 22 12 19 9"/>
+              </svg>
               <span class="ctrl-label">LIBRE</span>
             </button>
             <button class="ctrl-btn" id="cam-follow" onclick="setCamMode('follow')" title="Suivi Orion">
