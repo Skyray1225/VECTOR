@@ -46,37 +46,46 @@ html, body {
 /* ── HEADER ── */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 18px; height: 52px; background: #121a24;
+  padding: 0 18px; height: 70px; background: #0d1520;
   border-bottom: 1px solid var(--border); flex-shrink: 0;
   font-family: var(--heading); font-weight: 600; letter-spacing: .06em;
+  gap: 12px;
 }
 .hd-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text);
-  font-size: 18px;
-  text-transform: uppercase;
-  letter-spacing: .03em;
+  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
 }
-.hd-patch {
-  width: 38px;
-  height: 46px;
-  object-fit: contain;
-  flex-shrink: 0;
+.hd-emblem { width: 50px; height: 50px; flex-shrink: 0; }
+.hd-brand { display: flex; flex-direction: column; gap: 3px; }
+.hd-brand-name {
+  font-family: var(--heading); font-size: 22px; font-weight: 700;
+  letter-spacing: .12em; color: #fff; text-transform: uppercase; line-height: 1;
 }
-.hd-logo span { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 12px; }
-.hd-met { display: flex; flex-direction: column; align-items: center; }
+.hd-brand-sub {
+  font-family: var(--heading); font-size: 8.5px; font-weight: 400;
+  letter-spacing: .18em; color: var(--muted); text-transform: uppercase;
+}
+.hd-mission-chip {
+  display: flex; align-items: center; gap: 7px;
+  margin-left: 18px; padding: 4px 10px 4px 6px;
+  border: 1px solid rgba(0,210,255,.2); border-radius: 4px;
+  background: rgba(0,210,255,.05);
+}
+.hd-mission-chip img { width: 22px; height: 27px; object-fit: contain; }
+.hd-mission-chip span {
+  font-family: var(--heading); font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; color: var(--accent); text-transform: uppercase;
+}
+.hd-met { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
 .hd-met-label { font-size: 10px; color: var(--muted); letter-spacing: .12em; }
 #met { font-family: var(--mono); font-size: 24px; color: #7dd4a2; letter-spacing: .05em; }
-.hd-right { text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.hd-right { text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink: 0; }
 .hd-about {
-  display: inline-block; padding: 4px 11px; margin-left: 16px;
+  display: inline-block; padding: 4px 11px; margin-left: 14px;
   border: 1px solid rgba(0,210,255,.35); border-radius: 3px;
   font-size: 10px; font-weight: 700; letter-spacing: .1em;
   color: var(--accent); text-decoration: none; text-transform: uppercase;
   font-family: var(--heading); transition: background .15s, border-color .15s;
-  align-self: center; white-space: nowrap;
+  align-self: center; white-space: nowrap; flex-shrink: 0;
 }
 .hd-about:hover { background: rgba(0,210,255,.1); border-color: var(--accent); }
 #utc-clock { font-family: var(--mono); font-size: 14px; color: var(--muted); }
@@ -388,7 +397,7 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 
 /* ── SETTINGS PANEL ── */
 #settings-panel {
-  display: none; position: fixed; top: 52px; right: 0; bottom: 0; z-index: 200;
+  display: none; position: fixed; top: 70px; right: 0; bottom: 0; z-index: 200;
   width: 300px; background: #0b1520; border-left: 1px solid var(--border);
   box-shadow: -8px 0 32px rgba(0,0,0,.5); overflow-y: auto;
   animation: slideIn .18s ease;
@@ -789,8 +798,53 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 <!-- HEADER -->
 <header>
   <div class="hd-logo">
-    <img class="hd-patch" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Écusson Artemis II">
-    <div>ARTEMIS II <span>NASA / ESA — CONTRÔLE DE MISSION</span></div>
+    <!-- VECTOR emblem — SVG inline -->
+    <svg class="hd-emblem" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="vbg" cx="40%" cy="35%" r="68%">
+          <stop offset="0%" stop-color="#0e2540"/>
+          <stop offset="100%" stop-color="#040c18"/>
+        </radialGradient>
+        <radialGradient id="vsph" cx="35%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#b8f0ff"/>
+          <stop offset="55%" stop-color="#00d2ff"/>
+          <stop offset="100%" stop-color="#005f80"/>
+        </radialGradient>
+        <filter id="vglow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Outer rim -->
+      <circle cx="50" cy="50" r="49" fill="none" stroke="#1e3a58" stroke-width="0.8"/>
+      <!-- Background -->
+      <circle cx="50" cy="50" r="48" fill="url(#vbg)"/>
+      <!-- Orbital ring — back half (dim) -->
+      <ellipse cx="50" cy="50" rx="43" ry="15" fill="none"
+               stroke="#005577" stroke-width="2.2" transform="rotate(-18 50 50)"/>
+      <!-- V chevron -->
+      <polygon points="15,17 33,17 50,65 67,17 85,17 50,80" fill="white"/>
+      <!-- Orbital ring — front arc (bright, drawn over V) -->
+      <ellipse cx="50" cy="50" rx="43" ry="15" fill="none"
+               stroke="#00d2ff" stroke-width="2.5"
+               stroke-dasharray="104 104" transform="rotate(-18 50 50)"/>
+      <!-- Sphere halo -->
+      <circle cx="77" cy="30" r="9" fill="#00d2ff" opacity="0.18" filter="url(#vglow)"/>
+      <!-- Sphere -->
+      <circle cx="77" cy="30" r="5" fill="url(#vsph)"/>
+      <circle cx="75" cy="28" r="1.8" fill="white" opacity="0.55"/>
+    </svg>
+
+    <div class="hd-brand">
+      <div class="hd-brand-name">VECTOR</div>
+      <div class="hd-brand-sub">Vehicle Ephemeris &amp; Telemetry Observation</div>
+    </div>
+
+    <div class="hd-mission-chip">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
+      <span>Artemis II</span>
+    </div>
+
     <a href="/about.html" class="hd-about">À propos</a>
   </div>
   <div class="hd-met">
