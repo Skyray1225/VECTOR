@@ -377,49 +377,57 @@ header {
 a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 .panel-body { padding: 11px 13px; flex: 1; overflow: visible; }
 
-/* ── UNIT PICKER ── */
-.unit-btn {
-  float: right; clear: right; margin-top: 3px;
-  background: rgba(0,210,255,.08); border: 1px solid rgba(0,210,255,.28);
-  border-radius: 3px; padding: 2px 8px; font-size: 9px; font-weight: 700;
-  letter-spacing: .1em; color: var(--accent); cursor: pointer;
-  font-family: var(--heading); transition: background .15s;
+/* ── SETTINGS BUTTON ── */
+.hd-settings-btn {
+  background: none; border: 1px solid rgba(0,210,255,.28); border-radius: 4px;
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  color: var(--accent); cursor: pointer; transition: background .15s, border-color .15s;
+  flex-shrink: 0; margin-left: 12px;
 }
-.unit-btn:hover { background: rgba(0,210,255,.18); }
-#unit-popup {
-  display: none; position: absolute; z-index: 50;
-  background: #0d1824; border: 1px solid rgba(0,210,255,.35);
-  border-radius: 5px; padding: 14px 16px; min-width: 200px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.6);
+.hd-settings-btn:hover { background: rgba(0,210,255,.12); border-color: var(--accent); }
+
+/* ── SETTINGS PANEL ── */
+#settings-panel {
+  display: none; position: fixed; top: 52px; right: 0; bottom: 0; z-index: 200;
+  width: 300px; background: #0b1520; border-left: 1px solid var(--border);
+  box-shadow: -8px 0 32px rgba(0,0,0,.5); overflow-y: auto;
+  animation: slideIn .18s ease;
 }
-#unit-popup.open { display: block; }
-.up-section {
+#settings-panel.open { display: block; }
+@keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+#settings-content { padding: 20px; }
+.sp-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px;
+}
+.sp-title {
+  font-family: var(--heading); font-size: 13px; font-weight: 700;
+  letter-spacing: .14em; color: var(--text);
+}
+.sp-close {
+  background: none; border: none; color: var(--muted); font-size: 16px;
+  cursor: pointer; padding: 4px 6px; border-radius: 3px; transition: color .15s;
+}
+.sp-close:hover { color: var(--text); }
+.sp-section {
   font-family: var(--heading); font-size: 9px; font-weight: 700;
-  letter-spacing: .14em; color: var(--accent); margin: 10px 0 6px;
+  letter-spacing: .16em; color: var(--accent); text-transform: uppercase;
+  margin: 20px 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border);
 }
-.up-section:first-child { margin-top: 0; }
-.up-row {
-  display: flex; gap: 8px; flex-wrap: wrap;
-}
-.up-opt {
-  display: flex; align-items: center; gap: 5px; cursor: pointer;
-  padding: 4px 10px; border-radius: 3px; border: 1px solid rgba(255,255,255,.1);
-  font-family: var(--mono); font-size: 12px; color: var(--text);
+.sp-section:first-of-type { margin-top: 0; }
+.sp-row { display: flex; flex-direction: column; gap: 6px; }
+.sp-opt {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+  padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,.08);
+  font-family: var(--mono); font-size: 13px; color: var(--text);
   transition: background .12s, border-color .12s; user-select: none;
 }
-.up-opt input { display: none; }
-.up-opt:has(input:checked) {
-  background: rgba(0,210,255,.15); border-color: var(--accent); color: var(--accent);
+.sp-opt input { display: none; }
+.sp-opt:has(input:checked) {
+  background: rgba(0,210,255,.1); border-color: rgba(0,210,255,.45); color: var(--accent);
 }
-.up-opt:hover { background: rgba(255,255,255,.06); }
-.up-close {
-  display: block; width: 100%; margin-top: 12px;
-  background: rgba(0,210,255,.1); border: 1px solid rgba(0,210,255,.3);
-  border-radius: 3px; padding: 5px; font-family: var(--heading);
-  font-size: 10px; font-weight: 700; letter-spacing: .1em;
-  color: var(--accent); cursor: pointer; transition: background .15s;
-}
-.up-close:hover { background: rgba(0,210,255,.2); }
+.sp-opt:hover { background: rgba(255,255,255,.05); }
+.sp-hint { font-family: var(--body, sans-serif); font-size: 11px; color: var(--muted); margin-left: auto; }
 
 .panel-nav  { flex: 1 1 auto; min-height: 0; }
 .panel-live { flex: 0 0 auto; }
@@ -792,7 +800,37 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <span id="mission-phase">INITIALISATION</span>
     <span id="utc-clock">--:--:-- UTC</span>
   </div>
+  <button class="hd-settings-btn" onclick="toggleSettings(event)" title="Paramètres">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
 </header>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel">
+  <div id="settings-content">
+    <div class="sp-header">
+      <span class="sp-title">PARAMÈTRES</span>
+      <button class="sp-close" onclick="toggleSettings()">✕</button>
+    </div>
+
+    <div class="sp-section">UNITÉS DE DISTANCE</div>
+    <div class="sp-row">
+      <label class="sp-opt"><input type="radio" name="u-dist" value="km"  checked onchange="applyUnits()"> km <span class="sp-hint">Kilomètres</span></label>
+      <label class="sp-opt"><input type="radio" name="u-dist" value="sm"  onchange="applyUnits()"> SM <span class="sp-hint">Miles terrestres</span></label>
+      <label class="sp-opt"><input type="radio" name="u-dist" value="nm"  onchange="applyUnits()"> NM <span class="sp-hint">Milles nautiques</span></label>
+    </div>
+
+    <div class="sp-section">UNITÉS DE VITESSE</div>
+    <div class="sp-row">
+      <label class="sp-opt"><input type="radio" name="u-speed" value="kms" checked onchange="applyUnits()"> km/s</label>
+      <label class="sp-opt"><input type="radio" name="u-speed" value="kmh" onchange="applyUnits()"> km/h</label>
+      <label class="sp-opt"><input type="radio" name="u-speed" value="mph" onchange="applyUnits()"> mph</label>
+      <label class="sp-opt"><input type="radio" name="u-speed" value="kts" onchange="applyUnits()"> kts</label>
+    </div>
+  </div>
+</div>
 
 <!-- SIMULATION BANNER -->
 <div id="sim-banner">
@@ -845,23 +883,7 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <div class="mission-grid">
     <div class="mission-left">
       <div class="panel panel-nav">
-        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><a id="nav-src-badge" class="panel-src" style="color:var(--warn);text-decoration:none">SIMULATION</a><button class="unit-btn panel-src" onclick="toggleUnitPopup(event)">UNITÉ ▾</button></div>
-        <div id="unit-popup">
-          <div class="up-section">DISTANCE</div>
-          <div class="up-row">
-            <label class="up-opt"><input type="radio" name="u-dist" value="km" checked onchange="applyUnits()"> km</label>
-            <label class="up-opt"><input type="radio" name="u-dist" value="sm" onchange="applyUnits()"> SM</label>
-            <label class="up-opt"><input type="radio" name="u-dist" value="nm" onchange="applyUnits()"> NM</label>
-          </div>
-          <div class="up-section">VITESSE</div>
-          <div class="up-row">
-            <label class="up-opt"><input type="radio" name="u-speed" value="kms" checked onchange="applyUnits()"> km/s</label>
-            <label class="up-opt"><input type="radio" name="u-speed" value="kmh" onchange="applyUnits()"> km/h</label>
-            <label class="up-opt"><input type="radio" name="u-speed" value="mph" onchange="applyUnits()"> mph</label>
-            <label class="up-opt"><input type="radio" name="u-speed" value="kts" onchange="applyUnits()"> kts</label>
-          </div>
-          <button class="up-close" onclick="toggleUnitPopup()">FERMER</button>
-        </div>
+        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><a id="nav-src-badge" class="panel-src" style="color:var(--warn);text-decoration:none">SIMULATION</a></div>
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit" id="dunit-earth">km</span></span></div>
           <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit" id="dunit-moon">km</span></span></div>
@@ -3040,29 +3062,26 @@ function pushHistory() {
 }
 
 // ════════════════════════════════════════════════════════════════
-// UNIT PICKER
+// SETTINGS PANEL
 // ════════════════════════════════════════════════════════════════
 const navUnits = { dist: 'km', speed: 'kms' };
 
-function toggleUnitPopup(e) {
+function toggleSettings(e) {
   if (e) e.stopPropagation();
-  const pop = document.getElementById('unit-popup');
-  pop.classList.toggle('open');
-  if (pop.classList.contains('open')) {
-    // Position below button
-    const btn = e ? e.currentTarget : null;
-    if (btn) {
-      const r = btn.closest('.panel-nav').getBoundingClientRect();
-      pop.style.top  = (btn.getBoundingClientRect().bottom - r.top + 4) + 'px';
-      pop.style.right = '8px';
-      pop.style.left  = 'auto';
-    }
-    document.addEventListener('click', closeUnitPopup, { once: true });
+  const panel = document.getElementById('settings-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    document.addEventListener('click', closeSettingsOutside, { once: true });
   }
 }
-function closeUnitPopup(e) {
-  const pop = document.getElementById('unit-popup');
-  if (pop && !pop.contains(e.target)) pop.classList.remove('open');
+function closeSettingsOutside(e) {
+  const panel = document.getElementById('settings-panel');
+  const btn   = document.querySelector('.hd-settings-btn');
+  if (panel && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  } else if (panel && panel.classList.contains('open')) {
+    document.addEventListener('click', closeSettingsOutside, { once: true });
+  }
 }
 function applyUnits() {
   const distSel  = document.querySelector('input[name="u-dist"]:checked');
