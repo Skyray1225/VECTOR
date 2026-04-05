@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>À propos — Artemis II Mission Control</title>
-<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png">
+<title>À propos — VECTOR</title>
+<link rel="icon" type="image/png" href="/vector_favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -31,25 +31,36 @@ body {
 /* ── HEADER ── */
 header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 32px; height: 56px;
-  background: #0e1620; border-bottom: 1px solid var(--border);
+  padding: 0 18px; height: 70px;
+  background: #0d1520; border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
-  font-family: var(--heading);
+  font-family: var(--heading); font-weight: 600; letter-spacing: .06em;
+  gap: 12px;
 }
 .hd-logo {
-  display: flex; align-items: center; gap: 12px;
-  color: var(--text); font-size: 17px; font-weight: 700;
-  text-decoration: none; letter-spacing: .04em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
 }
-.hd-logo img { width: 34px; height: 42px; object-fit: contain; }
-.hd-logo span { color: var(--muted); font-weight: 400; font-size: 12px; }
+.hd-logo-img {
+  height: 54px; width: auto; flex-shrink: 0;
+}
+.hd-mission-chip {
+  display: flex; align-items: center; gap: 7px;
+  margin-left: 18px; padding: 4px 10px 4px 6px;
+  border: 1px solid rgba(0,210,255,.2); border-radius: 4px;
+  background: rgba(0,210,255,.05);
+}
+.hd-mission-chip img { width: 22px; height: 27px; object-fit: contain; }
+.hd-mission-chip span {
+  font-family: var(--heading); font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; color: var(--accent); text-transform: uppercase;
+}
 .hd-back {
-  padding: 5px 14px; border: 1px solid rgba(0,210,255,.35); border-radius: 3px;
-  font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
+  padding: 4px 11px; border: 1px solid rgba(0,210,255,.35); border-radius: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
   text-decoration: none; text-transform: uppercase; font-family: var(--heading);
-  transition: background .15s;
+  transition: background .15s, border-color .15s; white-space: nowrap; flex-shrink: 0;
 }
-.hd-back:hover { background: rgba(0,210,255,.1); }
+.hd-back:hover { background: rgba(0,210,255,.1); border-color: var(--accent); }
 
 /* ── HERO ── */
 .hero {
@@ -244,10 +255,13 @@ footer a { color: var(--accent); text-decoration: none; }
 
 <!-- HEADER -->
 <header>
-  <a href="/" class="hd-logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
-    ARTEMIS II <span>CONTRÔLE DE MISSION</span>
-  </a>
+  <div class="hd-logo">
+    <img class="hd-logo-img" src="/vector_logo.png" alt="VECTOR">
+    <div class="hd-mission-chip">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
+      <span>Artemis II</span>
+    </div>
+  </div>
   <a href="/" class="hd-back">← Retour au tableau de bord</a>
 </header>
 
