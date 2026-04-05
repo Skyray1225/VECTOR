@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos — Artemis II Mission Control</title>
+<link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #0b1119;
+  --panel:  #111b27;
+  --border: rgba(255,255,255,.07);
+  --text:   #e2eaf2;
+  --muted:  #7a9ab0;
+  --accent: #00d2ff;
+  --ok:     #4cffab;
+  --warn:   #ffb300;
+  --heading:'Barlow Condensed', sans-serif;
+  --body:   'Barlow', sans-serif;
+  --mono:   'Share Tech Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--body); font-size: 15px; line-height: 1.7;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+  background: #0e1620; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  font-family: var(--heading);
+}
+.hd-logo {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--text); font-size: 17px; font-weight: 700;
+  text-decoration: none; letter-spacing: .04em; text-transform: uppercase;
+}
+.hd-logo img { width: 34px; height: 42px; object-fit: contain; }
+.hd-logo span { color: var(--muted); font-weight: 400; font-size: 12px; }
+.hd-back {
+  padding: 5px 14px; border: 1px solid rgba(0,210,255,.35); border-radius: 3px;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
+  text-decoration: none; text-transform: uppercase; font-family: var(--heading);
+  transition: background .15s;
+}
+.hd-back:hover { background: rgba(0,210,255,.1); }
+
+/* ── HERO ── */
+.hero {
+  position: relative; overflow: hidden;
+  min-height: 480px; display: flex; align-items: center;
+  background: linear-gradient(135deg, #060d16 0%, #0d1f35 50%, #061220 100%);
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0,80,160,.18) 0%, transparent 70%),
+    url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Artemis_II_SLS_rocket_rollout_to_launch_pad_39B.jpg/1280px-Artemis_II_SLS_rocket_rollout_to_launch_pad_39B.jpg');
+  background-size: cover; background-position: center 30%;
+  filter: brightness(.28);
+}
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 860px; margin: 0 auto; padding: 80px 32px;
+}
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .2em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 18px;
+}
+.hero-title {
+  font-family: var(--heading); font-size: clamp(36px, 5vw, 60px);
+  font-weight: 700; line-height: 1.05; letter-spacing: .01em;
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.hero-title em { color: var(--accent); font-style: normal; }
+.hero-sub {
+  font-size: 17px; color: #b0c8da; max-width: 580px; line-height: 1.65;
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 960px; margin: 0 auto; padding: 0 32px 80px; }
+
+/* ── SECTION ── */
+.section { margin-top: 72px; }
+.section-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .2em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 10px;
+}
+.section-title {
+  font-family: var(--heading); font-size: 28px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: 24px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.section p { color: #c0d4e0; margin-bottom: 16px; }
+.section p:last-child { margin-bottom: 0; }
+
+/* ── HIGHLIGHT BOX ── */
+.highlight {
+  background: rgba(0,210,255,.06); border: 1px solid rgba(0,210,255,.2);
+  border-left: 3px solid var(--accent); border-radius: 4px;
+  padding: 18px 22px; margin: 24px 0;
+}
+.highlight p { color: var(--text); margin: 0; }
+
+/* ── SCREENSHOT ── */
+.screenshot-wrap {
+  margin: 32px 0; border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0,0,0,.5);
+}
+.screenshot-wrap img { width: 100%; display: block; }
+.screenshot-caption {
+  background: #0d1824; padding: 10px 16px;
+  font-size: 11px; color: var(--muted); font-family: var(--mono);
+  letter-spacing: .06em; text-transform: uppercase;
+}
+
+/* ── SOURCE CARDS ── */
+.source-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px; margin-top: 28px;
+}
+.source-card {
+  background: var(--panel); border: 1px solid var(--border);
+  border-radius: 6px; padding: 20px 22px;
+}
+.source-card-name {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 6px;
+}
+.source-card-title {
+  font-family: var(--heading); font-size: 16px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px;
+}
+.source-card p { font-size: 13px; color: #97b5c8; line-height: 1.6; margin-bottom: 8px; }
+.source-card p:last-child { margin: 0; }
+.source-card-url {
+  display: inline-block; margin-top: 10px;
+  font-family: var(--mono); font-size: 10px; color: var(--accent);
+  text-decoration: none; letter-spacing: .05em; opacity: .8;
+}
+.source-card-url:hover { opacity: 1; text-decoration: underline; }
+.source-badge {
+  display: inline-block; padding: 2px 7px; border-radius: 2px;
+  font-family: var(--mono); font-size: 9px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; border: 1px solid currentColor; margin-bottom: 12px;
+}
+.badge-ok   { color: var(--ok); }
+.badge-warn { color: var(--warn); }
+.badge-muted{ color: var(--muted); }
+
+/* ── PHOTO GRID ── */
+.photo-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 12px; margin: 28px 0;
+}
+.photo-grid img {
+  width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  border-radius: 4px; border: 1px solid var(--border);
+  display: block;
+}
+.photo-grid .wide { grid-column: span 2; }
+.photo-grid .tall { aspect-ratio: 4/3; }
+
+/* ── CREW STRIP ── */
+.crew-strip {
+  display: flex; gap: 12px; margin: 28px 0; overflow-x: auto;
+}
+.crew-strip-card {
+  flex: 0 0 160px; background: var(--panel); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.crew-strip-card img {
+  width: 100%; aspect-ratio: 1/1; object-fit: cover; object-position: center 12%;
+}
+.crew-strip-label {
+  padding: 8px 10px;
+  font-family: var(--heading); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--text);
+}
+.crew-strip-role {
+  font-size: 10px; color: var(--accent); font-family: var(--mono);
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 0 10px 8px;
+}
+
+/* ── OPEN SOURCE BOX ── */
+.opensource-box {
+  display: flex; gap: 24px; align-items: flex-start;
+  background: rgba(76,255,171,.05); border: 1px solid rgba(76,255,171,.18);
+  border-radius: 6px; padding: 28px; margin-top: 28px;
+}
+.opensource-icon {
+  font-size: 40px; flex-shrink: 0; line-height: 1;
+}
+.opensource-box h3 {
+  font-family: var(--heading); font-size: 18px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--ok);
+  margin-bottom: 10px;
+}
+.opensource-box p { font-size: 14px; color: #9dc8b0; margin-bottom: 8px; }
+.opensource-box a { color: var(--ok); }
+
+/* ── TECH PILLS ── */
+.tech-list {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
+}
+.tech-pill {
+  padding: 4px 12px; background: rgba(255,255,255,.05);
+  border: 1px solid var(--border); border-radius: 20px;
+  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  letter-spacing: .06em;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 28px 32px;
+  text-align: center; font-size: 12px; color: var(--muted);
+  font-family: var(--mono); letter-spacing: .06em;
+}
+footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="/" class="hd-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
+    ARTEMIS II <span>CONTRÔLE DE MISSION</span>
+  </a>
+  <a href="/" class="hd-back">← Retour au tableau de bord</a>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">À propos du projet</div>
+    <h1 class="hero-title">Un tableau de bord<br>pour un <em>moment historique</em></h1>
+    <p class="hero-sub">Artemis II Mission Control est un outil de suivi en temps réel de la mission Artemis II — le premier vol habité vers la Lune depuis Apollo 17 en 1972. Ce projet existe pour rendre cet événement compréhensible et accessible à tous.</p>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- WHAT IS IT -->
+  <div class="section">
+    <div class="section-label">Présentation</div>
+    <h2 class="section-title">Qu'est-ce que ce site ?</h2>
+    <p>Artemis II Mission Control est une application web de suivi de mission spatiale en temps réel, conçue pour permettre à n'importe qui — passionné d'espace, étudiant, journaliste ou simple curieux — de suivre la mission Artemis II avec le niveau de détail habituellement réservé aux professionnels du secteur spatial.</p>
+    <p>Le site agrège automatiquement des données issues de plusieurs sources officielles NASA et NOAA, les traite, et les présente dans une interface inspirée des véritables salles de contrôle de mission. Aucune connaissance technique n'est requise pour l'utiliser : tout est mis à jour en continu, sans aucune intervention de l'utilisateur.</p>
+
+    <div class="highlight">
+      <p><strong>En un seul regard</strong> : position exacte du vaisseau Orion, distance à la Terre et à la Lune, vitesse, météo spatiale, état du réseau de communication DSN, chronologie de la mission, et vue 3D interactive du système Terre-Lune.</p>
+    </div>
+
+    <div class="screenshot-wrap">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Artemis_II_SLS_rocket_rollout_to_launch_pad_39B.jpg/1280px-Artemis_II_SLS_rocket_rollout_to_launch_pad_39B.jpg" alt="SLS rollout vers le pad 39B" loading="lazy">
+      <div class="screenshot-caption">Le lanceur SLS et la capsule Orion en route vers le pad de lancement 39B — Kennedy Space Center</div>
+    </div>
+  </div>
+
+  <!-- MISSION -->
+  <div class="section">
+    <div class="section-label">Vocation</div>
+    <h2 class="section-title">Diffuser un événement historique</h2>
+    <p>Artemis II est le retour de l'humanité vers la Lune. Pour la première fois depuis décembre 1972 et Apollo 17, des êtres humains s'apprêtent à quitter l'orbite basse de la Terre et à voguer vers notre satellite naturel. C'est un moment qui appartient à toute l'humanité.</p>
+    <p>Ce projet est né d'une conviction simple : un événement de cette ampleur mérite d'être visible, compréhensible et suivi par le plus grand nombre. Les données existent, les APIs sont publiques — il manquait seulement un outil qui les rassemble de façon lisible, belle et accessible.</p>
+    <p>La mission dure environ 10 jours. À bord d'Orion, quatre astronautes effectueront un survol libre de la Lune à environ 7 000 km de sa surface, atteignant une distance maximale jamais atteinte par l'humanité depuis Apollo : plus de <strong>450 000 km de la Terre</strong>.</p>
+
+    <!-- CREW STRIP -->
+    <div class="crew-strip">
+      <div class="crew-strip-card">
+        <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016434-alt.jpg?w=768" alt="Reid Wiseman" loading="lazy">
+        <div class="crew-strip-label">Reid Wiseman</div>
+        <div class="crew-strip-role">Commandant</div>
+      </div>
+      <div class="crew-strip-card">
+        <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016433-alt.jpg?w=768" alt="Victor Glover" loading="lazy">
+        <div class="crew-strip-label">Victor Glover</div>
+        <div class="crew-strip-role">Pilote</div>
+      </div>
+      <div class="crew-strip-card">
+        <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016435-alt.jpg?w=768" alt="Christina Koch" loading="lazy">
+        <div class="crew-strip-label">Christina Koch</div>
+        <div class="crew-strip-role">Spécialiste mission</div>
+      </div>
+      <div class="crew-strip-card">
+        <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016436-alt.jpg?resize=450,600" alt="Jeremy Hansen" loading="lazy">
+        <div class="crew-strip-label">Jeremy Hansen</div>
+        <div class="crew-strip-role">Spécialiste mission</div>
+      </div>
+    </div>
+
+    <div class="photo-grid">
+      <img class="wide" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Artemis_II_crew_members.jpg/1280px-Artemis_II_crew_members.jpg" alt="Équipage Artemis II" loading="lazy">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Orion_Artemis_II_capsule_at_KSC.jpg/640px-Orion_Artemis_II_capsule_at_KSC.jpg" alt="Capsule Orion" loading="lazy" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png';this.style.objectFit='contain';this.style.background='#0d1824'">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Artemis_II_mission_insignia.png/640px-Artemis_II_mission_insignia.png" alt="Écusson Artemis II" loading="lazy" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png';this.style.objectFit='contain';this.style.background='#0d1824'">
+    </div>
+  </div>
+
+  <!-- SOURCES -->
+  <div class="section">
+    <div class="section-label">Données</div>
+    <h2 class="section-title">Les sources — choisies avec minutie</h2>
+    <p>Chaque donnée affichée provient d'une source officielle identifiée, publique, et maintenue par les agences spatiales elles-mêmes. Le choix de chaque source résulte d'une analyse approfondie de ce qui est disponible publiquement, de sa fiabilité, de sa fréquence de mise à jour, et de sa pertinence pour le suivi de mission.</p>
+
+    <div class="source-grid">
+
+      <div class="source-card">
+        <div class="source-badge badge-ok">Temps réel · Toutes les 5 min</div>
+        <div class="source-card-name">Position &amp; Vitesse</div>
+        <div class="source-card-title">JPL Horizons</div>
+        <p>Le système Horizons du Jet Propulsion Laboratory de la NASA est la référence mondiale pour les éphémérides de corps du système solaire. Il intègre les données de tracking DSN et fournit des vecteurs d'état (position + vitesse en J2000) pour le vaisseau Orion via l'identifiant <code>-1024</code>.</p>
+        <p>C'est la source la plus précise publiquement accessible pour suivre Orion. Le décalage par rapport au temps réel est de quelques heures — inhérent au traitement des données DSN — mais constitue la meilleure option disponible sans accès aux systèmes internes de la NASA.</p>
+        <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener" class="source-card-url">ssd.jpl.nasa.gov/horizons →</a>
+      </div>
+
+      <div class="source-card">
+        <div class="source-badge badge-ok">Quotidien</div>
+        <div class="source-card-name">Trajectoire complète</div>
+        <div class="source-card-title">NASA OEM Ephemeris</div>
+        <p>NASA publie quotidiennement un fichier d'éphéméride au format CCSDS OEM (Orbit Ephemeris Message) contenant des vecteurs d'état prédits pour toute la mission jusqu'à la rentrée. Ce fichier, distribué sous forme de ZIP, permet de tracer la trajectoire complète — passée et future — avec une haute précision.</p>
+        <p>C'est la même source de données que celle utilisée par le tracker officiel AROW de la NASA pour sa trajectoire de référence.</p>
+        <a href="https://www.nasa.gov/missions/artemis/artemis-2/track-nasas-artemis-ii-mission-in-real-time/" target="_blank" rel="noopener" class="source-card-url">nasa.gov/trackartemis →</a>
+      </div>
+
+      <div class="source-card">
+        <div class="source-badge badge-ok">Temps réel · Toutes les 60 s</div>
+        <div class="source-card-name">Météo spatiale</div>
+        <div class="source-card-title">NOAA SWPC</div>
+        <p>Le Space Weather Prediction Center de la NOAA fournit en temps réel les données de météorologie spatiale critiques pour la sécurité de l'équipage : indice géomagnétique Kp, champ magnétique interplanétaire Bz et Bt, densité et vitesse du vent solaire, flux X-ray GOES et classe des éruptions solaires.</p>
+        <p>Ces données sont essentielles : une tempête géomagnétique sévère pourrait nécessiter des procédures de protection pour l'équipage contre les radiations en espace lointain.</p>
+        <a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener" class="source-card-url">swpc.noaa.gov →</a>
+      </div>
+
+      <div class="source-card">
+        <div class="source-badge badge-ok">Temps réel · Toutes les 10 s</div>
+        <div class="source-card-name">Communications</div>
+        <div class="source-card-title">NASA DSN Now</div>
+        <p>Le Deep Space Network est le réseau mondial d'antennes géantes de la NASA (Goldstone, Madrid, Canberra) qui assure les communications avec Orion. L'API DSN Now fournit en quasi-temps réel l'état de chaque antenne : contact actif, fréquence, puissance du signal et délai aller-retour.</p>
+        <p>Le délai de transmission lumière (RTLT) est une donnée fondamentale : à 400 000 km, chaque commande envoyée depuis Houston met plus de 2,6 secondes pour atteindre Orion — un détail qui illustre concrètement la distance parcourue.</p>
+        <a href="https://eyes.nasa.gov/dsn/dsn.html" target="_blank" rel="noopener" class="source-card-url">eyes.nasa.gov/dsn →</a>
+      </div>
+
+      <div class="source-card">
+        <div class="source-badge badge-muted">Document officiel</div>
+        <div class="source-card-name">Chronologie</div>
+        <div class="source-card-title">NASA Timeline PDF</div>
+        <p>La chronologie de mission affichée est basée sur le document officiel publié par la NASA : <em>"Artemis II Overview Timeline — FINAL"</em> (janvier 2026, domaine public). Ce document liste l'ensemble des événements clés de la mission avec leurs MET (Mission Elapsed Time) exacts.</p>
+        <p>Ce choix garantit une fidélité totale à la planification officielle, contrairement à des sources secondaires qui peuvent contenir des approximations.</p>
+        <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="source-card-url">Télécharger le PDF NASA →</a>
+      </div>
+
+      <div class="source-card">
+        <div class="source-badge badge-warn">Fallback automatique</div>
+        <div class="source-card-name">Fallback position</div>
+        <div class="source-card-title">Simulation physique</div>
+        <p>Lorsque JPL Horizons est indisponible (avant le lancement, ou lors d'une indisponibilité de l'API), le site bascule automatiquement sur une simulation physique basée sur la mécanique orbitale de Kepler et l'approximation des coniques patchées — la méthode standard de calcul des trajectoires interplanétaires.</p>
+        <p>La simulation utilise les éphémérides de la Lune (série ELP2000) et du Soleil (algorithme de Meeus). Un bandeau ambre visible signale clairement quand la simulation est active.</p>
+      </div>
+
+    </div>
+
+    <div class="highlight" style="margin-top:32px;">
+      <p><strong>Pourquoi pas NASA AROW ?</strong> Le tracker officiel AROW de la NASA affiche des données du flux télémétrique interne de Johnson Space Center. Ce flux n'est pas exposé publiquement via une API — c'est une limite imposée par la NASA, non par ce projet. Les sources utilisées ici (JPL Horizons + OEM) représentent la meilleure précision accessible publiquement, et correspondent exactement à la source de la trajectoire de référence d'AROW.</p>
+    </div>
+  </div>
+
+  <!-- OPEN SOURCE -->
+  <div class="section">
+    <div class="section-label">Philosophie</div>
+    <h2 class="section-title">Un projet open source</h2>
+    <p>Artemis II Mission Control est entièrement open source. Le code source complet est disponible sur GitHub, sous licence libre. N'importe qui peut l'examiner, le modifier, le déployer, ou s'en inspirer pour créer ses propres outils de suivi de missions spatiales.</p>
+
+    <div class="opensource-box">
+      <div class="opensource-icon">⟨/⟩</div>
+      <div>
+        <h3>Code source disponible</h3>
+        <p>L'application est un fichier HTML unique (~3 000 lignes) sans dépendances à installer, sans build step, sans framework. Trois bibliothèques CDN suffisent : Three.js pour la 3D, OrbitControls pour la caméra, et Google Fonts. L'architecture délibérément simple permet à n'importe quel développeur de comprendre et de modifier le code.</p>
+        <p>Les fonctions serverless Vercel (proxy CORS vers JPL Horizons et NASA OEM) sont également open source dans le dossier <code>api/</code>.</p>
+        <a href="https://github.com/Skyray1225/Artemis-II" target="_blank" rel="noopener">github.com/Skyray1225/Artemis-II →</a>
+      </div>
+    </div>
+
+    <p style="margin-top:28px;">L'objectif unique de ce projet est de rendre l'exploration spatiale plus accessible et compréhensible. Il ne poursuit aucun objectif commercial. Si ce travail vous apporte quelque chose, vous pouvez soutenir son développement sur Tipeee :</p>
+
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://fr.tipeee.com/artemis-ii-mission-control/" target="_blank" rel="noopener noreferrer"
+         style="display:inline-flex;align-items:center;gap:9px;padding:12px 28px;background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.5);border-radius:4px;color:#ffb347;font-family:var(--heading);font-size:14px;font-weight:700;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;transition:background .2s;">
+        &#9829;&nbsp; Soutenir sur Tipeee
+      </a>
+    </div>
+  </div>
+
+  <!-- TECH -->
+  <div class="section">
+    <div class="section-label">Technique</div>
+    <h2 class="section-title">Architecture &amp; technologies</h2>
+    <p>Le site est une application HTML/CSS/JavaScript en fichier unique, sans framework, sans bundler, sans backend propriétaire. Il est hébergé sur Vercel avec deux fonctions serverless servant de proxy CORS vers les APIs officielles.</p>
+
+    <div class="tech-list">
+      <span class="tech-pill">HTML / CSS / JS vanilla</span>
+      <span class="tech-pill">Three.js r128</span>
+      <span class="tech-pill">OrbitControls</span>
+      <span class="tech-pill">GLTFLoader</span>
+      <span class="tech-pill">Vercel (hébergement)</span>
+      <span class="tech-pill">Vercel Serverless Functions</span>
+      <span class="tech-pill">GitHub (CI/CD)</span>
+      <span class="tech-pill">Mécanique orbitale Kepler</span>
+      <span class="tech-pill">Éphéméride ELP2000 (Lune)</span>
+      <span class="tech-pill">Algorithme Meeus (Soleil)</span>
+      <span class="tech-pill">Format CCSDS OEM</span>
+      <span class="tech-pill">Coordonnées J2000</span>
+    </div>
+
+    <div class="photo-grid" style="margin-top:28px;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/NASA_orion_logo.png/640px-NASA_orion_logo.png"
+           alt="Logo Orion NASA" loading="lazy"
+           onerror="this.parentElement.removeChild(this)">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/640px-NASA_logo.svg.png"
+           alt="Logo NASA" loading="lazy" style="object-fit:contain;background:#fff;padding:20px;">
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Artemis II Mission Control — Projet open source indépendant &nbsp;·&nbsp;
+  <a href="https://github.com/Skyray1225/Artemis-II" target="_blank" rel="noopener">GitHub</a> &nbsp;·&nbsp;
+  <a href="https://fr.tipeee.com/artemis-ii-mission-control/" target="_blank" rel="noopener">Tipeee</a> &nbsp;·&nbsp;
+  Non affilié à la NASA
+  </p>
+</footer>
+
+</body>
+</html>
