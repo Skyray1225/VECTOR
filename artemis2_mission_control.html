@@ -1731,6 +1731,36 @@ function initThree() {
   scene3.add(labelSprites.orion);
 
   window.addEventListener('resize', onResize3);
+
+  // ── Default camera: frame the full Earth-Moon system ─────────────────────
+  (function defaultCameraView() {
+    const moon  = getMoonJ2000(new Date());
+    const mp    = toScene(moon.x, moon.y, moon.z);   // Moon in Three.js space
+    const d     = mp.length();                         // ≈ 384 units
+
+    // Look at a point 35% of the way from Earth toward the Moon
+    const target = mp.clone().multiplyScalar(0.35);
+
+    // Direction perpendicular to Earth-Moon axis, in the "up" plane
+    const moonDir = mp.clone().normalize();
+    const worldUp = new THREE.Vector3(0, 1, 0);
+    // Side axis (perpendicular to both moonDir and up)
+    const side = new THREE.Vector3().crossVectors(moonDir, worldUp).normalize();
+    // Component of worldUp perpendicular to moonDir (true "above orbital plane")
+    const aboveDir = worldUp.clone()
+      .sub(moonDir.clone().multiplyScalar(moonDir.dot(worldUp))).normalize();
+
+    // Camera: above + slight pull-back along opposite side
+    const camPos = target.clone()
+      .addScaledVector(aboveDir, d * 0.65)
+      .addScaledVector(side, -d * 0.25);
+
+    camera3.position.copy(camPos);
+    controls3.target.copy(target);
+    camera3.lookAt(target);
+    controls3.update();
+  })();
+
   animateThree();
   buildPrediction();
 }
