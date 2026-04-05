@@ -552,20 +552,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 }
 .attr3d-tag a { color: inherit; text-decoration: none; }
 .attr3d-tag a:hover { color: var(--accent); }
-#cam-coords {
-  position: absolute; bottom: 36px; right: 10px;
-  background: rgba(10,16,24,.90); border: 1px solid rgba(0,210,255,.22);
-  border-radius: 4px; padding: 8px 12px; z-index: 4; pointer-events: none;
-  font-family: var(--mono); font-size: 11px; line-height: 1.7;
-  color: rgba(180,210,230,.75);
-}
-#cam-coords .cc-title {
-  font-family: var(--heading); font-size: 9px; letter-spacing: .14em;
-  color: var(--accent); margin-bottom: 4px; font-weight: 700;
-}
-#cam-coords .cc-row { display: flex; justify-content: space-between; gap: 14px; }
-#cam-coords .cc-lbl { color: rgba(150,180,200,.55); }
-#cam-coords .cc-val { color: #c8e0f0; }
 #hud3d {
   position: absolute; top: 10px; left: 10px;
   background: rgba(15,22,31,.94); border: 1px solid var(--border); border-radius: 4px;
@@ -840,15 +826,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <div class="mission-center">
       <div class="mission-stage">
         <canvas id="canvas3d"></canvas>
-        <div id="cam-coords">
-          <div class="cc-title">CAMÉRA — COORDONNÉES</div>
-          <div class="cc-row"><span class="cc-lbl">POS X</span><span class="cc-val" id="cc-px">—</span></div>
-          <div class="cc-row"><span class="cc-lbl">POS Y</span><span class="cc-val" id="cc-py">—</span></div>
-          <div class="cc-row"><span class="cc-lbl">POS Z</span><span class="cc-val" id="cc-pz">—</span></div>
-          <div class="cc-row" style="margin-top:4px"><span class="cc-lbl">TGT X</span><span class="cc-val" id="cc-tx">—</span></div>
-          <div class="cc-row"><span class="cc-lbl">TGT Y</span><span class="cc-val" id="cc-ty">—</span></div>
-          <div class="cc-row"><span class="cc-lbl">TGT Z</span><span class="cc-val" id="cc-tz">—</span></div>
-        </div>
         <div id="attr3d">
           <span class="attr3d-tag"><a href="https://threejs.org" target="_blank" rel="noopener">Three.js r128</a></span>
           <span class="attr3d-tag">Éphéméride Lune — ELP2000</span>
@@ -2380,20 +2357,6 @@ function animateThree() {
   if (controls3) controls3.update();
   updateThree();
   if (renderer3 && scene3 && camera3) renderer3.render(scene3, camera3);
-  // Live camera coordinates overlay
-  if (camera3 && controls3) {
-    const p = camera3.position, t = controls3.target;
-    const f = v => v.toFixed(1);
-    const el = id => document.getElementById(id);
-    if (el('cc-px')) {
-      el('cc-px').textContent = f(p.x);
-      el('cc-py').textContent = f(p.y);
-      el('cc-pz').textContent = f(p.z);
-      el('cc-tx').textContent = f(t.x);
-      el('cc-ty').textContent = f(t.y);
-      el('cc-tz').textContent = f(t.z);
-    }
-  }
 }
 
 function onResize3() {
