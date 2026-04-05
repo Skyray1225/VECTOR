@@ -231,6 +231,26 @@ header {
 .ctrl-icon { display: none; }
 .stage-compact .ctrl-icon { display: block; flex-shrink: 0; }
 .stage-compact .ctrl-label { display: none; }
+
+/* Coordonnées caméra — compact uniquement */
+#cam-coords-compact {
+  display: none;
+  position: absolute; top: 8px; left: 8px; z-index: 4;
+  background: rgba(7,12,20,.88); border: 1px solid rgba(0,210,255,.18);
+  border-radius: 3px; padding: 5px 9px;
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+.stage-compact #cam-coords-compact { display: block; }
+.ccc-row { display: flex; align-items: baseline; gap: 6px; line-height: 1.7; }
+.ccc-lbl {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  color: var(--muted); text-transform: uppercase; flex-shrink: 0; width: 24px;
+}
+.ccc-val {
+  font-family: var(--mono); font-size: 9px; color: var(--accent);
+  letter-spacing: .04em;
+}
 /* Live fullstage — when live is in center */
 /* aspect-ratio:16/9 stays — the wider center column naturally gives more height */
 .live-fullstage {
@@ -998,6 +1018,11 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <div class="mission-center">
       <div class="mission-stage">
         <canvas id="canvas3d"></canvas>
+        <!-- COMPACT CAMERA COORDS — visible uniquement en mode .stage-compact -->
+        <div id="cam-coords-compact">
+          <div class="ccc-row"><span class="ccc-lbl">POS</span><span class="ccc-val" id="ccc-pos">---</span></div>
+          <div class="ccc-row"><span class="ccc-lbl">TGT</span><span class="ccc-val" id="ccc-tgt">---</span></div>
+        </div>
         <div id="attr3d">
           <span class="attr3d-tag"><a href="https://threejs.org" target="_blank" rel="noopener">Three.js r128</a></span>
           <span class="attr3d-tag">Éphéméride Lune — ELP2000</span>
@@ -2546,6 +2571,15 @@ function animateThree() {
   if (controls3) controls3.update();
   updateThree();
   if (renderer3 && scene3 && camera3) renderer3.render(scene3, camera3);
+  // Coords compactes
+  if (camera3 && controls3) {
+    const f = v => v.toFixed(1);
+    const p = camera3.position, t = controls3.target;
+    const ep = document.getElementById('ccc-pos');
+    const et = document.getElementById('ccc-tgt');
+    if (ep) ep.textContent = `${f(p.x)} / ${f(p.y)} / ${f(p.z)}`;
+    if (et) et.textContent = `${f(t.x)} / ${f(t.y)} / ${f(t.z)}`;
+  }
 }
 
 function onResize3() {
