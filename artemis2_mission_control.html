@@ -54,8 +54,11 @@ header {
 .hd-logo {
   display: flex; align-items: center; gap: 14px; flex-shrink: 0;
 }
+.hd-logo-img-wrap {
+  height: 46px; overflow: hidden; flex-shrink: 0;
+}
 .hd-logo-img {
-  height: 54px; width: auto; flex-shrink: 0;
+  height: 72px; width: auto; display: block;
 }
 .hd-mission-chip {
   display: flex; align-items: center; gap: 7px;
@@ -792,7 +795,9 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 <header>
   <div class="hd-logo">
     <!-- VECTOR logo -->
-    <img class="hd-logo-img" src="/vector_logo.png" alt="VECTOR">
+    <div class="hd-logo-img-wrap">
+      <img class="hd-logo-img" src="/vector_logo.png" alt="VECTOR">
+    </div>
 
     <div class="hd-mission-chip">
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
