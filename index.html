@@ -386,18 +386,22 @@ body {
   background: #050b15;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
-  padding: 8px 24px;
   display: flex; align-items: center; gap: 0;
-  overflow: hidden;
   font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
   text-transform: uppercase;
 }
 .ticker-label {
   color: var(--accent); flex-shrink: 0;
-  margin-right: 20px; font-size: 9px; letter-spacing: .18em;
+  padding: 8px 16px 8px 24px;
+  border-right: 1px solid var(--border2);
+  font-size: 9px; letter-spacing: .18em;
+  background: #050b15;
+}
+.ticker-scroll-zone {
+  flex: 1; overflow: hidden; min-width: 0;
 }
 .ticker-items {
-  display: flex; gap: 0; overflow: hidden;
+  display: flex; gap: 0;
   animation: ticker-scroll 40s linear infinite;
 }
 .ticker-item {
@@ -449,7 +453,7 @@ footer a:hover { color: var(--muted); }
   <div class="topbar-div"></div>
   <div class="topbar-sys">
     VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION<br>
-    <strong>MISSION HUB &nbsp;·&nbsp; SYSTÈME NOMINAL</strong>
+    <strong>MISSION HUB</strong>
   </div>
   <div class="topbar-right">
     <div class="topbar-clock">UTC &nbsp;<span id="hub-clock">--:--:--</span></div>
@@ -464,7 +468,6 @@ footer a:hover { color: var(--muted); }
   <div class="ident-block">
     <div>
       <div class="ident-label">VECTOR / MISSION REGISTRY v1.0</div>
-      <div class="ident-title">Catalogue des missions de suivi orbital actives et planifiées</div>
     </div>
     <div class="sys-status">
       <div class="ss-item"><div class="ss-dot ok"></div>RÉSEAU EN LIGNE</div>
@@ -476,8 +479,8 @@ footer a:hover { color: var(--muted); }
   <!-- TELEMETRY TICKER -->
   <div class="ticker-bar">
     <div class="ticker-label">▶ LIVE</div>
-    <div class="ticker-items" id="ticker-items">
-      <!-- duplicated for loop -->
+    <div class="ticker-scroll-zone">
+      <div class="ticker-items" id="ticker-items"></div>
     </div>
   </div>
 
