@@ -72,15 +72,18 @@ module.exports = async (req, res) => {
   const candidates = oemCandidates();
   let oemText = null;
 
-  for (const candidate of candidates) {
-    try {
-      const { status, body } = await fetchUrl(candidate, 7000);
-      if (status !== 200) continue;
-      oemText = extractFirstFileFromZip(body);
-      break;
-    } catch (_) {
-      // try next candidate
-    }
+  // Try all candidates in parallel — return first success regardless of order.
+  // This avoids sequential timeouts accumulating beyond Vercel's 30s limit.
+  try {
+    oemText = await Promise.any(
+      candidates.map(async (candidate) => {
+        const { status, body } = await fetchUrl(candidate, 22000);
+        if (status !== 200) throw new Error(`HTTP ${status}`);
+        return extractFirstFileFromZip(body);
+      })
+    );
+  } catch (_) {
+    oemText = null;
   }
 
   if (!oemText) {
