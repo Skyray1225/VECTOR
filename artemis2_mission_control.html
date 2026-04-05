@@ -363,7 +363,9 @@ header {
   font-family: var(--mono); text-transform: uppercase;
   padding: 1px 5px; border-radius: 2px; margin-left: 8px;
   border: 1px solid currentColor; opacity: .7;
+  text-decoration: none;
 }
+a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 .panel-body { padding: 11px 13px; flex: 1; overflow: visible; }
 
 .panel-nav  { flex: 1 1 auto; min-height: 0; }
@@ -789,7 +791,7 @@ header {
   <div class="mission-grid">
     <div class="mission-left">
       <div class="panel panel-nav">
-        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><span class="panel-src" id="nav-src-badge" style="color:var(--warn)">SIMULATION</span></div>
+        <div class="panel-hdr">NAVIGATION — ORION <span class="upd" id="upd-nav">---</span><a id="nav-src-badge" class="panel-src" style="color:var(--warn);text-decoration:none">SIMULATION</a></div>
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit">km</span></span></div>
           <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit">km</span></span></div>
@@ -804,7 +806,7 @@ header {
       </div>
 
       <div class="panel panel-dsn">
-        <div class="panel-hdr">RÉSEAU D'ESPACE PROFOND (DSN) <span class="upd" id="upd-dsn">---</span><span class="panel-src" style="color:var(--accent)">NASA DSN NOW</span></div>
+        <div class="panel-hdr">RÉSEAU D'ESPACE PROFOND (DSN) <span class="upd" id="upd-dsn">---</span><a href="https://eyes.nasa.gov/dsn/dsn.html" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent)">NASA DSN NOW</a></div>
         <div class="panel-body" id="dsn-body">
           <div style="color:var(--muted);font-size:11px">Connexion en cours...</div>
         </div>
@@ -960,7 +962,7 @@ header {
       </div>
 
       <div class="panel panel-swpc">
-        <div class="panel-hdr">MÉTÉO SPATIALE — NOAA SWPC <span class="upd" id="upd-swpc">---</span><span class="panel-src" style="color:var(--accent)">NOAA SWPC</span></div>
+        <div class="panel-hdr">MÉTÉO SPATIALE — NOAA SWPC <span class="upd" id="upd-swpc">---</span><a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent)">NOAA SWPC</a></div>
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Indice Kp</span><span><span class="dvalue" id="v-kp">---</span></span></div>
           <div class="bar-row">
@@ -2817,6 +2819,9 @@ function updateNav() {
     const isReal = state.posSource === 'JPL HORIZONS';
     navBadge.textContent = isReal ? 'JPL HORIZONS' : 'SIMULATION';
     navBadge.style.color = isReal ? 'var(--accent)' : 'var(--warn)';
+    navBadge.href = isReal ? 'https://ssd.jpl.nasa.gov/horizons/' : '';
+    navBadge.target = isReal ? '_blank' : '';
+    navBadge.rel = isReal ? 'noopener' : '';
   }
   updateMiniTimeline();
   document.getElementById('upd-nav').textContent = 'MàJ ' + new Date().toISOString().slice(11,19) + ' UTC';
