@@ -206,16 +206,9 @@ header {
   height: auto !important;
 }
 /* Live fullstage — when live is in center */
+/* aspect-ratio:16/9 stays — the wider center column naturally gives more height */
 .live-fullstage {
-  flex: 1 1 auto !important;
-  display: flex; flex-direction: column;
-  min-height: 520px;
-}
-.live-fullstage .panel-body {
-  flex: 1; display: flex; flex-direction: column; min-height: 0;
-}
-.live-fullstage .live-frame {
-  flex: 1; aspect-ratio: unset !important; height: 0;
+  display: block;
 }
 .mission-mini-timeline {
   border: 1px solid var(--border);
