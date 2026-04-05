@@ -829,6 +829,20 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
       <label class="sp-opt"><input type="radio" name="u-speed" value="mph" onchange="applyUnits()"> mph</label>
       <label class="sp-opt"><input type="radio" name="u-speed" value="kts" onchange="applyUnits()"> kts</label>
     </div>
+
+    <div class="sp-section">RÉSEAU DSN — AFFICHAGE</div>
+    <div class="sp-row">
+      <label class="sp-opt">
+        <input type="radio" name="dsn-filter" value="all" checked onchange="applyDSNFilter()">
+        Toutes les antennes actives
+        <span class="sp-hint">Par défaut</span>
+      </label>
+      <label class="sp-opt">
+        <input type="radio" name="dsn-filter" value="orion" onchange="applyDSNFilter()">
+        Artemis II uniquement
+        <span class="sp-hint">Antennes en contact avec Orion</span>
+      </label>
+    </div>
   </div>
 </div>
 
@@ -2965,18 +2979,27 @@ function isOrion(name) { return ORION_NAMES.has((name||'').toUpperCase()); }
 function updateDSN() {
   const { stations } = dsnData;
   let html = '';
+  let anyVisible = false;
 
   stations.forEach(st => {
     const activeOrionDishes = st.dishes.filter(d => d.contacts.some(c => isOrion(c.name)));
     const otherDishes       = st.dishes.filter(d => !d.contacts.some(c => isOrion(c.name)));
 
+    // Apply DSN filter preference
+    const visibleDishes = dsnFilter === 'orion' ? activeOrionDishes
+                                                 : [...activeOrionDishes, ...otherDishes];
+
+    // In orion-only mode, skip stations with no Orion contact
+    if (dsnFilter === 'orion' && visibleDishes.length === 0) return;
+    anyVisible = true;
+
     html += `<div class="dsn-station"><div class="dsn-name">${st.friendlyName}</div>`;
 
-    if (st.dishes.length === 0) {
+    if (visibleDishes.length === 0) {
       html += `<div class="dsn-idle">Aucun contact actif</div>`;
     } else {
       // Render Orion dishes first, highlighted
-      [...activeOrionDishes, ...otherDishes].forEach(d => {
+      visibleDishes.forEach(d => {
         const hasOrion   = d.contacts.some(c => isOrion(c.name));
         const dishClass  = `dsn-dish${hasOrion ? ' orion-active' : ''}`;
         const nameClass  = `dsn-dish-name${hasOrion ? ' orion' : ''}`;
@@ -3011,7 +3034,10 @@ function updateDSN() {
     html += `</div>`;
   });
 
-  document.getElementById('dsn-body').innerHTML = html || '<div style="color:var(--muted);font-size:11px">Aucune donnée</div>';
+  const empty = dsnFilter === 'orion'
+    ? '<div style="color:var(--muted);font-size:11px">Aucun contact Orion détecté actuellement</div>'
+    : '<div style="color:var(--muted);font-size:11px">Aucune donnée</div>';
+  document.getElementById('dsn-body').innerHTML = html || empty;
   document.getElementById('upd-dsn').textContent = 'MàJ ' + new Date().toISOString().slice(11,19) + ' UTC';
 }
 
@@ -3065,6 +3091,13 @@ function pushHistory() {
 // SETTINGS PANEL
 // ════════════════════════════════════════════════════════════════
 const navUnits = { dist: 'km', speed: 'kms' };
+let dsnFilter = 'all'; // 'all' | 'orion'
+
+function applyDSNFilter() {
+  const sel = document.querySelector('input[name="dsn-filter"]:checked');
+  if (sel) dsnFilter = sel.value;
+  updateDSN();
+}
 
 function toggleSettings(e) {
   if (e) e.stopPropagation();
