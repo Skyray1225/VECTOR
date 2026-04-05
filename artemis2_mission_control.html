@@ -1434,9 +1434,10 @@ const swpcSrc = {
       out.bz = parseFloat(row[3]);
       out.bt = parseFloat(row[6]);
     }
-    if (results.kp && results.kp.length>1) {
+    if (results.kp && results.kp.length>0) {
       const row = results.kp[results.kp.length-1];
-      out.kp = parseFloat(row[1]);
+      // NOAA changed format: now objects {Kp, time_tag, ...} instead of arrays
+      out.kp = parseFloat(row.Kp ?? row[1]);
     }
     if (results.xray && results.xray.length>0) {
       const last = results.xray[results.xray.length-1];
