@@ -2309,7 +2309,11 @@ function updateThree() {
   // Camera modes
   if (camMode === 'follow') {
     controls3.minDistance = 0.002;
-    const offset = opos.clone().normalize().multiplyScalar(60);
+    // Close follow: slightly behind + above Orion (radial dir from Earth + up bias)
+    const radialDir = opos.clone().normalize();
+    const upBias = new THREE.Vector3(0, 1, 0);
+    const followDir = radialDir.clone().addScaledVector(upBias, 0.4).normalize();
+    const offset = followDir.multiplyScalar(9);
     camera3.position.lerp(opos.clone().add(offset), 0.03);
     controls3.target.lerp(opos, 0.05);
   } else if (camMode === 'system') {
