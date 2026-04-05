@@ -184,6 +184,39 @@ header {
   border-radius: 4px;
   overflow: hidden;
 }
+
+/* ── SWAP LAYOUT BUTTON ── */
+.swap-view-btn {
+  position: absolute; top: 10px; right: 10px; z-index: 20;
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 3px;
+  background: rgba(7,12,20,.88); border: 1px solid rgba(0,210,255,.2);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  color: var(--muted); cursor: pointer; text-transform: uppercase;
+  transition: color .15s, border-color .15s, background .15s;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.swap-view-btn:hover { color: var(--accent); border-color: rgba(0,210,255,.5); background: rgba(0,210,255,.06); }
+.swap-view-btn svg { flex-shrink: 0; }
+
+/* 3D compact — when moved to right column */
+.stage-compact {
+  min-height: 260px !important;
+  flex: none !important;
+  height: auto !important;
+}
+/* Live fullstage — when live is in center */
+.live-fullstage {
+  flex: 1 1 auto !important;
+  display: flex; flex-direction: column;
+  min-height: 520px;
+}
+.live-fullstage .panel-body {
+  flex: 1; display: flex; flex-direction: column; min-height: 0;
+}
+.live-fullstage .live-frame {
+  flex: 1; aspect-ratio: unset !important; height: 0;
+}
 .mission-mini-timeline {
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -975,6 +1008,13 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
             <button class="ctrl-btn active" id="lyr-labels" onclick="toggleLayer('labels')">LABELS</button>
           </div>
         </div>
+        <!-- SWAP BUTTON -->
+        <button class="swap-view-btn" id="swap-view-btn" onclick="swapLayout()" title="Basculer vue principale">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+          </svg>
+          <span id="swap-btn-label">LIVE EN AVANT</span>
+        </button>
       </div>
       <div class="mission-mini-timeline">
         <div class="mini-tl-hdr">Séquence Mission <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent);text-decoration:none;float:right">NASA TIMELINE PDF</a></div>
@@ -2487,6 +2527,35 @@ function onResize3() {
   renderer3.setSize(W, H);
   camera3.aspect = W/H;
   camera3.updateProjectionMatrix();
+}
+
+/* ── SWAP LAYOUT (3D ↔ LIVE) ── */
+let layoutSwapped = false;
+function swapLayout() {
+  const stage     = document.querySelector('.mission-stage');
+  const livePanel = document.querySelector('.panel-live');
+  const center    = document.querySelector('.mission-center');
+  const right     = document.querySelector('.mission-right');
+  const label     = document.getElementById('swap-btn-label');
+
+  if (!layoutSwapped) {
+    // Live → centre, 3D → droite
+    right.insertBefore(stage, right.firstChild);
+    center.insertBefore(livePanel, center.firstChild);
+    stage.classList.add('stage-compact');
+    livePanel.classList.add('live-fullstage');
+    if (label) label.textContent = '3D EN AVANT';
+  } else {
+    // 3D → centre, Live → droite
+    center.insertBefore(stage, center.firstChild);
+    right.insertBefore(livePanel, right.firstChild);
+    stage.classList.remove('stage-compact');
+    livePanel.classList.remove('live-fullstage');
+    if (label) label.textContent = 'LIVE EN AVANT';
+  }
+  layoutSwapped = !layoutSwapped;
+  // Resize Three.js renderer après le repaint
+  setTimeout(onResize3, 80);
 }
 
 function setCamMode(mode) {
