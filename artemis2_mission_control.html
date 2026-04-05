@@ -2509,8 +2509,14 @@ function updateThree() {
     controls3.target.lerp(opos, 0.05);
   } else if (camMode === 'system') {
     controls3.minDistance = 8;
-    camera3.position.lerp(new THREE.Vector3(112.6, 9.3, 511.1), 0.02);
-    controls3.target.lerp(new THREE.Vector3(-110.3, -135.1, 140.1), 0.05);
+    const sysPos = layoutSwapped
+      ? new THREE.Vector3(304.3, 213.4, 540.1)
+      : new THREE.Vector3(112.6, 9.3, 511.1);
+    const sysTgt = layoutSwapped
+      ? new THREE.Vector3(-57.8, -250.9, 139.5)
+      : new THREE.Vector3(-110.3, -135.1, 140.1);
+    camera3.position.lerp(sysPos, 0.02);
+    controls3.target.lerp(sysTgt, 0.05);
   } else {
     controls3.minDistance = 8;
   }
@@ -2618,6 +2624,8 @@ function swapLayout() {
   layoutSwapped = !layoutSwapped;
   // Resize Three.js renderer après le repaint
   setTimeout(onResize3, 80);
+  // Animer la caméra vers la position par défaut de la nouvelle disposition
+  if (threeInited) setCamMode('system');
 }
 
 function setCamMode(mode) {
