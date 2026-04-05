@@ -199,12 +199,38 @@ header {
 .swap-view-btn:hover { color: var(--accent); border-color: rgba(0,210,255,.5); background: rgba(0,210,255,.06); }
 .swap-view-btn svg { flex-shrink: 0; }
 
-/* 3D compact — when moved to right column */
+/* ── 3D COMPACT (colonne droite) ── */
 .stage-compact {
-  min-height: 260px !important;
+  min-height: 210px !important;
   flex: none !important;
   height: auto !important;
 }
+/* Masquer HUD, attributions, label du bouton swap */
+.stage-compact #hud3d,
+.stage-compact #attr3d { display: none !important; }
+.stage-compact #swap-btn-label { display: none; }
+
+/* ctrl3d : positionné en bas, horizontal */
+.stage-compact #ctrl3d {
+  top: auto !important; bottom: 8px; right: 8px;
+  flex-direction: row; align-items: flex-end;
+}
+/* Masquer le groupe COUCHES (2e ctrl-group) */
+.stage-compact #ctrl3d .ctrl-group:last-child { display: none; }
+/* Groupe CAMÉRA : row d'icônes */
+.stage-compact #ctrl3d .ctrl-group:first-child {
+  flex-direction: row; padding: 5px; gap: 3px;
+}
+.stage-compact .ctrl-group-label { display: none; }
+.stage-compact .ctrl-btn {
+  padding: 6px 7px; width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+}
+/* Icônes SVG des boutons caméra */
+.ctrl-icon { display: none; }
+.stage-compact .ctrl-icon { display: block; flex-shrink: 0; }
+.stage-compact .ctrl-label { display: none; }
 /* Live fullstage — when live is in center */
 /* aspect-ratio:16/9 stays — the wider center column naturally gives more height */
 .live-fullstage {
@@ -989,9 +1015,18 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
         <div id="ctrl3d">
           <div class="ctrl-group">
             <div class="ctrl-group-label">CAMÉRA</div>
-            <button class="ctrl-btn active" id="cam-free" onclick="setCamMode('free')">LIBRE</button>
-            <button class="ctrl-btn" id="cam-follow" onclick="setCamMode('follow')">SUIVI ORION</button>
-            <button class="ctrl-btn" id="cam-system" onclick="setCamMode('system')">VUE SYSTÈME</button>
+            <button class="ctrl-btn active" id="cam-free" onclick="setCamMode('free')" title="Caméra libre">
+              <svg class="ctrl-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2l-6 6"/><path d="M21.5 8V2h-6"/><path d="M10 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/></svg>
+              <span class="ctrl-label">LIBRE</span>
+            </button>
+            <button class="ctrl-btn" id="cam-follow" onclick="setCamMode('follow')" title="Suivi Orion">
+              <svg class="ctrl-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+              <span class="ctrl-label">SUIVI ORION</span>
+            </button>
+            <button class="ctrl-btn" id="cam-system" onclick="setCamMode('system')" title="Vue système">
+              <svg class="ctrl-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <span class="ctrl-label">VUE SYSTÈME</span>
+            </button>
           </div>
           <div class="ctrl-group">
             <div class="ctrl-group-label">COUCHES</div>
