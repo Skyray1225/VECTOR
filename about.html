@@ -317,6 +317,51 @@ footer {
   font-family: var(--mono); letter-spacing: .06em;
 }
 footer a { color: var(--accent); text-decoration: none; }
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE — max-width: 768px
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Header compact */
+  header { padding: 0 12px; height: 58px; }
+  .hd-logo-img { height: 42px; }
+  .hd-back { font-size: 9px; padding: 3px 8px; }
+
+  /* Hero */
+  .hero { min-height: 320px; }
+  .hero-content { padding: 50px 16px 40px; }
+  .hero-title { font-size: clamp(28px, 7vw, 48px); }
+  .hero-sub { font-size: 14px; }
+
+  /* Page layout */
+  .page { padding: 0 16px 60px; }
+  .section { margin-top: 48px; }
+  .section-title { font-size: 22px; }
+
+  /* Mission cards: déjà auto-fill, ok */
+  .mission-cards { grid-template-columns: 1fr; }
+
+  /* Photo slots */
+  .photo-strip { height: 220px; }
+  .photo-aside { grid-template-columns: 1fr; gap: 16px; }
+  .photo-aside-text { padding-right: 0; }
+  .photo-aside-slot { height: 200px; }
+  .photo-inset { height: 200px; margin: 28px 0; }
+  .photo-duo { grid-template-columns: 1fr; }
+  .photo-duo-slot { height: 180px; }
+
+  /* Vector brand */
+  .vector-brand { padding: 32px 16px; }
+
+  /* Footer */
+  footer { padding: 20px 16px; }
+}
+
+@media (max-width: 420px) {
+  .hero-title { font-size: clamp(24px, 8vw, 36px); }
+  .photo-strip { height: 170px; }
+}
 </style>
 </head>
 <body>

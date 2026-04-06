@@ -1119,6 +1119,138 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE STRIP — bandeau métriques clés (mobile only)
+══════════════════════════════════════════════════════════ */
+#mob-strip {
+  display: none;
+  background: #0a1520;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap; align-items: stretch;
+  font-family: var(--mono);
+}
+.mob-metric {
+  flex: 1 0 auto; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 6px 14px; gap: 2px; min-width: 80px;
+}
+.mob-metric-label {
+  font-size: 8px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--muted);
+}
+.mob-metric-value {
+  font-size: 13px; color: var(--text); letter-spacing: .04em;
+  white-space: nowrap;
+}
+.mob-metric-sep {
+  width: 1px; background: var(--border); flex-shrink: 0; margin: 6px 0;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE — max-width: 768px
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Structure globale */
+  #app { height: auto; min-height: 100svh; }
+
+  /* Sources bar scrollable */
+  #sources-bar { overflow-x: auto; flex-wrap: nowrap; padding: 0 10px; -webkit-overflow-scrolling: touch; }
+  .src-item { flex-shrink: 0; }
+
+  /* Tab nav scrollable */
+  #tab-nav { overflow-x: auto; flex-wrap: nowrap; justify-content: flex-start; padding: 4px 8px; gap: 6px; -webkit-overflow-scrolling: touch; }
+  .tab-btn { flex-shrink: 0; white-space: nowrap; padding: 7px 12px; font-size: 12px; }
+
+  /* Bandeau métriques mobile */
+  #mob-strip { display: flex; }
+
+  /* Tab content */
+  .tab-content { display: none; flex-direction: column; overflow-y: auto; height: auto; }
+  .tab-content.active { display: flex; }
+
+  /* ── MISSION CONTROL ── */
+  #tab-mission { padding: 0; overflow-y: auto; height: auto; }
+  .mission-grid {
+    display: flex; flex-direction: column;
+    height: auto; overflow: visible; min-height: 0;
+  }
+  .mission-center { order: 1; width: 100%; min-height: 0; flex: 0 0 auto; }
+  .mission-left   { order: 2; width: 100%; min-height: 0; flex: 0 0 auto; overflow: visible; }
+  .mission-right  { order: 3; width: 100%; min-height: 0; flex: 0 0 auto; overflow: visible; }
+
+  /* View mode bar */
+  .view-mode-bar { padding: 8px 12px; gap: 10px; }
+  .vmb-label { font-size: 9px; }
+  .vmb-seg { flex: 1; }
+  .vmb-btn { flex: 1; padding: 9px 0; font-size: 12px; }
+
+  /* Stage 3D */
+  .mission-stage { height: 56vw; min-height: 220px; max-height: 48vh; }
+
+  /* Sur mobile : cacher le live quand pas en mode fullstage, cacher le 3D compact */
+  .panel-live:not(.live-fullstage) { display: none !important; }
+  .stage-compact { display: none !important; }
+
+  /* Contrôles 3D compacts */
+  #ctrl3d { top: 6px; right: 6px; padding: 4px; gap: 2px; }
+  .ctrl-group { gap: 2px; }
+  .ctrl-btn { padding: 5px 6px; }
+  .ctrl-label { font-size: 9px; }
+
+  /* Panels left */
+  .panel-nav { flex: 0 0 auto; max-height: none; overflow: visible; }
+  .panel-dsn { flex: 0 0 auto; max-height: none; overflow-y: visible; }
+  .panel-swpc { flex: 0 0 auto; }
+  .panel-log { flex: 0 0 auto; max-height: 160px; }
+
+  /* Mini-timeline en colonne */
+  .mini-tl-track { grid-template-columns: 1fr; }
+  .mini-tl-step { border-right: none; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .mini-tl-step:last-child { border-bottom: none; }
+
+  /* Data rows */
+  .drow { padding: 7px 0; }
+  .dvalue { font-size: 17px; }
+
+  /* ── TIMELINE ── */
+  #tab-chronologie { padding: 10px; }
+  .tl-event { grid-template-columns: 95px 58px 1fr; gap: 6px; padding: 6px 8px; }
+  .tl-time { font-size: 10px; }
+  .tl-badge { font-size: 9px; padding: 2px 5px; }
+  .tl-desc { font-size: 13px; }
+  .tl-sub { font-size: 11px; }
+
+  /* ── DESCRIPTION ── */
+  #tab-description { height: auto; }
+  .desc-page { padding: 0 14px 60px; }
+  .desc-hero { height: 180px; margin: 0 -14px; }
+  .desc-hero-title { font-size: clamp(22px, 5.5vw, 36px); }
+  .desc-hero-content { padding: 0 14px 24px; }
+  .desc-stats { grid-template-columns: 1fr 1fr; margin-top: 16px; }
+  .desc-stat { padding: 10px 12px; }
+  .desc-stat-value { font-size: 17px; }
+  .desc-section { margin-top: 40px; }
+  .desc-section-title { font-size: 20px; }
+  .desc-obj-grid { grid-template-columns: 1fr; gap: 8px; }
+  .desc-phases .desc-phase { grid-template-columns: 70px 1fr; }
+  .desc-crew-grid { grid-template-columns: 1fr; gap: 16px; }
+  .desc-photo { margin: 24px -14px; height: 180px; }
+  .desc-photo-caption { right: 14px; }
+}
+
+/* ── Très petits écrans (< 420px) ── */
+@media (max-width: 420px) {
+  .tab-btn { padding: 6px 9px; font-size: 11px; }
+  .tl-event { grid-template-columns: 80px 1fr; }
+  .tl-badge { display: none; }
+  .mission-stage { height: 58vw; }
+  #tab-chronologie { padding: 8px; }
+  .desc-stats { grid-template-columns: 1fr 1fr; }
+  .desc-hero { height: 140px; }
+}
 </style>
 </head>
 <body>
@@ -1215,6 +1347,29 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
   </svg>
+</div>
+
+<!-- MOBILE METRICS STRIP -->
+<div id="mob-strip">
+  <div class="mob-metric">
+    <div class="mob-metric-label">Phase</div>
+    <div class="mob-metric-value" id="mob-phase">---</div>
+  </div>
+  <div class="mob-metric-sep"></div>
+  <div class="mob-metric">
+    <div class="mob-metric-label">MET</div>
+    <div class="mob-metric-value" id="mob-met">---</div>
+  </div>
+  <div class="mob-metric-sep"></div>
+  <div class="mob-metric">
+    <div class="mob-metric-label">Dist. Terre</div>
+    <div class="mob-metric-value" id="mob-dist">---</div>
+  </div>
+  <div class="mob-metric-sep"></div>
+  <div class="mob-metric">
+    <div class="mob-metric-label">Vitesse</div>
+    <div class="mob-metric-value" id="mob-spd">---</div>
+  </div>
 </div>
 
 <!-- SOURCES STATUS BAR -->
@@ -3662,6 +3817,9 @@ function updateNav() {
   setVal('v-dist-earth', fmt_km(cA.val)); document.getElementById('dunit-earth').textContent = cA.unit;
   setVal('v-dist-moon',  fmt_km(cM.val)); document.getElementById('dunit-moon').textContent  = cM.unit;
   setVal('v-speed',      cS.val.toFixed(cS.dec)); document.getElementById('dunit-speed').textContent = cS.unit;
+  // Mobile strip
+  const md = document.getElementById('mob-dist'); if (md) md.textContent = fmt_km(cA.val) + ' ' + cA.unit;
+  const ms2 = document.getElementById('mob-spd'); if (ms2) ms2.textContent = cS.val.toFixed(cS.dec) + ' ' + cS.unit;
   setVal('v-vel',        `${state.vel.x.toFixed(2)} / ${state.vel.y.toFixed(2)} / ${state.vel.z.toFixed(2)}`);
   setVal('v-x',          fmt_km(state.pos.x));
   setVal('v-y',          fmt_km(state.pos.y));
@@ -3832,9 +3990,14 @@ function getMissionPhase(date) {
 }
 
 function tickClock() {
-  document.getElementById('met').textContent = metStr();
+  const ms = metStr();
+  document.getElementById('met').textContent = ms;
   document.getElementById('utc-clock').textContent = new Date().toISOString().slice(11,19) + ' UTC';
-  document.getElementById('mission-phase').textContent = getMissionPhase(new Date());
+  const ph = getMissionPhase(new Date());
+  document.getElementById('mission-phase').textContent = ph;
+  // Mobile strip
+  const mm = document.getElementById('mob-met');   if (mm) mm.textContent = ms;
+  const mp = document.getElementById('mob-phase'); if (mp) mp.textContent = ph;
 }
 
 // ════════════════════════════════════════════════════════════════
