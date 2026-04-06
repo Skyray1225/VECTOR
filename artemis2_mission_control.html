@@ -1818,7 +1818,7 @@ function useSimulation() {
 let renderer3, scene3, camera3, controls3;
 let earthMesh, moonMesh, orionGroup, moonOrbitMesh;
 let sunDirLight;
-let trajLine, predLine, predDots, blendLine;
+let trajLine, predLine, blendLine;
 let camMode = 'free';
 let scaleMultiplier = 1.0;
 const layers = { traj: true, pred: true, 'moon-orb': true, labels: true };
@@ -1945,21 +1945,15 @@ function initThree() {
   const trajGeo = new THREE.BufferGeometry();
   trajGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_HIST*3),3));
   trajLine = new THREE.Line(trajGeo, new THREE.LineBasicMaterial({color:0x00e87a,linewidth:1}));
+  trajLine.frustumCulled = false;
   scene3.add(trajLine);
 
   // Predicted trajectory — line + billboard dots (dots never disappear edge-on)
   const predGeo = new THREE.BufferGeometry();
   predGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(600*3),3));
   predLine = new THREE.Line(predGeo, new THREE.LineBasicMaterial({color:0x00c8ff,transparent:true,opacity:0.4,linewidth:1}));
+  predLine.frustumCulled = false;
   scene3.add(predLine);
-
-  const predDotsGeo = new THREE.BufferGeometry();
-  predDotsGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(600*3),3));
-  predDots = new THREE.Points(predDotsGeo, new THREE.PointsMaterial({
-    color: 0x00c8ff, size: 2.5, sizeAttenuation: false,
-    transparent: true, opacity: 0.7, depthWrite: false
-  }));
-  scene3.add(predDots);
 
   const blendGeo = new THREE.BufferGeometry();
   blendGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(48*3),3));
@@ -2457,20 +2451,16 @@ function updateThree() {
   // Prediction
   if (state.prediction.length > 0) {
     const pa = predLine.geometry.attributes.position;
-    const da = predDots.geometry.attributes.position;
     const n  = Math.min(state.prediction.length, 600);
     const predStart = Math.min(blendForward, Math.max(0, n - 1));
     const visiblePred = Math.max(0, n - predStart);
     for (let i=0;i<visiblePred;i++) {
       const p = toScene(state.prediction[i + predStart].x, state.prediction[i + predStart].y, state.prediction[i + predStart].z);
       pa.setXYZ(i, p.x, p.y, p.z);
-      da.setXYZ(i, p.x, p.y, p.z);
     }
-    for (let i=visiblePred;i<600;i++) { pa.setXYZ(i,0,0,0); da.setXYZ(i,0,0,0); }
+    for (let i=visiblePred;i<600;i++) pa.setXYZ(i,0,0,0);
     pa.needsUpdate = true;
-    da.needsUpdate = true;
     predLine.geometry.setDrawRange(0, visiblePred);
-    predDots.geometry.setDrawRange(0, visiblePred);
   }
 
   if (blendLine) {
@@ -2530,7 +2520,6 @@ function updateThree() {
   labelSprites.orion.visible = layers.labels;
   trajLine.visible    = layers.traj;
   predLine.visible    = layers.pred;
-  predDots.visible    = layers.pred;
   moonOrbitMesh.visible = layers['moon-orb'];
 
   // Camera modes
