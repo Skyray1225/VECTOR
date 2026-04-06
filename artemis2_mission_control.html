@@ -1954,10 +1954,9 @@ function initThree() {
 
   const blendGeo = new THREE.BufferGeometry();
   blendGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(48*3),3));
-  blendGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(48*3),3));
   blendLine = new THREE.Line(
     blendGeo,
-    new THREE.LineBasicMaterial({ vertexColors: true, transparent: true, opacity: 0.95, linewidth: 2 })
+    new THREE.LineBasicMaterial({ color: 0x00c8ff, transparent: true, opacity: 0.4, linewidth: 1 })
   );
   scene3.add(blendLine);
 
@@ -2461,7 +2460,6 @@ function updateThree() {
 
   if (blendLine) {
     const blendPos = blendLine.geometry.attributes.position;
-    const blendCol = blendLine.geometry.attributes.color;
     const blendPts = [];
     const histAnchor = hist.length > 1 ? hist[Math.max(0, hist.length - 1 - blendBack)] : null;
     const currentAnchor = { x: state.pos.x, y: state.pos.y, z: state.pos.z };
@@ -2497,14 +2495,11 @@ function updateThree() {
       const t = count <= 1 ? 1 : i / (count - 1);
       const p = toScene(blendPts[i].x, blendPts[i].y, blendPts[i].z);
       blendPos.setXYZ(i, p.x, p.y, p.z);
-      blendCol.setXYZ(i, 0, 0.9098039216 * (1 - t) + 0.7843137255 * t, 0.4784313725 * (1 - t) + 1 * t);
     }
     for (let i = count; i < 48; i++) {
       blendPos.setXYZ(i, 0, 0, 0);
-      blendCol.setXYZ(i, 0, 0, 0);
     }
     blendPos.needsUpdate = true;
-    blendCol.needsUpdate = true;
     blendLine.geometry.setDrawRange(0, count);
     blendLine.visible = layers.traj || layers.pred;
   }
