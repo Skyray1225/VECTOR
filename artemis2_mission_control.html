@@ -2645,13 +2645,15 @@ function swapLayout() {
   if (!layoutSwapped) {
     // Live → centre, 3D → droite
     right.insertBefore(stage, right.firstChild);
-    center.insertBefore(livePanel, center.firstChild);
+    const vmb = center.querySelector('.view-mode-bar');
+    center.insertBefore(livePanel, vmb ? vmb.nextSibling : center.firstChild);
     stage.classList.add('stage-compact');
     livePanel.classList.add('live-fullstage');
     if (label) label.textContent = '3D EN AVANT';
   } else {
     // 3D → centre, Live → droite
-    center.insertBefore(stage, center.firstChild);
+    const vmb2 = center.querySelector('.view-mode-bar');
+    center.insertBefore(stage, vmb2 ? vmb2.nextSibling : center.firstChild);
     right.insertBefore(livePanel, right.firstChild);
     stage.classList.remove('stage-compact');
     livePanel.classList.remove('live-fullstage');
