@@ -3637,7 +3637,6 @@ function updateNav() {
   const cE = convDist(dE),  cM = convDist(dM), cA = convDist(alt), cS = convSpeed(spd);
   setVal('v-dist-earth', fmt_km(cA.val)); document.getElementById('dunit-earth').textContent = cA.unit;
   setVal('v-dist-moon',  fmt_km(cM.val)); document.getElementById('dunit-moon').textContent  = cM.unit;
-  setVal('v-alt',        fmt_km(cA.val)); document.getElementById('dunit-alt').textContent   = cA.unit;
   setVal('v-speed',      cS.val.toFixed(cS.dec)); document.getElementById('dunit-speed').textContent = cS.unit;
   setVal('v-vel',        `${state.vel.x.toFixed(2)} / ${state.vel.y.toFixed(2)} / ${state.vel.z.toFixed(2)}`);
   setVal('v-x',          fmt_km(state.pos.x));
