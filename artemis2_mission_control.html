@@ -869,6 +869,227 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 
 /* ── TIMELINE ── */
 #tab-chronologie { overflow-y: auto; padding: 16px; flex-direction: column; }
+
+/* ══════════════════════════════════════════
+   DESCRIPTION TAB
+   ══════════════════════════════════════════ */
+#tab-description {
+  overflow-y: auto; flex-direction: column;
+  background: #080f18;
+}
+.desc-page {
+  max-width: 900px; margin: 0 auto; padding: 0 32px 80px;
+  font-family: 'Barlow', sans-serif;
+}
+
+/* Hero */
+.desc-hero {
+  position: relative; overflow: hidden;
+  height: 320px; margin: 0 -32px;
+  display: flex; align-items: flex-end;
+}
+.desc-hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://images-assets.nasa.gov/image/Artemis%20II%20at%20the%20pad%20anamorphic%2001282026_3/Artemis%20II%20at%20the%20pad%20anamorphic%2001282026_3~orig.jpg');
+  background-size: cover; background-position: center 40%;
+  filter: brightness(.28);
+}
+.desc-hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, #080f18 0%, transparent 55%);
+}
+.desc-hero-content {
+  position: relative; z-index: 2; padding: 0 32px 36px;
+}
+.desc-hero-eyebrow {
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  letter-spacing: .22em; color: var(--accent); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.desc-hero-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+  line-height: 1.05; color: #fff;
+}
+.desc-hero-title span { color: var(--accent); }
+
+/* Stats bar */
+.desc-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 4px;
+  margin: 28px 0 0; overflow: hidden;
+}
+.desc-stat {
+  background: #0e1a27; padding: 14px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.desc-stat-label {
+  font-family: 'Share Tech Mono', monospace; font-size: 9px;
+  letter-spacing: .18em; color: var(--muted); text-transform: uppercase;
+}
+.desc-stat-value {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 20px;
+  font-weight: 700; color: var(--text); letter-spacing: .02em;
+}
+.desc-stat-value em { color: var(--accent); font-style: normal; font-size: 14px; }
+
+/* Section */
+.desc-section { margin-top: 60px; }
+.desc-section-eyebrow {
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  letter-spacing: .2em; color: var(--accent); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.desc-section-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 26px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  color: var(--text); margin-bottom: 20px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--border);
+}
+.desc-body {
+  font-size: 15px; line-height: 1.75; color: #b8ccd8;
+  margin-bottom: 16px;
+}
+.desc-body:last-child { margin-bottom: 0; }
+.desc-body strong { color: var(--text); font-weight: 600; }
+
+/* Highlight block */
+.desc-highlight {
+  background: rgba(0,210,255,.05); border: 1px solid rgba(0,210,255,.18);
+  border-left: 3px solid var(--accent); border-radius: 3px;
+  padding: 16px 20px; margin: 24px 0;
+  font-size: 14px; line-height: 1.7; color: #ccdde8;
+}
+
+/* Objectifs grid */
+.desc-obj-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin: 24px 0;
+}
+.desc-obj-card {
+  background: #0e1a27; border: 1px solid var(--border); border-radius: 4px;
+  padding: 16px 18px;
+}
+.desc-obj-num {
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  color: var(--accent); letter-spacing: .14em; margin-bottom: 6px;
+}
+.desc-obj-title {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text); margin-bottom: 8px;
+}
+.desc-obj-body {
+  font-size: 13px; line-height: 1.6; color: #95b0c4;
+}
+
+/* Phases de vol */
+.desc-phases { margin: 24px 0; display: flex; flex-direction: column; gap: 0; }
+.desc-phase {
+  display: grid; grid-template-columns: 90px 1fr;
+  gap: 0; border-top: 1px solid var(--border); padding: 14px 0;
+}
+.desc-phase:last-child { border-bottom: 1px solid var(--border); }
+.desc-phase-met {
+  font-family: 'Share Tech Mono', monospace; font-size: 11px;
+  color: var(--accent); padding-top: 2px; line-height: 1.4;
+}
+.desc-phase-body {}
+.desc-phase-name {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 14px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  color: var(--text); margin-bottom: 4px;
+}
+.desc-phase-desc {
+  font-size: 13px; line-height: 1.55; color: #95b0c4;
+}
+
+/* Photo intégrée */
+.desc-photo {
+  position: relative; margin: 40px -32px; height: 300px; overflow: hidden;
+}
+.desc-photo img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%);
+}
+.desc-photo-caption {
+  position: absolute; bottom: 16px; right: 24px;
+  font-family: 'Share Tech Mono', monospace; font-size: 9px;
+  letter-spacing: .12em; color: rgba(255,255,255,.3); text-transform: uppercase;
+}
+
+/* Équipage */
+.desc-crew-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 24px; margin-top: 28px;
+}
+.desc-crew-card {
+  background: #0e1a27; border: 1px solid var(--border); border-radius: 4px;
+  overflow: hidden; display: flex; flex-direction: column;
+}
+.desc-crew-photo-wrap {
+  position: relative; height: 220px; overflow: hidden;
+  background: #07101a;
+}
+.desc-crew-photo-wrap img {
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: center 10%;
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+.desc-crew-flag {
+  position: absolute; top: 12px; right: 12px;
+  font-family: 'Share Tech Mono', monospace; font-size: 9px;
+  letter-spacing: .12em; color: rgba(255,255,255,.5);
+  background: rgba(0,0,0,.45); padding: 3px 7px; border-radius: 2px;
+  text-transform: uppercase;
+}
+.desc-crew-body { padding: 18px 20px 22px; }
+.desc-crew-role {
+  font-family: 'Share Tech Mono', monospace; font-size: 9px;
+  letter-spacing: .16em; color: var(--accent); text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.desc-crew-name {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 22px;
+  font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+  color: var(--text); margin-bottom: 12px;
+}
+.desc-crew-facts {
+  display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.desc-crew-fact {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.desc-crew-fact-label {
+  font-family: 'Share Tech Mono', monospace; font-size: 8px;
+  letter-spacing: .14em; color: var(--muted); text-transform: uppercase;
+}
+.desc-crew-fact-value {
+  font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+  font-weight: 600; color: var(--text);
+}
+.desc-crew-bio {
+  font-size: 13px; line-height: 1.65; color: #95b0c4;
+}
+
+/* Sources footer */
+.desc-sources {
+  margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  letter-spacing: .1em; color: var(--muted);
+}
+.desc-sources a { color: var(--accent); text-decoration: none; }
+.desc-sources a:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .desc-stats { grid-template-columns: 1fr 1fr; }
+  .desc-obj-grid { grid-template-columns: 1fr; }
+  .desc-crew-grid { grid-template-columns: 1fr; }
+}
 #tl-progress-wrap { margin-bottom: 20px; }
 .tl-prog-label { font-size: 12px; color: var(--muted); letter-spacing: .1em; margin-bottom: 6px; }
 .tl-prog-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
@@ -1032,6 +1253,7 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 <nav id="tab-nav">
   <button class="tab-btn active" onclick="switchTab('mission')">MISSION CONTROL</button>
   <button class="tab-btn" onclick="switchTab('chronologie')">CHRONOLOGIE</button>
+  <button class="tab-btn" onclick="switchTab('description')">DESCRIPTION</button>
 </nav>
 
 <!-- ════ MISSION CONTROL TAB ════ -->
@@ -1165,77 +1387,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
           </div>
         </div>
       </div>
-      <div class="mission-brief">
-        <div class="mini-tl-hdr">Aperçu De Mission</div>
-        <div class="mission-brief-body">
-          <p class="mission-brief-lead">Artemis II est le premier vol habité du programme Artemis et la première mission avec équipage à bord de la fusée SLS et du vaisseau Orion. La mission doit valider en espace lointain les systèmes nécessaires aux vols habités vers la Lune, avant les futures missions de surface.</p>
-          <div class="mission-brief-grid">
-            <div class="mission-brief-item">
-              <div class="mission-brief-label">Profil</div>
-              <div class="mission-brief-value">Vol circumlunaire habité d’environ 10 jours avec quatre astronautes à bord d’Orion.</div>
-            </div>
-            <div class="mission-brief-item">
-              <div class="mission-brief-label">Objectif Technique</div>
-              <div class="mission-brief-value">Démontrer les performances du SLS, d’Orion, du support-vie et des opérations d’équipage en environnement lointain.</div>
-            </div>
-            <div class="mission-brief-item">
-              <div class="mission-brief-label">Séquence De Vol</div>
-              <div class="mission-brief-value">Après deux orbites terrestres, Orion effectue l’injection translunaire, passe autour de la Lune, puis revient vers la Terre pour une rentrée atmosphérique et un amerrissage.</div>
-            </div>
-            <div class="mission-brief-item">
-              <div class="mission-brief-label">Portée</div>
-              <div class="mission-brief-value">La mission prépare Artemis III et les missions suivantes, tout en collectant des données utiles pour les futures expéditions lunaires et martiennes.</div>
-            </div>
-          </div>
-          <div class="mission-brief-sources">Sources NASA officielles :
-            <a href="https://www.nasa.gov/mission/artemis-ii/" target="_blank" rel="noopener noreferrer">Artemis II Overview</a>
-            ·
-            <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-press-kit.pdf" target="_blank" rel="noopener noreferrer">Artemis II Press Kit</a>
-          </div>
-        </div>
-      </div>
-      <div class="mission-crew">
-        <div class="mini-tl-hdr">Équipage Artemis II</div>
-        <div class="crew-grid">
-          <article class="crew-card">
-<img class="crew-photo reid" src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016434-alt.jpg?w=768" alt="Portrait officiel de Reid Wiseman">
-            <div class="crew-copy">
-              <div class="crew-role">Commandant</div>
-              <div class="crew-name">Reid Wiseman</div>
-              <div class="crew-bio">Ancien chef du bureau des astronautes de la NASA et vétéran de l’ISS, il dirige la mission et les opérations d’équipage.</div>
-            </div>
-          </article>
-          <article class="crew-card">
-<img class="crew-photo victor" src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016433-alt.jpg?w=768" alt="Portrait officiel de Victor Glover">
-            <div class="crew-copy">
-              <div class="crew-role">Pilote</div>
-              <div class="crew-name">Victor Glover</div>
-              <div class="crew-bio">Pilote naval, ingénieur et ancien pilote de Crew-1, il supervise le pilotage et les opérations dynamiques d’Orion.</div>
-            </div>
-          </article>
-          <article class="crew-card">
-            <img class="crew-photo christina" src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016435-alt.jpg?w=768" alt="Portrait officiel de Christina Koch">
-            <div class="crew-copy">
-              <div class="crew-role">Spécialiste De Mission</div>
-              <div class="crew-name">Christina Koch</div>
-              <div class="crew-bio">Ingénieure et astronaute expérimentée, elle conduit les démonstrations de mission et les opérations scientifiques en vol.</div>
-            </div>
-          </article>
-          <article class="crew-card">
-            <img class="crew-photo jeremy" src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016436-alt.jpg?resize=450,600" alt="Portrait officiel de Jeremy Hansen">
-            <div class="crew-copy">
-              <div class="crew-role">Spécialiste De Mission</div>
-              <div class="crew-name">Jeremy Hansen</div>
-              <div class="crew-bio">Astronaute de la CSA et ancien pilote de chasse, il deviendra le premier Canadien à participer à un vol autour de la Lune.</div>
-            </div>
-          </article>
-        </div>
-        <div class="crew-sources">Portraits officiels :
-          <a href="https://www.nasa.gov/artemis-ii-press-kit/" target="_blank" rel="noopener noreferrer">NASA Artemis II Press Kit</a>
-          ·
-          <a href="https://www.asc-csa.gc.ca/eng/multimedia/search/image/18544" target="_blank" rel="noopener noreferrer">CSA Jeremy Hansen Portrait</a>
-        </div>
-      </div>
     </div>
 
     <div class="mission-right">
@@ -1311,6 +1462,290 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <div class="tl-prog-track"><div class="tl-prog-fill" id="tl-prog-fill" style="width:0%"></div></div>
   </div>
   <div id="tl-list"></div>
+</div>
+
+<!-- ════ DESCRIPTION TAB ════ -->
+<div id="tab-description" class="tab-content">
+  <div class="desc-page">
+
+    <!-- HERO -->
+    <div class="desc-hero">
+      <div class="desc-hero-bg"></div>
+      <div class="desc-hero-overlay"></div>
+      <div class="desc-hero-content">
+        <div class="desc-hero-eyebrow">NASA · ESA · CSA — Programme Artemis</div>
+        <div class="desc-hero-title">Artemis II<br><span>Premier vol habité vers la Lune</span></div>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="desc-stats">
+      <div class="desc-stat">
+        <div class="desc-stat-label">Lancement</div>
+        <div class="desc-stat-value">1 Avr <em>2026</em></div>
+      </div>
+      <div class="desc-stat">
+        <div class="desc-stat-label">Durée</div>
+        <div class="desc-stat-value">~10 <em>jours</em></div>
+      </div>
+      <div class="desc-stat">
+        <div class="desc-stat-label">Distance max.</div>
+        <div class="desc-stat-value">~9 000 <em>km / Lune</em></div>
+      </div>
+      <div class="desc-stat">
+        <div class="desc-stat-label">Équipage</div>
+        <div class="desc-stat-value">4 <em>astronautes</em></div>
+      </div>
+    </div>
+
+    <!-- LA MISSION -->
+    <div class="desc-section">
+      <div class="desc-section-eyebrow">Contexte</div>
+      <div class="desc-section-title">La Mission</div>
+      <p class="desc-body">Artemis II est le <strong>premier vol habité du programme Artemis</strong> et, plus largement, le premier voyage de l'humanité au-delà de l'orbite terrestre basse depuis la mission Apollo 17 en décembre 1972 — soit plus d'un demi-siècle sans présence humaine dans l'espace lointain.</p>
+      <p class="desc-body">À bord du vaisseau <strong>Orion</strong>, lancé par la <strong>Space Launch System (SLS)</strong> — la fusée la plus puissante jamais construite —, quatre astronautes effectueront une trajectoire circumlunaire libre : après deux orbites terrestres et une injection translunaire, Orion longera la Lune à moins de 9 000 km de sa surface avant de revenir vers la Terre pour un amerrissage dans le Pacifique.</p>
+      <p class="desc-body">Aucun alunissage n'est prévu lors de cette mission. Artemis II est avant tout une <strong>validation systèmes en conditions réelles</strong> : support-vie, communications lointaines, performances d'Orion, comportement de l'équipage en environnement de rayonnement spatial. Elle ouvre directement la voie à Artemis III, dont l'objectif est le premier alunissage humain depuis 1972.</p>
+      <div class="desc-highlight">
+        « Pour la première fois depuis Apollo, des êtres humains verront la Terre entière depuis l'espace lointain — une expérience qui n'a été vécue que par 24 personnes dans toute l'histoire de l'humanité. »
+      </div>
+    </div>
+
+    <!-- PHOTO 1 -->
+    <div class="desc-photo">
+      <img src="https://images-assets.nasa.gov/image/Artemis%20II%20at%20the%20pad%20Full%20Snow%20Moon%2002012026_4/Artemis%20II%20at%20the%20pad%20Full%20Snow%20Moon%2002012026_4~orig.jpg" alt="SLS et la pleine lune">
+      <div class="desc-photo-caption">SLS · Pad 39B · Kennedy Space Center</div>
+    </div>
+
+    <!-- OBJECTIFS -->
+    <div class="desc-section">
+      <div class="desc-section-eyebrow">Technique</div>
+      <div class="desc-section-title">Objectifs & Défis</div>
+      <p class="desc-body">La mission poursuit des objectifs techniques précis, chacun constituant une condition préalable aux missions de surface planifiées à partir d'Artemis III.</p>
+      <div class="desc-obj-grid">
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">01 / PROPULSION</div>
+          <div class="desc-obj-title">Qualification du SLS en vol habité</div>
+          <div class="desc-obj-body">Démontrer que le Block 1 Crew peut propulser un Orion habité sur une trajectoire translunaire dans des conditions nominales, en validant l'ensemble des marges de performance.</div>
+        </div>
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">02 / ENVIRONNEMENT</div>
+          <div class="desc-obj-title">Exposition au rayonnement spatial</div>
+          <div class="desc-obj-body">Collecter des données sur l'exposition de l'équipage hors de la magnétosphère terrestre, en utilisant des mannequins instrumentés et des dosimètres portés par les astronautes.</div>
+        </div>
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">03 / SUPPORT-VIE</div>
+          <div class="desc-obj-title">Systèmes de vie en espace lointain</div>
+          <div class="desc-obj-body">Valider le système de support-vie d'Orion (ECLSS) sur une durée de dix jours en environnement réel, bien au-delà des capacités testées lors d'Artemis I.</div>
+        </div>
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">04 / RENTRÉE</div>
+          <div class="desc-obj-title">Bouclier thermique à vitesse lunaire</div>
+          <div class="desc-obj-body">Qualifier le bouclier thermique AVCOAT lors d'une rentrée atmosphérique à ~11 km/s — vitesse caractéristique d'un retour depuis l'espace lointain, plus sévère que tout retour depuis l'ISS.</div>
+        </div>
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">05 / COMMUNICATIONS</div>
+          <div class="desc-obj-title">Réseau DSN à distance lunaire</div>
+          <div class="desc-obj-body">Tester les communications haut-débit entre Orion et le Deep Space Network (DSN) à des distances allant jusqu'à 370 000 km, avec les délais de transmission associés.</div>
+        </div>
+        <div class="desc-obj-card">
+          <div class="desc-obj-num">06 / OPÉRATIONS</div>
+          <div class="desc-obj-title">Procédures d'équipage en espace lointain</div>
+          <div class="desc-obj-body">Former et valider les procédures opérationnelles d'un équipage en conditions d'isolement réelles : gestion des urgences, activités EVA-like, autonomie de décision avec délais de communication.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFIL DE VOL -->
+    <div class="desc-section">
+      <div class="desc-section-eyebrow">Séquence</div>
+      <div class="desc-section-title">Profil de Vol</div>
+      <p class="desc-body">La mission se déroule en plusieurs phases distinctes sur environ dix jours, suivant une trajectoire circumlunaire libre — la même mécanique orbitale utilisée lors des missions Apollo.</p>
+      <div class="desc-phases">
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET 0:00</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Ascension</div>
+            <div class="desc-phase-desc">Décollage depuis le pad 39B de Kennedy Space Center. Les deux boosters solides et le cœur SLS propulsent Orion jusqu'à l'orbite de stationnement terrestre initiale.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~2h30</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Orbites terrestres</div>
+            <div class="desc-phase-desc">Deux orbites basses permettent aux équipes sol de vérifier tous les systèmes avant la fenêtre d'injection translunaire. Dernière occasion d'avorter la mission en toute sécurité.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~25h37</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Injection Translunaire (TLI)</div>
+            <div class="desc-phase-desc">Le moteur du module de service européen (ESM, fourni par l'ESA) effectue la burn de TLI, propulsant Orion hors de l'orbite terrestre. Le vaisseau prend le chemin de la Lune.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~4 jours</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Approche lunaire & Survol</div>
+            <div class="desc-phase-desc">Orion atteint son point de plus proche approche de la Lune à environ 9 000 km de la surface. Aucune mise en orbite : la trajectoire libre utilise la gravité lunaire comme fronde pour entamer le retour.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~5–9 j</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Transit de retour</div>
+            <div class="desc-phase-desc">Orion rebrousse chemin vers la Terre sur une trajectoire de retour libre. L'équipage conduit des expériences, des vérifications systèmes et des simulations d'urgence pendant plusieurs jours.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~217h33</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Séparation CM/SM & Rentrée</div>
+            <div class="desc-phase-desc">Le module de service est éjecté. La capsule Orion entre dans l'atmosphère à ~11 km/s, protégée par son bouclier thermique AVCOAT. Le système de parachutes se déploie en séquence.</div>
+          </div>
+        </div>
+        <div class="desc-phase">
+          <div class="desc-phase-met">MET ~217h46</div>
+          <div class="desc-phase-body">
+            <div class="desc-phase-name">Amerrissage</div>
+            <div class="desc-phase-desc">Amerrissage dans l'océan Pacifique au large de San Diego. Les équipes de récupération de l'USS San Diego sont pré-positionnées pour extraire l'équipage en moins d'une heure.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHOTO 2 -->
+    <div class="desc-photo">
+      <img src="/img/art002e000191.jpg" alt="La Terre vue depuis le hublot d'Orion">
+      <div class="desc-photo-caption">Terre vue depuis le hublot d'Orion — Artemis II</div>
+    </div>
+
+    <!-- ÉQUIPAGE -->
+    <div class="desc-section">
+      <div class="desc-section-eyebrow">Équipage</div>
+      <div class="desc-section-title">Les Quatre Astronautes</div>
+      <p class="desc-body">L'équipage d'Artemis II réunit deux vétérans de l'ISS, une astronaute recordwoman du temps passé en orbite, et le premier Canadien à voyager vers la Lune. Ensemble, ils représentent la NASA, l'ESA et la CSA.</p>
+
+      <div class="desc-crew-grid">
+
+        <!-- Reid Wiseman -->
+        <div class="desc-crew-card">
+          <div class="desc-crew-photo-wrap">
+            <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016434-alt.jpg?w=768" alt="Reid Wiseman">
+            <div class="desc-crew-flag">NASA · USA</div>
+          </div>
+          <div class="desc-crew-body">
+            <div class="desc-crew-role">Commandant</div>
+            <div class="desc-crew-name">Reid Wiseman</div>
+            <div class="desc-crew-facts">
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Naissance</div>
+                <div class="desc-crew-fact-value">Baltimore, MD</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Vols précédents</div>
+                <div class="desc-crew-fact-value">Expedition 40/41</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Formation</div>
+                <div class="desc-crew-fact-value">Génie aérospatial</div>
+              </div>
+            </div>
+            <div class="desc-crew-bio">Pilote de chasse et ingénieur de test naval, Reid Wiseman a effectué 167 jours à bord de l'ISS lors d'Expedition 40/41 (2014), où il a réalisé deux sorties extravéhiculaires. Ancien chef du bureau des astronautes de la NASA, il est chargé d'assurer la sécurité et la cohésion de l'équipage tout au long de la mission. Sa maîtrise des procédures d'urgence et son leadership sont la colonne vertébrale d'Artemis II.</div>
+          </div>
+        </div>
+
+        <!-- Victor Glover -->
+        <div class="desc-crew-card">
+          <div class="desc-crew-photo-wrap">
+            <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016433-alt.jpg?w=768" alt="Victor Glover" style="object-position:center 8%;">
+            <div class="desc-crew-flag">NASA · USA</div>
+          </div>
+          <div class="desc-crew-body">
+            <div class="desc-crew-role">Pilote</div>
+            <div class="desc-crew-name">Victor Glover</div>
+            <div class="desc-crew-facts">
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Naissance</div>
+                <div class="desc-crew-fact-value">Pomona, CA</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Vols précédents</div>
+                <div class="desc-crew-fact-value">Crew Dragon Crew-1</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Formation</div>
+                <div class="desc-crew-fact-value">Systèmes de vol</div>
+              </div>
+            </div>
+            <div class="desc-crew-bio">Commandant en chef de l'US Navy et pilote d'essai, Victor Glover a été pilote lors de la mission Crew-1 (2020–2021), passant 168 jours sur l'ISS et conduisant quatre sorties extravéhiculaires. Son rôle de pilote l'amène à maîtriser les phases critiques de vol : injection translunaire, corrections de trajectoire, et rentrée atmosphérique. Il est le premier astronaute afro-américain à effectuer un long séjour en orbite.</div>
+          </div>
+        </div>
+
+        <!-- Christina Koch -->
+        <div class="desc-crew-card">
+          <div class="desc-crew-photo-wrap">
+            <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016435-alt.jpg?w=768" alt="Christina Koch" style="object-position:center 5%;">
+            <div class="desc-crew-flag">NASA · USA</div>
+          </div>
+          <div class="desc-crew-body">
+            <div class="desc-crew-role">Spécialiste de Mission</div>
+            <div class="desc-crew-name">Christina Koch</div>
+            <div class="desc-crew-facts">
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Naissance</div>
+                <div class="desc-crew-fact-value">Grand Rapids, MI</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Record</div>
+                <div class="desc-crew-fact-value">328 j en orbite (femme)</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Formation</div>
+                <div class="desc-crew-fact-value">Génie électrique</div>
+              </div>
+            </div>
+            <div class="desc-crew-bio">Ingénieure électricienne et exploratrice polaire, Christina Koch détient le record du plus long séjour en orbite pour une femme (328 jours consécutifs, 2019–2020) et a participé à la première sortie extravéhiculaire entièrement féminine. Sa profonde expérience des effets physiologiques du vol spatial de longue durée et sa rigueur opérationnelle font d'elle la cheville ouvrière des activités scientifiques et médicales à bord d'Orion.</div>
+          </div>
+        </div>
+
+        <!-- Jeremy Hansen -->
+        <div class="desc-crew-card">
+          <div class="desc-crew-photo-wrap">
+            <img src="https://www.nasa.gov/wp-content/uploads/2023/06/jsc2023e0016436-alt.jpg?resize=450,600" alt="Jeremy Hansen" style="object-position:center 8%;">
+            <div class="desc-crew-flag">CSA · Canada</div>
+          </div>
+          <div class="desc-crew-body">
+            <div class="desc-crew-role">Spécialiste de Mission</div>
+            <div class="desc-crew-name">Jeremy Hansen</div>
+            <div class="desc-crew-facts">
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Naissance</div>
+                <div class="desc-crew-fact-value">London, Ontario</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Agence</div>
+                <div class="desc-crew-fact-value">CSA — Agence spatiale canadienne</div>
+              </div>
+              <div class="desc-crew-fact">
+                <div class="desc-crew-fact-label">Formation</div>
+                <div class="desc-crew-fact-value">Physique, pilote CF-18</div>
+              </div>
+            </div>
+            <div class="desc-crew-bio">Pilote de chasse CF-18 et physicien, Jeremy Hansen est le premier Canadien à voyager vers la Lune — et le premier non-Américain à le faire depuis les missions Apollo. Sélectionné par la CSA en 2009, il représente l'engagement international du programme Artemis. Sa présence à bord symbolise que le retour à la Lune est une entreprise humaine collective, au-delà des frontières nationales.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="desc-sources">
+      Sources : <a href="https://www.nasa.gov/mission/artemis-ii/" target="_blank">NASA Artemis II</a> ·
+      <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-press-kit.pdf" target="_blank">Press Kit</a> ·
+      <a href="https://www.asc-csa.gc.ca/eng/astronauts/canadian/active/bio-jeremy-hansen.asp" target="_blank">CSA — Jeremy Hansen</a>
+    </div>
+
+  </div>
 </div>
 
 </div><!-- /app -->
@@ -3479,7 +3914,7 @@ function switchTab(name) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  const idx = ['mission','chronologie'].indexOf(name);
+  const idx = ['mission','chronologie','description'].indexOf(name);
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   if (name==='mission'&&!renderer3) { setTimeout(initThree,50); }
   if (name==='chronologie') buildTimeline();
