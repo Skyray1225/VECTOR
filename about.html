@@ -195,6 +195,31 @@ header {
 .badge-warn { color: var(--warn); }
 .badge-muted{ color: var(--muted); }
 
+/* ── PHOTO GRID ── */
+.photo-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 12px; margin: 32px 0;
+}
+.photo-grid img {
+  width: 100%; aspect-ratio: 16/9; object-fit: cover;
+  border-radius: 4px; border: 1px solid var(--border); display: block;
+}
+.photo-grid .wide { grid-column: span 2; }
+.photo-grid .tall { aspect-ratio: 4/3; }
+.photo-caption {
+  background: #0d1824; padding: 8px 14px;
+  font-size: 10px; color: var(--muted); font-family: var(--mono);
+  letter-spacing: .06em; text-transform: uppercase;
+  border: 1px solid var(--border); border-top: none;
+  border-radius: 0 0 4px 4px; margin-top: -12px; margin-bottom: 12px;
+}
+.photo-wrap { margin-bottom: 0; }
+.photo-wrap img {
+  width: 100%; display: block; border-radius: 4px 4px 0 0;
+  border: 1px solid var(--border); border-bottom: none;
+  aspect-ratio: 16/9; object-fit: cover;
+}
+
 /* ── OPEN SOURCE BOX ── */
 .opensource-box {
   display: flex; gap: 24px; align-items: flex-start;
@@ -271,6 +296,13 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
   </div>
 
+    <!-- Photo après présentation -->
+    <div class="photo-wrap" style="margin-top:32px;">
+      <img src="https://images-assets.nasa.gov/image/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED~medium.jpg" alt="SLS rollout vers le pad 39B" loading="lazy">
+      <div class="photo-caption">Le lanceur SLS et la capsule Orion en route vers le pad 39B — Kennedy Space Center, 2026</div>
+    </div>
+  </div>
+
   <!-- MISSIONS -->
   <div class="section">
     <div class="section-label">Missions suivies</div>
@@ -323,6 +355,14 @@ footer a { color: var(--accent); text-decoration: none; }
         </div>
       </div>
 
+    </div>
+  </div>
+
+    <!-- Grille photo après les missions -->
+    <div class="photo-grid" style="margin-top:32px;">
+      <img class="wide" src="https://images-assets.nasa.gov/image/art002e004440/art002e004440~medium.jpg" alt="Équipage Artemis II à bord d'Orion" loading="lazy">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Orion_Artemis_II_capsule_at_KSC.jpg/640px-Orion_Artemis_II_capsule_at_KSC.jpg" alt="Capsule Orion Artemis II" loading="lazy" onerror="this.src='https://images-assets.nasa.gov/image/art002e000192/art002e000192~medium.jpg'">
+      <img src="https://images-assets.nasa.gov/image/art002e000192/art002e000192~medium.jpg" alt="La Terre vue depuis Orion — Artemis I" loading="lazy">
     </div>
   </div>
 
@@ -386,6 +426,13 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
   </div>
 
+    <!-- Photo DSN après sources -->
+    <div class="photo-wrap" style="margin-top:32px;">
+      <img src="https://images-assets.nasa.gov/image/PIA17441/PIA17441~medium.jpg" alt="Antenne DSN Goldstone" loading="lazy" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Goldstone_DSS-14_antenna.jpg/640px-Goldstone_DSS-14_antenna.jpg'">
+      <div class="photo-caption">Antenne de 70m du Deep Space Network — Goldstone, Californie. Principal relais de communication avec Orion.</div>
+    </div>
+  </div>
+
   <!-- OPEN SOURCE -->
   <div class="section">
     <div class="section-label">Philosophie</div>
@@ -408,6 +455,13 @@ footer a { color: var(--accent); text-decoration: none; }
          style="display:inline-flex;align-items:center;gap:9px;padding:12px 28px;background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.5);border-radius:4px;color:#ffb347;font-family:var(--heading);font-size:14px;font-weight:700;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;">
         &#9829;&nbsp; Soutenir sur Tipeee
       </a>
+    </div>
+  </div>
+
+    <!-- Photo JPL après open source -->
+    <div class="photo-grid" style="margin-top:32px;">
+      <img src="https://images-assets.nasa.gov/image/PIA23491/PIA23491~medium.jpg" alt="JPL Mission Control" loading="lazy" onerror="this.style.display='none'">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/960px-NASA_logo.svg.png" alt="NASA" loading="lazy" style="object-fit:contain;background:#070d17;padding:40px;">
     </div>
   </div>
 
