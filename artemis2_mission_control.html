@@ -670,6 +670,45 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 .dsn-sig.down.orion { color: var(--ok); border-color: rgba(0,232,122,.4); background: rgba(0,232,122,.08); }
 .dsn-idle { font-size: 12px; color: var(--muted); font-style: italic; padding: 2px 0; }
 
+/* ── 3D LOADER ── */
+#stage-loader {
+  position: absolute; inset: 0; z-index: 10;
+  background: #070c12;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .6s ease;
+}
+#stage-loader.sl-hidden { opacity: 0; pointer-events: none; }
+.sl-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+  width: 220px;
+}
+.sl-ring {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid rgba(107,184,214,.15);
+  border-top-color: var(--accent);
+  animation: sl-spin 1s linear infinite;
+}
+@keyframes sl-spin { to { transform: rotate(360deg); } }
+.sl-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+  color: var(--accent); text-transform: uppercase;
+}
+.sl-bar-wrap {
+  width: 100%; height: 2px; background: rgba(107,184,214,.12); border-radius: 1px; overflow: hidden;
+}
+.sl-bar {
+  height: 100%; width: 0%; background: var(--accent); border-radius: 1px;
+  animation: sl-fill 2.8s cubic-bezier(.4,0,.2,1) forwards;
+}
+@keyframes sl-fill { to { width: 100%; } }
+.sl-subs { width: 100%; display: flex; flex-direction: column; gap: 5px; }
+.sl-sub {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .08em;
+  color: var(--muted); opacity: 0;
+  transition: opacity .3s ease;
+}
+.sl-sub.visible { opacity: 1; }
+
 /* ── 3D VIEW ── */
 #canvas3d  { position: relative; z-index: 1; width: 100%; height: 100%; display: block; }
 #attr3d {
@@ -1032,6 +1071,18 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
         </div>
       </div>
       <div class="mission-stage">
+        <div id="stage-loader">
+          <div class="sl-inner">
+            <div class="sl-ring"></div>
+            <div class="sl-label">INITIALISATION RENDU 3D</div>
+            <div class="sl-bar-wrap"><div class="sl-bar"></div></div>
+            <div class="sl-subs">
+              <div class="sl-sub" id="sl-s1">Chargement géométries…</div>
+              <div class="sl-sub" id="sl-s2">Calcul éphémérides…</div>
+              <div class="sl-sub" id="sl-s3">Mise en place scène…</div>
+            </div>
+          </div>
+        </div>
         <canvas id="canvas3d"></canvas>
         <!-- COMPACT CAMERA COORDS — visible uniquement en mode .stage-compact -->
         <div id="cam-coords-compact">
@@ -1854,9 +1905,22 @@ function rebuildMoonOrbit(referenceDate = new Date()) {
   moonOrbitScale = scaleMultiplier;
 }
 
+function dismissStageLoader() {
+  const loader = document.getElementById('stage-loader');
+  if (!loader) return;
+  setTimeout(() => { document.getElementById('sl-s1')?.classList.add('visible'); }, 400);
+  setTimeout(() => { document.getElementById('sl-s2')?.classList.add('visible'); }, 1100);
+  setTimeout(() => { document.getElementById('sl-s3')?.classList.add('visible'); }, 1900);
+  setTimeout(() => {
+    loader.classList.add('sl-hidden');
+    setTimeout(() => loader.remove(), 700);
+  }, 3000);
+}
+
 function initThree() {
   const canvas = document.getElementById('canvas3d');
   if (!canvas) return;
+  dismissStageLoader();
   const W = canvas.parentElement.clientWidth;
   const H = canvas.parentElement.clientHeight;
   renderer3 = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
