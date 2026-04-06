@@ -2410,12 +2410,16 @@ function updateThree() {
   moonMesh.lookAt(new THREE.Vector3(0,0,0));
 
   // ── Orion ─────────────────────────────────────────────────────
-  const opos = toScene(state.pos.x, state.pos.y, state.pos.z);
+  // Use per-frame simulation for smooth 3D movement; state.pos used for telemetry/history
+  const simFrame = simulateOrion(now);
+  const dispPos = state.posSource === 'JPL HORIZONS' ? state.pos : simFrame.pos;
+  const dispVel = state.posSource === 'JPL HORIZONS' ? state.vel : simFrame.vel;
+  const opos = toScene(dispPos.x, dispPos.y, dispPos.z);
   orionGroup.position.copy(opos);
   // Orient capsule with CM toward velocity direction
-  const vlen = Math.sqrt(state.vel.x**2+state.vel.y**2+state.vel.z**2);
+  const vlen = Math.sqrt(dispVel.x**2+dispVel.y**2+dispVel.z**2);
   if (vlen > 0.01) {
-    const vn = toScene(state.vel.x/vlen*10, state.vel.y/vlen*10, state.vel.z/vlen*10);
+    const vn = toScene(dispVel.x/vlen*10, dispVel.y/vlen*10, dispVel.z/vlen*10);
     orionGroup.lookAt(opos.clone().add(vn));
   }
   // Slowly rotate solar panels on their axis for visual effect
