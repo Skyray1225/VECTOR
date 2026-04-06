@@ -185,19 +185,25 @@ header {
   overflow: hidden;
 }
 
-/* ── SWAP LAYOUT BUTTON ── */
-.swap-view-btn {
-  position: absolute; top: 10px; right: 10px; z-index: 20;
-  display: flex; align-items: center; gap: 5px;
-  padding: 5px 10px; border-radius: 3px;
-  background: rgba(7,12,20,.88); border: 1px solid rgba(0,210,255,.2);
-  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
-  color: var(--muted); cursor: pointer; text-transform: uppercase;
-  transition: color .15s, border-color .15s, background .15s;
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+/* ── VIEW MODE TOGGLE BAR ── */
+.view-mode-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 10px; margin-bottom: 0;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 4px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em; text-transform: uppercase;
+  flex-shrink: 0;
 }
-.swap-view-btn:hover { color: var(--accent); border-color: rgba(0,210,255,.5); background: rgba(0,210,255,.06); }
-.swap-view-btn svg { flex-shrink: 0; }
+.vmb-label { color: var(--dim); flex-shrink: 0; }
+.vmb-seg { display: flex; gap: 3px; }
+.vmb-btn {
+  padding: 3px 12px; border-radius: 2px;
+  background: none; border: 1px solid var(--border);
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+  color: var(--muted); cursor: pointer; text-transform: uppercase;
+  transition: all .15s;
+}
+.vmb-btn.active { background: rgba(0,210,255,.1); border-color: var(--accent); color: var(--accent); }
+.vmb-btn:hover:not(.active) { color: var(--text); border-color: rgba(255,255,255,.18); }
 
 /* ── 3D COMPACT (colonne droite) ── */
 .stage-compact {
@@ -207,10 +213,9 @@ header {
   height: auto !important;
   min-height: unset !important;
 }
-/* Masquer HUD, attributions, label du bouton swap */
+/* Masquer HUD et attributions */
 .stage-compact #hud3d,
 .stage-compact #attr3d { display: none !important; }
-.stage-compact #swap-btn-label { display: none; }
 
 /* ctrl3d : positionné en bas, horizontal */
 .stage-compact #ctrl3d {
@@ -1018,6 +1023,14 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     </div>
 
     <div class="mission-center">
+      <!-- VIEW MODE TOGGLE — position fixe dans la colonne centrale -->
+      <div class="view-mode-bar">
+        <span class="vmb-label">VUE PRINCIPALE</span>
+        <div class="vmb-seg">
+          <button class="vmb-btn active" id="vmb-3d"   onclick="setViewMode('3d')">3D</button>
+          <button class="vmb-btn"        id="vmb-live" onclick="setViewMode('live')">LIVE</button>
+        </div>
+      </div>
       <div class="mission-stage">
         <canvas id="canvas3d"></canvas>
         <!-- COMPACT CAMERA COORDS — visible uniquement en mode .stage-compact -->
@@ -1080,13 +1093,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
             <button class="ctrl-btn active" id="lyr-labels" onclick="toggleLayer('labels')">LABELS</button>
           </div>
         </div>
-        <!-- SWAP BUTTON -->
-        <button class="swap-view-btn" id="swap-view-btn" onclick="swapLayout()" title="Basculer vue principale">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-          </svg>
-          <span id="swap-btn-label">LIVE EN AVANT</span>
-        </button>
       </div>
       <div class="mission-mini-timeline">
         <div class="mini-tl-hdr">Séquence Mission <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="panel-src" style="color:var(--accent);text-decoration:none;float:right">NASA TIMELINE PDF</a></div>
@@ -2618,6 +2624,17 @@ function onResize3() {
 
 /* ── SWAP LAYOUT (3D ↔ LIVE) ── */
 let layoutSwapped = false;
+
+function setViewMode(mode) {
+  if (mode === 'live' && !layoutSwapped) swapLayout();
+  if (mode === '3d'   &&  layoutSwapped) swapLayout();
+}
+
+function syncViewToggle() {
+  document.getElementById('vmb-3d')  ?.classList.toggle('active', !layoutSwapped);
+  document.getElementById('vmb-live')?.classList.toggle('active',  layoutSwapped);
+}
+
 function swapLayout() {
   const stage     = document.querySelector('.mission-stage');
   const livePanel = document.querySelector('.panel-live');
@@ -2641,6 +2658,7 @@ function swapLayout() {
     if (label) label.textContent = 'LIVE EN AVANT';
   }
   layoutSwapped = !layoutSwapped;
+  syncViewToggle();
   // Resize + repositionnement caméra après que le DOM a fini de muter
   setTimeout(() => {
     onResize3();
