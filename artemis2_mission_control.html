@@ -1765,6 +1765,7 @@ const scheduler = {
       state.pos = data.pos;
       state.vel = data.vel;
       state.posSource = 'JPL HORIZONS';
+      pushHistory();
       appLog(`Horizons OK — ID ${horizonsSrc.targetId}`, 'ok');
     } else {
       appLog('Horizons indisponible — simulation active', 'warn');
@@ -3481,7 +3482,6 @@ async function init() {
     if (horizonsSrc.status !== 'OK') useSimulation();
     updateNav();
     draw2D();
-    pushHistory();
   }, 5000);
 
   // Re-fetch Horizons every 5 minutes
