@@ -2410,10 +2410,10 @@ function updateThree() {
   moonMesh.lookAt(new THREE.Vector3(0,0,0));
 
   // ── Orion ─────────────────────────────────────────────────────
-  // Use per-frame simulation for smooth 3D movement; state.pos used for telemetry/history
+  // Always use per-frame simulation for smooth 3D movement; state.pos used for telemetry display only
   const simFrame = simulateOrion(now);
-  const dispPos = state.posSource === 'JPL HORIZONS' ? state.pos : simFrame.pos;
-  const dispVel = state.posSource === 'JPL HORIZONS' ? state.vel : simFrame.vel;
+  const dispPos = simFrame.pos;
+  const dispVel = simFrame.vel;
   const opos = toScene(dispPos.x, dispPos.y, dispPos.z);
   orionGroup.position.copy(opos);
   // Orient capsule with CM toward velocity direction
@@ -3319,7 +3319,9 @@ function tickClock() {
 // HISTORY PUSH
 // ════════════════════════════════════════════════════════════════
 function pushHistory() {
-  state.history.push({ x:state.pos.x, y:state.pos.y, z:state.pos.z });
+  // Always use simulation for smooth history; Horizons used only for telemetry display
+  const p = simulateOrion(new Date()).pos;
+  state.history.push({ x:p.x, y:p.y, z:p.z });
   if (state.history.length > MAX_HIST) state.history.shift();
 }
 
