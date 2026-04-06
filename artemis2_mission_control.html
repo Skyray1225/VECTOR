@@ -3286,11 +3286,34 @@ function metStr() {
   return (neg?'-':'')+`${String(D).padStart(2,'0')}+${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(S).padStart(2,'0')}`;
 }
 
+// MET boundaries from NASA Artemis II Overview Timeline (Jan 2026 official PDF)
+// Format: hours elapsed since LAUNCH_UTC
+const PHASE_BOUNDARIES = [
+  { met: 0,        label: 'ASCENSION' },
+  { met: 25.6167,  label: 'TRANSIT TRANS-LUNAIRE' },   // 01/01:37 — TLI burn
+  { met: 102.9833, label: 'APPROCHE LUNAIRE' },          // 04/06:59 — Lunar SOI entry
+  { met: 121.3889, label: 'SURVOL LUNAIRE' },            // 05/01:23:20 — Lunar close approach
+  { met: 139.7833, label: 'RETOUR VERS LA TERRE' },      // 05/19:47 — Lunar SOI exit
+  { met: 217.2167, label: 'SÉPARATION CM/SM' },          // 09/01:13 — CM/SM sep
+  { met: 217.55,   label: 'RENTRÉE ATMOSPHÉRIQUE' },     // 09/01:33 — Entry interface
+  { met: 217.7667, label: 'AMERRISSAGE' },               // 09/01:46 — Splashdown
+];
+
+function getMissionPhase(date) {
+  const metH = (date - LAUNCH_UTC) / 3600000;
+  if (metH < 0) return 'PRÉ-LANCEMENT';
+  let phase = PHASE_BOUNDARIES[0].label;
+  for (const b of PHASE_BOUNDARIES) {
+    if (metH >= b.met) phase = b.label;
+    else break;
+  }
+  return phase;
+}
+
 function tickClock() {
   document.getElementById('met').textContent = metStr();
   document.getElementById('utc-clock').textContent = new Date().toISOString().slice(11,19) + ' UTC';
-  const sim = simulateOrion(new Date());
-  document.getElementById('mission-phase').textContent = sim.phase;
+  document.getElementById('mission-phase').textContent = getMissionPhase(new Date());
 }
 
 // ════════════════════════════════════════════════════════════════
