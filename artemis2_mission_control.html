@@ -1265,7 +1265,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
         <div class="panel-body">
           <div class="drow"><span class="dlabel">Distance Terre</span><span><span class="dvalue" id="v-dist-earth">---</span><span class="dunit" id="dunit-earth">km</span></span></div>
           <div class="drow"><span class="dlabel">Distance Lune</span><span><span class="dvalue" id="v-dist-moon">---</span><span class="dunit" id="dunit-moon">km</span></span></div>
-          <div class="drow"><span class="dlabel">Altitude s/sol</span><span><span class="dvalue" id="v-alt">---</span><span class="dunit" id="dunit-alt">km</span></span></div>
           <div class="drow"><span class="dlabel">Vitesse scalaire</span><span><span class="dvalue" id="v-speed">---</span><span class="dunit" id="dunit-speed">km/s</span></span></div>
           <div class="drow"><span class="dlabel">Vx / Vy / Vz</span><span><span class="dvalue" id="v-vel" style="font-size:11px">--- / --- / ---</span></span></div>
           <div class="drow"><span class="dlabel">X (J2000)</span><span><span class="dvalue" id="v-x">---</span><span class="dunit">km</span></span></div>
@@ -3636,7 +3635,7 @@ function updateNav() {
   const spd  = Math.sqrt(state.vel.x**2+state.vel.y**2+state.vel.z**2);
 
   const cE = convDist(dE),  cM = convDist(dM), cA = convDist(alt), cS = convSpeed(spd);
-  setVal('v-dist-earth', fmt_km(cE.val)); document.getElementById('dunit-earth').textContent = cE.unit;
+  setVal('v-dist-earth', fmt_km(cA.val)); document.getElementById('dunit-earth').textContent = cA.unit;
   setVal('v-dist-moon',  fmt_km(cM.val)); document.getElementById('dunit-moon').textContent  = cM.unit;
   setVal('v-alt',        fmt_km(cA.val)); document.getElementById('dunit-alt').textContent   = cA.unit;
   setVal('v-speed',      cS.val.toFixed(cS.dec)); document.getElementById('dunit-speed').textContent = cS.unit;
