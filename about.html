@@ -37,13 +37,8 @@ header {
   font-family: var(--heading); font-weight: 600; letter-spacing: .06em;
   gap: 12px;
 }
-.hd-logo {
-  display: flex; align-items: center; gap: 14px; flex-shrink: 0;
-  text-decoration: none;
-}
-.hd-logo-img {
-  height: 54px; width: auto; flex-shrink: 0;
-}
+.hd-logo { display: flex; align-items: center; gap: 14px; flex-shrink: 0; text-decoration: none; }
+.hd-logo-img { height: 54px; width: auto; flex-shrink: 0; }
 .hd-back {
   padding: 4px 11px; border: 1px solid rgba(0,210,255,.35); border-radius: 3px;
   font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--accent);
@@ -80,9 +75,7 @@ header {
   text-transform: uppercase; margin-bottom: 20px;
 }
 .hero-title em { color: var(--accent); font-style: normal; }
-.hero-sub {
-  font-size: 17px; color: #b0c8da; max-width: 600px; line-height: 1.65;
-}
+.hero-sub { font-size: 17px; color: #b0c8da; max-width: 600px; line-height: 1.65; }
 
 /* ── VECTOR BRAND BANNER ── */
 .vector-brand {
@@ -122,6 +115,110 @@ header {
 }
 .highlight p { color: var(--text); margin: 0; }
 
+/* ══════════════════════════════════════════
+   PHOTO SLOTS — images fondues dans le décor
+   ══════════════════════════════════════════ */
+
+/* Slot pleine largeur (brise hors de .page) */
+.photo-strip {
+  position: relative;
+  width: 100vw; left: 50%; right: 50%;
+  margin-left: -50vw; margin-right: -50vw;
+  height: 340px; overflow: hidden;
+  background: #070d17; /* fond visible si pas d'image */
+}
+.photo-strip img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0.55;
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 0%, rgba(0,0,0,.7) 18%, black 38%, black 62%, rgba(0,0,0,.7) 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom,
+    transparent 0%, rgba(0,0,0,.7) 18%, black 38%, black 62%, rgba(0,0,0,.7) 82%, transparent 100%);
+}
+/* Placeholder vide */
+.photo-strip:not(:has(img[src])) { height: 280px; }
+.photo-strip-label {
+  position: absolute; bottom: 18px; right: 28px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
+  color: rgba(255,255,255,.2); text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Slot inset dans .page (pleine largeur dans la colonne) */
+.photo-inset {
+  position: relative;
+  width: 100%; height: 280px; overflow: hidden;
+  margin: 40px 0;
+  background: #070d17;
+}
+.photo-inset img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0.5;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 8%,  black 92%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 8%,  black 92%, transparent 100%);
+  -webkit-mask-composite: intersect;
+  mask-composite: intersect;
+}
+
+/* Slot côte à côte : texte gauche, photo droite */
+.photo-aside {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; margin: 40px 0; align-items: center;
+}
+.photo-aside-text { padding-right: 40px; }
+.photo-aside-text p { color: #c0d4e0; font-size: 14px; line-height: 1.7; }
+.photo-aside-slot {
+  position: relative; height: 260px; overflow: hidden;
+  background: #070d17;
+}
+.photo-aside-slot img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0.5;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 15%, black 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 15%, black 100%);
+  -webkit-mask-composite: intersect;
+  mask-composite: intersect;
+}
+
+/* Slot paire côte à côte */
+.photo-duo {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; margin: 40px 0;
+}
+.photo-duo-slot {
+  position: relative; height: 220px; overflow: hidden;
+  background: #070d17;
+}
+.photo-duo-slot img {
+  width: 100%; height: 100%; object-fit: cover;
+  opacity: 0.45;
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%),
+    linear-gradient(to right,  transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-composite: intersect;
+  mask-composite: intersect;
+}
+
+/* Label de slot vide */
+.slot-id {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+  color: rgba(255,255,255,.1); text-transform: uppercase;
+  pointer-events: none;
+}
+
 /* ── MISSION CARDS ── */
 .mission-cards {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -129,17 +226,13 @@ header {
 }
 .mission-card {
   background: var(--panel); border: 1px solid var(--border);
-  border-radius: 6px; overflow: hidden;
-  display: flex; flex-direction: column;
+  border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;
 }
 .mission-card-header {
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px 12px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 12px;
 }
-.mission-card-patch {
-  width: 36px; height: 36px; object-fit: contain; flex-shrink: 0;
-}
+.mission-card-patch { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; }
 .mission-card-name {
   font-family: var(--heading); font-size: 15px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .06em;
@@ -195,57 +288,26 @@ header {
 .badge-warn { color: var(--warn); }
 .badge-muted{ color: var(--muted); }
 
-/* ── PHOTO GRID ── */
-.photo-grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 12px; margin: 32px 0;
-}
-.photo-grid img {
-  width: 100%; aspect-ratio: 16/9; object-fit: cover;
-  border-radius: 4px; border: 1px solid var(--border); display: block;
-}
-.photo-grid .wide { grid-column: span 2; }
-.photo-grid .tall { aspect-ratio: 4/3; }
-.photo-caption {
-  background: #0d1824; padding: 8px 14px;
-  font-size: 10px; color: var(--muted); font-family: var(--mono);
-  letter-spacing: .06em; text-transform: uppercase;
-  border: 1px solid var(--border); border-top: none;
-  border-radius: 0 0 4px 4px; margin-top: -12px; margin-bottom: 12px;
-}
-.photo-wrap { margin-bottom: 0; }
-.photo-wrap img {
-  width: 100%; display: block; border-radius: 4px 4px 0 0;
-  border: 1px solid var(--border); border-bottom: none;
-  aspect-ratio: 16/9; object-fit: cover;
-}
-
 /* ── OPEN SOURCE BOX ── */
 .opensource-box {
   display: flex; gap: 24px; align-items: flex-start;
   background: rgba(76,255,171,.05); border: 1px solid rgba(76,255,171,.18);
   border-radius: 6px; padding: 28px; margin-top: 28px;
 }
-.opensource-icon {
-  font-size: 40px; flex-shrink: 0; line-height: 1;
-}
+.opensource-icon { font-size: 40px; flex-shrink: 0; line-height: 1; }
 .opensource-box h3 {
   font-family: var(--heading); font-size: 18px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .06em; color: var(--ok);
-  margin-bottom: 10px;
+  text-transform: uppercase; letter-spacing: .06em; color: var(--ok); margin-bottom: 10px;
 }
 .opensource-box p { font-size: 14px; color: #9dc8b0; margin-bottom: 8px; }
 .opensource-box a { color: var(--ok); }
 
 /* ── TECH PILLS ── */
-.tech-list {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px;
-}
+.tech-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .tech-pill {
   padding: 4px 12px; background: rgba(255,255,255,.05);
   border: 1px solid var(--border); border-radius: 20px;
-  font-family: var(--mono); font-size: 11px; color: var(--muted);
-  letter-spacing: .06em;
+  font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em;
 }
 
 /* ── FOOTER ── */
@@ -282,9 +344,15 @@ footer a { color: var(--accent); text-decoration: none; }
   <img src="/vector_logo.png" alt="VECTOR — Vehicle Ephemeris & Telemetry Observation">
 </div>
 
+<!-- PHOTO SLOT A — pleine largeur, entre le banner et la présentation -->
+<div class="photo-strip">
+  <img src="" alt="" data-slot="A">
+  <div class="slot-id">PHOTO — A</div>
+</div>
+
 <div class="page">
 
-  <!-- WHAT IS IT -->
+  <!-- PRÉSENTATION -->
   <div class="section">
     <div class="section-label">Présentation</div>
     <h2 class="section-title">Qu'est-ce que VECTOR ?</h2>
@@ -296,13 +364,6 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
   </div>
 
-    <!-- Photo après présentation -->
-    <div class="photo-wrap" style="margin-top:32px;">
-      <img src="https://images-assets.nasa.gov/image/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED/SLS-4201_KSC%20SLS%20Roll%20Out%20Beauty%20Shot%20Photo_8%20NOT%20CROPPED~medium.jpg" alt="SLS rollout vers le pad 39B" loading="lazy">
-      <div class="photo-caption">Le lanceur SLS et la capsule Orion en route vers le pad 39B — Kennedy Space Center, 2026</div>
-    </div>
-  </div>
-
   <!-- MISSIONS -->
   <div class="section">
     <div class="section-label">Missions suivies</div>
@@ -310,7 +371,6 @@ footer a { color: var(--accent); text-decoration: none; }
     <p>VECTOR est conçu pour évoluer au fil des missions importantes de l'exploration spatiale habitée. Chaque mission dispose de son propre tableau de bord dédié, adapté à ses spécificités techniques et à son profil de vol.</p>
 
     <div class="mission-cards">
-
       <div class="mission-card">
         <div class="mission-card-header">
           <img class="mission-card-patch" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="Artemis II">
@@ -354,15 +414,18 @@ footer a { color: var(--accent); text-decoration: none; }
           <p>Le registre VECTOR a vocation à s'étendre aux prochaines missions habitées majeures — Artemis III, missions commerciales en orbite lunaire, et au-delà.</p>
         </div>
       </div>
-
     </div>
-  </div>
 
-    <!-- Grille photo après les missions -->
-    <div class="photo-grid" style="margin-top:32px;">
-      <img class="wide" src="https://images-assets.nasa.gov/image/art002e004440/art002e004440~medium.jpg" alt="Équipage Artemis II à bord d'Orion" loading="lazy">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Orion_Artemis_II_capsule_at_KSC.jpg/640px-Orion_Artemis_II_capsule_at_KSC.jpg" alt="Capsule Orion Artemis II" loading="lazy" onerror="this.src='https://images-assets.nasa.gov/image/art002e000192/art002e000192~medium.jpg'">
-      <img src="https://images-assets.nasa.gov/image/art002e000192/art002e000192~medium.jpg" alt="La Terre vue depuis Orion — Artemis I" loading="lazy">
+    <!-- PHOTO SLOT B — côte à côte, texte à gauche -->
+    <div class="photo-aside" style="margin-top:48px;">
+      <div class="photo-aside-text">
+        <p style="font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:12px;">Artemis II — 2026</p>
+        <p>Pour la première fois depuis décembre 1972, des êtres humains s'apprêtent à quitter l'orbite terrestre et à voguer vers la Lune. Un moment qui appartient à toute l'humanité.</p>
+      </div>
+      <div class="photo-aside-slot">
+        <img src="" alt="" data-slot="B">
+        <div class="slot-id">PHOTO — B</div>
+      </div>
     </div>
   </div>
 
@@ -373,13 +436,12 @@ footer a { color: var(--accent); text-decoration: none; }
     <p>Chaque donnée affichée provient d'une source officielle identifiée, publique, et maintenue par les agences spatiales elles-mêmes. Le choix de chaque source résulte d'une analyse approfondie de ce qui est disponible publiquement, de sa fiabilité, de sa fréquence de mise à jour et de sa pertinence pour le suivi de mission.</p>
 
     <div class="source-grid">
-
       <div class="source-card">
         <div class="source-badge badge-ok">Temps réel · Toutes les 5 min</div>
         <div class="source-card-name">Position &amp; Vitesse</div>
         <div class="source-card-title">JPL Horizons</div>
         <p>Le système Horizons du Jet Propulsion Laboratory est la référence mondiale pour les éphémérides de corps du système solaire. Il intègre les données de tracking DSN et fournit des vecteurs d'état (position + vitesse en J2000) pour les vaisseaux en vol.</p>
-        <p>C'est la source la plus précise publiquement accessible. Le décalage par rapport au temps réel est de quelques heures — inhérent au traitement DSN — mais constitue la meilleure option disponible sans accès aux systèmes internes de la NASA.</p>
+        <p>C'est la source la plus précise publiquement accessible. Le décalage par rapport au temps réel est inhérent au traitement DSN — mais constitue la meilleure option disponible sans accès aux systèmes internes de la NASA.</p>
         <a href="https://ssd.jpl.nasa.gov/horizons/" target="_blank" rel="noopener" class="source-card-url">ssd.jpl.nasa.gov/horizons →</a>
       </div>
 
@@ -387,8 +449,8 @@ footer a { color: var(--accent); text-decoration: none; }
         <div class="source-badge badge-ok">Quotidien</div>
         <div class="source-card-name">Trajectoire complète</div>
         <div class="source-card-title">NASA OEM Ephemeris</div>
-        <p>NASA publie quotidiennement un fichier d'éphéméride au format CCSDS OEM (Orbit Ephemeris Message) contenant des vecteurs d'état prédits pour toute la mission. Ce fichier permet de tracer la trajectoire complète — passée et future — avec une haute précision.</p>
-        <p>C'est la même source que celle utilisée par le tracker officiel AROW de la NASA pour sa trajectoire de référence.</p>
+        <p>NASA publie quotidiennement un fichier d'éphéméride au format CCSDS OEM contenant des vecteurs d'état prédits pour toute la mission. Ce fichier permet de tracer la trajectoire complète — passée et future — avec une haute précision.</p>
+        <p>C'est la même source que celle utilisée par le tracker officiel AROW de la NASA.</p>
         <a href="https://www.nasa.gov/missions/artemis/artemis-2/track-nasas-artemis-ii-mission-in-real-time/" target="_blank" rel="noopener" class="source-card-url">nasa.gov/trackartemis →</a>
       </div>
 
@@ -396,7 +458,7 @@ footer a { color: var(--accent); text-decoration: none; }
         <div class="source-badge badge-ok">Temps réel · Toutes les 60 s</div>
         <div class="source-card-name">Météo spatiale</div>
         <div class="source-card-title">NOAA SWPC</div>
-        <p>Le Space Weather Prediction Center fournit en temps réel les données de météorologie spatiale critiques pour la sécurité de l'équipage : indice Kp, champ magnétique interplanétaire Bz/Bt, vent solaire, flux X-ray et classe des éruptions solaires.</p>
+        <p>Le Space Weather Prediction Center fournit en temps réel les données de météorologie spatiale critiques pour la sécurité de l'équipage : indice Kp, champ magnétique Bz/Bt, vent solaire, flux X-ray et classe des éruptions solaires.</p>
         <a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener" class="source-card-url">swpc.noaa.gov →</a>
       </div>
 
@@ -412,7 +474,7 @@ footer a { color: var(--accent); text-decoration: none; }
         <div class="source-badge badge-muted">Document officiel</div>
         <div class="source-card-name">Chronologie</div>
         <div class="source-card-title">NASA Timeline PDF</div>
-        <p>La chronologie de chaque mission est basée sur les documents officiels publiés par la NASA, avec les MET (Mission Elapsed Time) exacts de chaque événement. Ce choix garantit une fidélité totale à la planification officielle.</p>
+        <p>La chronologie de chaque mission est basée sur les documents officiels NASA, avec les MET exacts de chaque événement — garantissant une fidélité totale à la planification officielle.</p>
         <a href="https://www.nasa.gov/wp-content/uploads/2026/01/artemis-ii-overview-timeline-public-final.pdf" target="_blank" rel="noopener" class="source-card-url">Timeline Artemis II (PDF) →</a>
       </div>
 
@@ -420,16 +482,14 @@ footer a { color: var(--accent); text-decoration: none; }
         <div class="source-badge badge-warn">Fallback automatique</div>
         <div class="source-card-name">Fallback position</div>
         <div class="source-card-title">Simulation physique</div>
-        <p>Lorsque JPL Horizons est indisponible, le site bascule automatiquement sur une simulation basée sur la mécanique orbitale de Kepler et l'approximation des coniques patchées, avec éphémérides Lune (ELP2000) et Soleil (Meeus). Un bandeau ambre signale clairement ce mode.</p>
+        <p>Lorsque JPL Horizons est indisponible, le site bascule sur une simulation basée sur la mécanique orbitale de Kepler et les coniques patchées, avec éphémérides Lune (ELP2000) et Soleil (Meeus). Un bandeau ambre signale ce mode.</p>
       </div>
-
     </div>
-  </div>
 
-    <!-- Photo DSN après sources -->
-    <div class="photo-wrap" style="margin-top:32px;">
-      <img src="https://images-assets.nasa.gov/image/PIA17441/PIA17441~medium.jpg" alt="Antenne DSN Goldstone" loading="lazy" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Goldstone_DSS-14_antenna.jpg/640px-Goldstone_DSS-14_antenna.jpg'">
-      <div class="photo-caption">Antenne de 70m du Deep Space Network — Goldstone, Californie. Principal relais de communication avec Orion.</div>
+    <!-- PHOTO SLOT C — inset dans la colonne -->
+    <div class="photo-inset">
+      <img src="" alt="" data-slot="C">
+      <div class="slot-id">PHOTO — C</div>
     </div>
   </div>
 
@@ -443,7 +503,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <div class="opensource-icon">⟨/⟩</div>
       <div>
         <h3>Code source disponible</h3>
-        <p>Chaque tableau de bord de mission est une application HTML/CSS/JS en fichier unique, sans dépendances à installer, sans build step, sans framework. Trois bibliothèques CDN suffisent : Three.js pour la 3D, OrbitControls pour la caméra, Google Fonts. L'architecture délibérément simple permet à n'importe quel développeur de comprendre, modifier ou réutiliser le code.</p>
+        <p>Chaque tableau de bord de mission est une application HTML/CSS/JS en fichier unique, sans dépendances à installer, sans build step, sans framework. Trois bibliothèques CDN suffisent : Three.js pour la 3D, OrbitControls pour la caméra, Google Fonts.</p>
         <p>Les fonctions serverless (proxy CORS vers JPL Horizons et NASA OEM) sont également open source dans le dossier <code>api/</code>.</p>
         <a href="https://github.com/Skyray1225/VECTOR" target="_blank" rel="noopener">github.com/Skyray1225/VECTOR →</a>
       </div>
@@ -458,18 +518,23 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
   </div>
 
-    <!-- Photo JPL après open source -->
-    <div class="photo-grid" style="margin-top:32px;">
-      <img src="https://images-assets.nasa.gov/image/PIA23491/PIA23491~medium.jpg" alt="JPL Mission Control" loading="lazy" onerror="this.style.display='none'">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/NASA_logo.svg/960px-NASA_logo.svg.png" alt="NASA" loading="lazy" style="object-fit:contain;background:#070d17;padding:40px;">
-    </div>
-  </div>
-
   <!-- TECH -->
   <div class="section">
     <div class="section-label">Technique</div>
     <h2 class="section-title">Architecture &amp; technologies</h2>
     <p>Chaque tableau de bord de mission est une application HTML/CSS/JavaScript monofichier, sans framework, sans bundler, sans backend propriétaire. La plateforme est hébergée sur Vercel avec des fonctions serverless servant de proxy CORS vers les APIs officielles. Le déploiement est continu via GitHub.</p>
+
+    <!-- PHOTO SLOT D — duo côte à côte -->
+    <div class="photo-duo">
+      <div class="photo-duo-slot">
+        <img src="" alt="" data-slot="D1">
+        <div class="slot-id">PHOTO — D1</div>
+      </div>
+      <div class="photo-duo-slot">
+        <img src="" alt="" data-slot="D2">
+        <div class="slot-id">PHOTO — D2</div>
+      </div>
+    </div>
 
     <div class="tech-list">
       <span class="tech-pill">HTML / CSS / JS vanilla</span>
@@ -487,6 +552,12 @@ footer a { color: var(--accent); text-decoration: none; }
     </div>
   </div>
 
+</div>
+
+<!-- PHOTO SLOT E — pleine largeur avant le footer -->
+<div class="photo-strip" style="margin-top:72px;">
+  <img src="" alt="" data-slot="E">
+  <div class="slot-id">PHOTO — E</div>
 </div>
 
 <!-- FOOTER -->
