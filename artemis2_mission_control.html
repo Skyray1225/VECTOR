@@ -1768,6 +1768,7 @@ let state = {
   pos: { x: 0, y: 0, z: 0 },
   vel: { x: 0, y: 0, z: 0 },
   posSource: 'SIMULATION',
+  moonPos: null,          // Set by JPL Horizons fetch (body 301), falls back to getMoonJ2000()
   history:  [],
   prediction: [],
   predictionDates: []
@@ -2012,6 +2013,28 @@ const horizonsSrc = {
     }
     if(!xyz||!vel) return null;
     return { pos:{x:xyz[0],y:xyz[1],z:xyz[2]}, vel:{x:vel[0],y:vel[1],z:vel[2]}, source:'JPL HORIZONS' };
+  },
+
+  // Fetch Moon position (body 301) from JPL Horizons — accurate alternative to getMoonJ2000()
+  async fetchMoon() {
+    const now = new Date();
+    const t0  = new Date(now - 10*60000);
+    const fmtDate = d => encodeURIComponent(`'${d.toISOString().slice(0,16).replace('T',' ')}'`);
+    const qs = `format=json`
+      + `&COMMAND=${encodeURIComponent("'301'")}`
+      + `&OBJ_DATA=NO&MAKE_EPHEM=YES&EPHEM_TYPE=VECTORS`
+      + `&CENTER=${encodeURIComponent("'500@399'")}`
+      + `&START_TIME=${fmtDate(t0)}&STOP_TIME=${fmtDate(now)}`
+      + `&STEP_SIZE=${encodeURIComponent("'5m'")}`
+      + `&OUT_UNITS=KM-S&VEC_TABLE=2&REF_SYSTEM=J2000&REF_PLANE=FRAME&VEC_CORR=NONE&CSV_FORMAT=NO`;
+    try {
+      const resp = await fetch(`${HORIZONS_PROXY}?${qs}`, { signal: AbortSignal.timeout(15000) });
+      if (!resp.ok) return null;
+      const json = await resp.json();
+      const txt  = json.result || '';
+      if (!txt.includes('$$SOE')) return null;
+      return this._parse(txt);
+    } catch(e) { return null; }
   }
 };
 
@@ -2242,7 +2265,10 @@ const scheduler = {
   },
   async runHorizons() {
     appLog('Requête JPL Horizons...', 'info');
-    const data = await horizonsSrc.fetch();
+    const [data, moonData] = await Promise.all([
+      horizonsSrc.fetch(),
+      horizonsSrc.fetchMoon()
+    ]);
     if (data) {
       state.pos = data.pos;
       state.vel = data.vel;
@@ -2253,6 +2279,7 @@ const scheduler = {
       appLog('Horizons indisponible — simulation active', 'warn');
       useSimulation();
     }
+    if (moonData) state.moonPos = moonData.pos;
     updateSourceUI();
   },
   async runSWPC() {
@@ -3625,7 +3652,7 @@ function updateMiniTimeline() {
 // ════════════════════════════════════════════════════════════════
 function updateNav() {
   const now  = new Date();
-  const moon = getMoonJ2000(now);
+  const moon = state.moonPos || getMoonJ2000(now);
   const dE   = Math.sqrt(state.pos.x**2+state.pos.y**2+state.pos.z**2);
   const dM   = Math.sqrt((state.pos.x-moon.x)**2+(state.pos.y-moon.y)**2+(state.pos.z-moon.z)**2);
   const alt  = dE - R_EARTH;
