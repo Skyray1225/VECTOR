@@ -2427,32 +2427,82 @@ function updateThree() {
   if (!histTail || histTail.x !== state.pos.x || histTail.y !== state.pos.y || histTail.z !== state.pos.z) {
     hist.push({ x: state.pos.x, y: state.pos.y, z: state.pos.z });
   }
+  const blendBack = Math.min(10, Math.max(0, hist.length - 1));
+  const blendForward = Math.min(10, Math.max(0, state.prediction.length - 1));
+
   if (hist.length > 1) {
     const pa = trajLine.geometry.attributes.position;
     const n  = Math.min(hist.length, MAX_HIST);
-    for (let i=0;i<n;i++) {
+    const visibleHist = Math.max(0, n - blendBack);
+    for (let i=0;i<visibleHist;i++) {
       const p = toScene(hist[i].x, hist[i].y, hist[i].z);
       pa.setXYZ(i, p.x, p.y, p.z);
     }
-    for (let i=n;i<MAX_HIST;i++) pa.setXYZ(i,0,0,0);
+    for (let i=visibleHist;i<MAX_HIST;i++) pa.setXYZ(i,0,0,0);
     pa.needsUpdate = true;
-    trajLine.geometry.setDrawRange(0, n);
+    trajLine.geometry.setDrawRange(0, visibleHist);
   }
 
   // Prediction
   if (state.prediction.length > 0) {
     const pa = predLine.geometry.attributes.position;
     const n  = Math.min(state.prediction.length, 600);
-    for (let i=0;i<n;i++) {
-      const p = toScene(state.prediction[i].x, state.prediction[i].y, state.prediction[i].z);
+    const predStart = Math.min(blendForward, Math.max(0, n - 1));
+    const visiblePred = Math.max(0, n - predStart);
+    for (let i=0;i<visiblePred;i++) {
+      const p = toScene(state.prediction[i + predStart].x, state.prediction[i + predStart].y, state.prediction[i + predStart].z);
       pa.setXYZ(i, p.x, p.y, p.z);
     }
-    for (let i=n;i<600;i++) pa.setXYZ(i,0,0,0);
+    for (let i=visiblePred;i<600;i++) pa.setXYZ(i,0,0,0);
     pa.needsUpdate = true;
-    predLine.geometry.setDrawRange(0, n);
+    predLine.geometry.setDrawRange(0, visiblePred);
   }
 
-  if (blendLine) blendLine.visible = false;
+  if (blendLine) {
+    const blendPos = blendLine.geometry.attributes.position;
+    const blendPts = [];
+    const histAnchor = hist.length > 1 ? hist[Math.max(0, hist.length - 1 - blendBack)] : null;
+    const currentAnchor = { x: state.pos.x, y: state.pos.y, z: state.pos.z };
+    const predAnchor = state.prediction.length > 1
+      ? state.prediction[Math.min(blendForward, state.prediction.length - 1)]
+      : null;
+
+    if (histAnchor) {
+      for (let i = 0; i < 12; i++) {
+        const t = i / 11;
+        blendPts.push({
+          x: histAnchor.x + (currentAnchor.x - histAnchor.x) * t,
+          y: histAnchor.y + (currentAnchor.y - histAnchor.y) * t,
+          z: histAnchor.z + (currentAnchor.z - histAnchor.z) * t
+        });
+      }
+    } else {
+      blendPts.push(currentAnchor);
+    }
+
+    if (predAnchor) {
+      for (let i = 1; i < 12; i++) {
+        const t = i / 11;
+        blendPts.push({
+          x: currentAnchor.x + (predAnchor.x - currentAnchor.x) * t,
+          y: currentAnchor.y + (predAnchor.y - currentAnchor.y) * t,
+          z: currentAnchor.z + (predAnchor.z - currentAnchor.z) * t
+        });
+      }
+    }
+    const count = Math.min(blendPts.length, 48);
+    for (let i = 0; i < count; i++) {
+      const t = count <= 1 ? 1 : i / (count - 1);
+      const p = toScene(blendPts[i].x, blendPts[i].y, blendPts[i].z);
+      blendPos.setXYZ(i, p.x, p.y, p.z);
+    }
+    for (let i = count; i < 48; i++) {
+      blendPos.setXYZ(i, 0, 0, 0);
+    }
+    blendPos.needsUpdate = true;
+    blendLine.geometry.setDrawRange(0, count);
+    blendLine.visible = layers.traj || layers.pred;
+  }
 
   // Labels
   if (layers.labels) {
