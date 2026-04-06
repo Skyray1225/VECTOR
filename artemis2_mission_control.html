@@ -1193,12 +1193,12 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <div class="sp-section">RÉSEAU DSN — AFFICHAGE</div>
     <div class="sp-row">
       <label class="sp-opt">
-        <input type="radio" name="dsn-filter" value="all" checked onchange="applyDSNFilter()">
+        <input type="radio" name="dsn-filter" value="all" onchange="applyDSNFilter()">
         Toutes les antennes actives
-        <span class="sp-hint">Par défaut</span>
+        <span class="sp-hint"></span>
       </label>
       <label class="sp-opt">
-        <input type="radio" name="dsn-filter" value="orion" onchange="applyDSNFilter()">
+        <input type="radio" name="dsn-filter" value="orion" checked onchange="applyDSNFilter()">
         Artemis II uniquement
         <span class="sp-hint">Antennes en contact avec Orion</span>
       </label>
@@ -3849,7 +3849,7 @@ function pushHistory() {
 // SETTINGS PANEL
 // ════════════════════════════════════════════════════════════════
 const navUnits = { dist: 'km', speed: 'kms' };
-let dsnFilter = 'all'; // 'all' | 'orion'
+let dsnFilter = 'orion'; // 'all' | 'orion'
 
 function applyLogDisplay() {
   const sel = document.querySelector('input[name="log-display"]:checked');
