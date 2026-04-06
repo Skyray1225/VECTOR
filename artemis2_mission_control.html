@@ -1882,7 +1882,7 @@ function buildMoonOrbitPoints(referenceDate, samples = 360) {
   if (state.predictionDates && state.predictionDates.length > 1) {
     return state.predictionDates.map(t => {
       const p = getMoonJ2000(t);
-      return toScene(p.x * 1.01, p.y * 1.01, p.z * 1.01);
+      return toScene(p.x * 1.03, p.y * 1.03, p.z * 1.03);
     });
   }
   const pts = [];
@@ -1890,7 +1890,7 @@ function buildMoonOrbitPoints(referenceDate, samples = 360) {
   for (let i = 0; i <= samples; i++) {
     const t = new Date(referenceDate.getTime() + (i / samples) * siderealMonthMs);
     const p = getMoonJ2000(t);
-    pts.push(toScene(p.x * 1.01, p.y * 1.01, p.z * 1.01));
+    pts.push(toScene(p.x * 1.03, p.y * 1.03, p.z * 1.03));
   }
   return pts;
 }
@@ -1983,7 +1983,7 @@ function initThree() {
 
   // Atmosphere glow (backside)
   scene3.add(new THREE.Mesh(
-    new THREE.SphereGeometry(eR * 1.01, 64, 32),
+    new THREE.SphereGeometry(eR * 1.03, 64, 32),
     new THREE.MeshPhongMaterial({ color: 0x3366cc, transparent: true, opacity: 0.10, side: THREE.BackSide })
   ));
 
@@ -2470,7 +2470,7 @@ function updateThree() {
 
   // ── Moon ─────────────────────────────────────────────────────
   const moon = getMoonJ2000(now);
-  const mpos = toScene(moon.x * 1.01, moon.y * 1.01, moon.z * 1.01);
+  const mpos = toScene(moon.x * 1.03, moon.y * 1.03, moon.z * 1.03);
   moonMesh.position.copy(mpos);
   if (now.getTime() - moonOrbitEpoch > 6 * 3600000 || moonOrbitScale !== scaleMultiplier) rebuildMoonOrbit(now);
   // Moon keeps same face toward Earth (simplified tidal lock)
