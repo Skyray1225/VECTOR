@@ -1160,7 +1160,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 
   /* Débloquer overflow sur les conteneurs actifs seulement */
   .tab-content.active { overflow-y: auto !important; overflow-x: hidden !important; height: auto !important; }
-  .mission-left, .mission-right, .mission-center { overflow: visible !important; }
   .panel-live { overflow: visible !important; }
 
   /* Header */
@@ -1206,17 +1205,27 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     display: flex !important; flex-direction: column !important;
     width: 100% !important; height: auto !important;
     overflow: visible !important; min-height: 0 !important;
+    align-items: stretch !important;
   }
+  /* Dissoudre les 3 colonnes pour que les panels remontent au niveau du grid */
   .mission-center,
   .mission-left,
   .mission-right {
-    width: 100% !important; max-width: 100% !important;
-    min-width: 0 !important; overflow: visible !important;
-    flex: 0 0 auto !important;
+    display: contents !important;
   }
-  .mission-center { order: 1; }
-  .mission-left   { order: 2; }
-  .mission-right  { order: 3; }
+  /* Ordre des tuiles — mode 3D : 3D / Nav / Séquence / DSN / NOAA / Dons */
+  /* Ordre des tuiles — mode Live : Live / Nav / Séquence / DSN / NOAA / Dons */
+  .view-mode-bar         { order: 0 !important; width: 100% !important; box-sizing: border-box; }
+  .mission-stage         { order: 1 !important; }
+  .panel-live            { order: 1 !important; }
+  .panel-nav             { order: 2 !important; }
+  .mission-mini-timeline { order: 3 !important; width: 100% !important; box-sizing: border-box; }
+  .panel-dsn             { order: 4 !important; }
+  .panel-swpc            { order: 5 !important; }
+  .panel-tipeee          { order: 6 !important; }
+  .panel-log             { order: 7 !important; }
+  /* Pleine largeur pour chaque tuile */
+  .panel { width: 100% !important; max-width: 100% !important; box-sizing: border-box !important; }
 
   /* View mode bar — plus grand, plus facile à tapper */
   .view-mode-bar { padding: 10px 14px; gap: 12px; }
@@ -1508,7 +1517,7 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
         </div>
       </div>
 
-      <div class="panel" style="flex:0 0 auto;">
+      <div class="panel panel-tipeee" style="flex:0 0 auto;">
         <div class="panel-body" style="padding:10px 13px; text-align:center;">
           <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#d5dde5;font-family:var(--heading);margin-bottom:6px;">SOUTENIR LE PROJET</div>
           <div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:10px;">Ce tableau de bord est développé bénévolement.<br>Si vous appréciez le travail, un don est le bienvenu !</div>
