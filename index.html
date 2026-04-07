@@ -656,7 +656,7 @@ footer a:hover { color: var(--muted); }
   <div class="section-header">
     <span class="sh-label">MISSION REGISTRY</span>
     <div class="sh-sep"></div>
-    <span class="sh-count" id="mission-count">3 ENTRÉES</span>
+    <span class="sh-count" id="mission-count">4 ENTRÉES</span>
   </div>
 
   <!-- MISSION TABLE -->
@@ -745,6 +745,34 @@ footer a:hover { color: var(--muted); }
         </td>
         <td class="td-date">
           <div class="cell-date"><strong>2027</strong>TBD</div>
+        </td>
+        <td class="td-link">
+          <span class="row-link disabled">INDISPONIBLE</span>
+        </td>
+      </tr>
+
+      <!-- ARTEMIS IV -->
+      <tr class="mission-row">
+        <td class="td-status"><span class="status-strip future"></span></td>
+        <td class="td-id"><div class="cell-id" style="color:var(--dim)">ATM-004</div></td>
+        <td class="td-name">
+          <div class="cell-patch cell-locked">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png" alt="" style="filter:grayscale(1) opacity(.18)">
+            <div>
+              <div class="cell-mission-name" style="color:var(--dim)">ARTEMIS IV</div>
+              <div class="cell-mission-sub">SLS BLOCK 1B · ORION / HLS</div>
+            </div>
+          </div>
+        </td>
+        <td class="td-agency">
+          <div class="cell-agency"><strong>NASA</strong>Programme Artemis</div>
+        </td>
+        <td class="td-phase">
+          <div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
+        </td>
+        <td class="td-date">
+          <div class="cell-date"><strong>2028</strong>TBD</div>
         </td>
         <td class="td-link">
           <span class="row-link disabled">INDISPONIBLE</span>
@@ -999,6 +1027,20 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
       phaseStrip: false,
       detail: null,
       desc: 'Test de manœuvre et d\'amarrage avec le HLS (Starship/SpaceX ou Blue Moon/Blue Origin) en orbite lunaire. Prépare Artemis IV.'
+    },
+    {
+      cardClass: 'card-future',
+      patch: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png',
+      patchDim: true,
+      name: 'ARTEMIS IV',
+      sub: 'SLS BLOCK 1B · ORION / HLS',
+      nameDim: true,
+      badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
+      date: '<strong>2028</strong> · TBD',
+      link: '<span class="row-link disabled">INDISPONIBLE</span>',
+      phaseStrip: false,
+      detail: null,
+      desc: null
     },
     {
       cardClass: 'card-tbd',
