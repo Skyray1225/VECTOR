@@ -779,7 +779,7 @@ header {
           <div class="panel-body">
             <div class="live-switcher">
               <button class="live-btn active" data-live="nasa">NASA Live</button>
-              <button class="live-btn" data-live="hdev">Earth View</button>
+              <button class="live-btn" data-live="hdev">NASA TV</button>
             </div>
             <div class="live-frame">
               <iframe id="live-frame" src="https://www.youtube.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1" title="NASA Live" allowfullscreen></iframe>
@@ -918,9 +918,9 @@ const LIVE_MODES = {
     note: 'Flux officiel NASA Live via le canal NASA.'
   },
   hdev: {
-    src: 'https://www.youtube.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=0',
-    link: 'https://eol.jsc.nasa.gov/ESRS/HDEV/',
-    note: 'Earth view: ouvrir la page HDEV si le direct n’est pas repris côté YouTube.'
+    src: ‘https://www.youtube.com/embed/live_stream?channel=UCVTomc35agH1muX6R6wMtkg’,
+    link: ‘https://www.nasa.gov/nasatv/’,
+    note: ‘NASA TV — couverture officielle des opérations et événements Mission Control.’
   }
 };
 
@@ -962,11 +962,6 @@ const stateISS = {
     source: null,
     freshness: null
   },
-  systems: {
-    attitude: null,
-    powerKw: null,
-    lifeSupport: null
-  },
   sources: {
     orbit: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     crew: { status: 'INIT', lastUpdate: null, label: 'INIT' },
@@ -988,6 +983,8 @@ let earthMesh, issMesh, footprintMesh, historyLine, predictionLine, sunlight;
 let camMode = 'free';
 let viewMode = '3d';
 const layers = { history: true, prediction: true, footprint: true };
+let lines3DDirty = false;
+let footprintDirty = false;
 
 function appLog(message, level = 'info') {
   const el = document.createElement('div');
@@ -996,6 +993,16 @@ function appLog(message, level = 'info') {
   const log = document.getElementById('log-feed');
   log.prepend(el);
   while (log.children.length > 40) log.removeChild(log.lastChild);
+}
+
+function esc(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function setSourceStatus(key, status, label) {
@@ -1189,6 +1196,7 @@ function propagatePrediction() {
   stateISS.orbit.transition = transition ? transition.t : null;
   const nextRegion = prediction.find((item) => classifyRegion(item.lat, item.lon).label !== stateISS.geo.label);
   stateISS.geo.next = nextRegion ? `${classifyRegion(nextRegion.lat, nextRegion.lon).label} · ${fmtClock(nextRegion.t)}` : 'Aucun changement majeur';
+  lines3DDirty = true;
 }
 
 function updateOrbitState() {
@@ -1205,6 +1213,8 @@ function updateOrbitState() {
   };
   stateISS.orbitTrack.push({ ...snap });
   if (stateISS.orbitTrack.length > HISTORY_CAP) stateISS.orbitTrack.shift();
+  lines3DDirty = true;
+  footprintDirty = true;
   updateNav();
 }
 
@@ -1292,11 +1302,11 @@ function renderCrew() {
   stateISS.crew.forEach((member) => {
     const card = document.createElement('div');
     card.className = 'crew-card';
-    const profile = member.profile ? `<a href="${member.profile}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Profil NASA</a>` : '';
+    const profile = member.profile ? `<a href="${esc(member.profile)}" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">Profil NASA</a>` : ‘’;
     card.innerHTML = `
-      <div class="crew-name">${member.name}</div>
-      <div class="crew-meta">${member.agency} · ${member.role}</div>
-      <div class="crew-sub">${member.accessMission || 'Mission d’accès non publiée'}</div>
+      <div class="crew-name">${esc(member.name)}</div>
+      <div class="crew-meta">${esc(member.agency)} · ${esc(member.role)}</div>
+      <div class="crew-sub">${esc(member.accessMission) || "Mission d’accès non publiée"}</div>
       <div class="crew-sub">${profile}</div>
     `;
     grid.appendChild(card);
@@ -1328,10 +1338,10 @@ function renderEvents() {
     const div = document.createElement('div');
     div.className = 'feed-item';
     div.innerHTML = `
-      <div class="feed-kicker">${event.type || 'Station Ops'} · ${event.source}</div>
-      <div class="feed-title">${event.title}</div>
+      <div class="feed-kicker">${esc(event.type) || 'Station Ops'} · ${esc(event.source)}</div>
+      <div class="feed-title">${esc(event.title)}</div>
       <div class="feed-meta">${event.date ? fmtClock(event.date) : 'Date non publiée'}</div>
-      <div class="feed-meta">${event.description || ''}</div>
+      <div class="feed-meta">${esc(event.description) || ''}</div>
     `;
     vehicleFeed.appendChild(div);
   });
@@ -1424,8 +1434,8 @@ function refreshMiniTimeline() {
     const div = document.createElement('div');
     div.className = 'mini-tl-step';
     div.innerHTML = `
-      <div class="mini-tl-kicker">${event.type || 'EVENT'} · ${event.source}</div>
-      <div class="mini-tl-title">${event.title}</div>
+      <div class="mini-tl-kicker">${esc(event.type) || 'EVENT'} · ${esc(event.source)}</div>
+      <div class="mini-tl-title">${esc(event.title)}</div>
       <div class="mini-tl-meta">${fmtClock(event.date)}</div>
     `;
     container.appendChild(div);
@@ -1451,8 +1461,8 @@ function refreshTimeline() {
       <div class="tl-time">${new Date(event.date).toISOString().slice(0, 16).replace('T', ' ')}</div>
       <div class="tl-badge ${badge}">${state === 'past' ? 'PASSÉ' : state === 'future' ? 'À VENIR' : 'EN COURS'}</div>
       <div>
-        <div class="tl-event-title">${event.title}</div>
-        <div class="tl-event-desc">${event.description || 'Événement opérationnel ISS.'}</div>
+        <div class="tl-event-title">${esc(event.title)}</div>
+        <div class="tl-event-desc">${esc(event.description) || 'Événement opérationnel ISS.'}</div>
         <div class="tl-countdown">${countdown}</div>
       </div>
     `;
@@ -1556,14 +1566,21 @@ function initThree() {
   scene3.add(historyLine, predictionLine, footprintMesh);
 
   const starGeo = new THREE.BufferGeometry();
-  const starPos = new Float32Array(3000);
-  for (let i = 0; i < starPos.length; i += 3) {
-    starPos[i] = (Math.random() - 0.5) * 2400;
-    starPos[i + 1] = (Math.random() - 0.5) * 2400;
-    starPos[i + 2] = (Math.random() - 0.5) * 2400;
+  const nStars = 6000;
+  const starPos = new Float32Array(nStars * 3);
+  for (let i = 0; i < nStars; i++) {
+    const th = Math.random() * 2 * Math.PI;
+    const ph = Math.acos(2 * Math.random() - 1);
+    const r = 900000;
+    starPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+    starPos[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
+    starPos[i * 3 + 2] = r * Math.cos(ph);
   }
   starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-  scene3.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 2, sizeAttenuation: true })));
+  scene3.add(new THREE.Points(
+    starGeo,
+    new THREE.PointsMaterial({ color: 0xffffff, size: 60, sizeAttenuation: true })
+  ));
 
   window.addEventListener('resize', onResize);
   animateThree();
@@ -1584,8 +1601,8 @@ function updateThree() {
   const issPos = latLonAltToVector(stateISS.orbit.lat, stateISS.orbit.lon, stateISS.orbit.altKm);
   issMesh.position.copy(issPos);
   issMesh.lookAt(issPos.clone().multiplyScalar(1.1));
-  rebuild3DLines();
-  rebuildFootprint();
+  if (lines3DDirty) { rebuild3DLines(); lines3DDirty = false; }
+  if (footprintDirty) { rebuildFootprint(); footprintDirty = false; }
   const sun = sunVectorEci(new Date());
   sunlight.position.set(sun.x * 350, sun.z * 350, sun.y * 350);
 
@@ -1665,16 +1682,17 @@ async function init() {
   initThree();
   setInterval(() => {
     updateOrbitState();
-    propagatePrediction();
     refreshMiniTimeline();
-    refreshTimeline();
   }, 1000);
+  setInterval(() => {
+    propagatePrediction();
+    refreshTimeline();
+  }, 30 * 1000);
   setInterval(fetchOrbit, 6 * 60 * 60 * 1000);
   setInterval(fetchCrew, 6 * 60 * 60 * 1000);
   setInterval(fetchEvents, 15 * 60 * 1000);
   setInterval(fetchEnv, 60 * 60 * 1000);
   setInterval(fetchSWPC, 60 * 1000);
-  setInterval(refreshTimeline, 30 * 1000);
 }
 
 init();
