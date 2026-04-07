@@ -675,6 +675,7 @@ header {
   </header>
 
   <div id="sources-bar">
+    <div class="src-item"><span class="src-dot" id="dot-telemetry"></span><span class="src-name">TÉLÉMÉTRIE</span><span class="src-time" id="src-telemetry">INIT</span></div>
     <div class="src-item"><span class="src-dot" id="dot-orbit"></span><span class="src-name">ORBITE</span><span class="src-time" id="src-orbit">INIT</span></div>
     <div class="src-item"><span class="src-dot" id="dot-crew"></span><span class="src-name">ÉQUIPAGE</span><span class="src-time" id="src-crew">INIT</span></div>
     <div class="src-item"><span class="src-dot" id="dot-events"></span><span class="src-name">OPS</span><span class="src-time" id="src-events">INIT</span></div>
@@ -782,7 +783,7 @@ header {
               <button class="live-btn" data-live="hdev">NASA TV</button>
             </div>
             <div class="live-frame">
-              <iframe id="live-frame" src="https://www.youtube.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1" title="NASA Live" allowfullscreen></iframe>
+              <iframe id="live-frame" src="https://www.youtube.com/embed/zPH5KtjJFaQ?autoplay=1&rel=0" title="ISS Live — vue Terre" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
             <div class="live-note" id="live-note">Flux officiel NASA Live via le canal NASA.</div>
             <a class="live-fallback" id="live-link" href="https://www.youtube.com/@NASA" target="_blank" rel="noopener noreferrer">Ouvrir la source externe</a>
@@ -903,22 +904,23 @@ header {
   </section>
 </div>
 <script>
-const ORBIT_PROXY = '/api/iss-oem';
-const CREW_PROXY = '/api/iss-crew';
-const EVENTS_PROXY = '/api/iss-events';
-const ENV_PROXY = '/api/iss-env';
+const ORBIT_PROXY      = '/api/iss-oem';
+const CREW_PROXY       = '/api/iss-crew';
+const EVENTS_PROXY     = '/api/iss-events';
+const ENV_PROXY        = '/api/iss-env';
+const TELEMETRY_PROXY  = '/api/iss-telemetry';
 const EXPEDITION_START = new Date('2025-12-08T00:00:00Z');
 const EXPEDITION_END_EST = new Date('2026-08-01T00:00:00Z');
 const R_EARTH = 6378.137;
 const HISTORY_CAP = 720;
 const LIVE_MODES = {
   nasa: {
-    src: 'https://www.youtube.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1',
-    link: 'https://www.youtube.com/@NASA',
-    note: 'Flux officiel NASA Live via le canal NASA.'
+    src: ‘https://www.youtube.com/embed/zPH5KtjJFaQ?autoplay=1&rel=0’,
+    link: ‘https://www.youtube.com/watch?v=zPH5KtjJFaQ’,
+    note: ‘Vue Terre en direct depuis la Station Spatiale Internationale (ISS HD Earth Viewing Experiment).’
   },
   hdev: {
-    src: ‘https://www.youtube.com/embed/live_stream?channel=UCVTomc35agH1muX6R6wMtkg’,
+    src: ‘https://www.youtube.com/embed/live_stream?channel=UCVTomc35agH1muX6R6wMtkg&autoplay=1’,
     link: ‘https://www.nasa.gov/nasatv/’,
     note: ‘NASA TV — couverture officielle des opérations et événements Mission Control.’
   }
@@ -963,12 +965,14 @@ const stateISS = {
     freshness: null
   },
   sources: {
+    telemetry: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     orbit: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     crew: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     events: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     env: { status: 'INIT', lastUpdate: null, label: 'INIT' },
     swpc: { status: 'INIT', lastUpdate: null, label: 'INIT' }
   },
+  liveSnap: null,
   orbitModel: null,
   expedition: {
     name: 'Expedition 74',
@@ -1200,7 +1204,10 @@ function propagatePrediction() {
 }
 
 function updateOrbitState() {
-  const snap = interpolateOrbit(new Date());
+  // Prefer live Lightstreamer telemetry if received within the last 30 s
+  const ls = stateISS.liveSnap;
+  const lsFresh = ls && (Date.now() - new Date(ls.freshness).getTime()) < 30000;
+  const snap = lsFresh ? ls : interpolateOrbit(new Date());
   if (!snap) return;
   stateISS.orbit = { ...stateISS.orbit, ...snap, periodMin: estimatePeriodMin(snap.altKm) };
   const region = classifyRegion(snap.lat, snap.lon);
@@ -1354,12 +1361,63 @@ async function fetchEnv() {
     stateISS.cabin = { ...stateISS.cabin, ...(data.metrics || {}), source: data.source, freshness: new Date() };
     setSourceStatus('env', data.status === 'LIMITED' ? 'WARN' : 'OK', data.status || 'LIMITED');
     setText('upd-cabin', fmtClock(new Date()));
-    setText('env-status', data.status || 'LIMITED');
-    setText('env-note', data.note || 'Télémétrie cabine publique limitée');
+    renderCabin();
     appLog('Cabin source checked — public data limited', 'warn');
   } catch (err) {
     setSourceStatus('env', 'ERR', 'ERROR');
     appLog(`Cabin source error: ${err.message}`, 'err');
+  }
+}
+
+function renderCabin() {
+  const c = stateISS.cabin;
+  setText('env-temp',     c.tempC    != null ? `${c.tempC.toFixed(1)} °C`    : 'N/D');
+  setText('env-pressure', c.pressure != null ? `${c.pressure.toFixed(1)} kPa` : 'N/D');
+  setText('env-humidity', c.humidity != null ? `${c.humidity.toFixed(0)} %`   : 'N/D');
+  setText('env-co2',      c.co2      != null ? `${c.co2.toFixed(0)} ppm`      : 'N/D');
+  setText('env-o2',       c.o2       != null ? `${c.o2.toFixed(1)} %`         : 'N/D');
+  if (c.source) {
+    setText('env-status', 'LIVE');
+    setText('env-note', `Source : ${c.source} · màj ${c.freshness ? fmtClock(c.freshness) : '--'}`);
+    const el = document.getElementById('env-status');
+    if (el) { el.className = 'datum-value ok'; }
+  }
+}
+
+async function fetchTelemetry() {
+  try {
+    const resp = await fetch(TELEMETRY_PROXY, { signal: AbortSignal.timeout(15000) });
+    const data = await resp.json();
+    if (data.status !== 'OK') throw new Error(data.error || 'Telemetry error');
+
+    // Build orbit snapshot from J2000 ECI state vector
+    const now = new Date();
+    // Fallback velocity direction if server didn't get vel (still gives correct lat/lon/alt)
+    const vel = data.velJ2000 || { x: 0, y: 7.66, z: 0 };
+    const snap = orbitSnapshotFromEci(now, data.posJ2000, vel, 'LIGHTSTREAMER');
+    stateISS.liveSnap = snap;
+
+    // Update cabin env if present
+    if (data.env) {
+      stateISS.cabin = {
+        ...stateISS.cabin,
+        tempC:     data.env.tempC,
+        pressure:  data.env.pressureKPa,
+        source:    'Lightstreamer / NASA',
+        freshness: now,
+      };
+      renderCabin();
+      const envOk = data.env.tempC != null || data.env.pressureKPa != null;
+      setSourceStatus('env', envOk ? 'OK' : 'WARN', envOk ? 'LIGHTSTREAMER' : 'LIMITÉ');
+      setText('upd-cabin', fmtClock(now));
+    }
+
+    setSourceStatus('telemetry', 'OK', 'LIGHTSTREAMER');
+    appLog(`Télémétrie live OK — pos (${data.posJ2000.x.toFixed(0)}, ${data.posJ2000.y.toFixed(0)}, ${data.posJ2000.z.toFixed(0)}) km`, 'ok');
+    updateOrbitState();
+  } catch (err) {
+    setSourceStatus('telemetry', 'ERR', 'OFFLINE');
+    appLog(`Telemetry error: ${err.message}`, 'err');
   }
 }
 
@@ -1678,7 +1736,8 @@ async function init() {
   bindUI();
   updateClock();
   setInterval(updateClock, 1000);
-  await Promise.all([fetchOrbit(), fetchCrew(), fetchEvents(), fetchEnv(), fetchSWPC()]);
+  // Kick off all data sources in parallel — telemetry first so position shows ASAP
+  await Promise.all([fetchTelemetry(), fetchOrbit(), fetchCrew(), fetchEvents(), fetchEnv(), fetchSWPC()]);
   initThree();
   setInterval(() => {
     updateOrbitState();
@@ -1688,11 +1747,14 @@ async function init() {
     propagatePrediction();
     refreshTimeline();
   }, 30 * 1000);
-  setInterval(fetchOrbit, 6 * 60 * 60 * 1000);
-  setInterval(fetchCrew, 6 * 60 * 60 * 1000);
+  // Live Lightstreamer telemetry — every 10 s (NASA updates ~every 4 s)
+  setInterval(fetchTelemetry, 10 * 1000);
+  // Slower periodic refreshes
+  setInterval(fetchOrbit,  6 * 60 * 60 * 1000);
+  setInterval(fetchCrew,   6 * 60 * 60 * 1000);
   setInterval(fetchEvents, 15 * 60 * 1000);
-  setInterval(fetchEnv, 60 * 60 * 1000);
-  setInterval(fetchSWPC, 60 * 1000);
+  setInterval(fetchEnv,    60 * 60 * 1000);
+  setInterval(fetchSWPC,   60 * 1000);
 }
 
 init();
