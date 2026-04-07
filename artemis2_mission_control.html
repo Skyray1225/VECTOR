@@ -1148,6 +1148,31 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   width: 1px; background: var(--border); flex-shrink: 0; margin: 6px 0;
 }
 
+/* ── HAMBURGER + MOBILE NAV DRAWER (cachés par défaut, desktop) ── */
+#mob-hamburger {
+  display: none;
+  align-items: center; justify-content: center;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 4px; padding: 8px 11px; cursor: pointer;
+  color: var(--text); flex-shrink: 0; line-height: 1;
+}
+#mob-hamburger svg { display: block; }
+#mob-nav-drawer {
+  display: none; flex-direction: column;
+  background: #0c1622; border-bottom: 2px solid var(--accent);
+  padding: 10px 14px; gap: 8px; position: relative; z-index: 200;
+}
+#mob-nav-drawer.open { display: flex; }
+.mob-tab-btn {
+  display: block; width: 100%; padding: 14px 18px;
+  background: #18222e; border: 1px solid var(--border); border-radius: 4px;
+  font-family: var(--heading); font-size: 14px; font-weight: 700;
+  letter-spacing: .1em; color: var(--muted); text-align: left;
+  cursor: pointer; transition: background .15s, border-color .15s, color .15s;
+}
+.mob-tab-btn:hover  { background: #1e2b39; color: var(--text); }
+.mob-tab-btn.active { background: rgba(0,210,255,.1); border-color: var(--accent); color: var(--accent); }
+
 /* ══════════════════════════════════════════════════════════
    MOBILE — max-width: 900px
    Approche : colonne unique, contrôle 3D/LIVE via JS uniquement
@@ -1172,30 +1197,27 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   #utc-clock, #mission-phase { font-size: 11px; }
   .hd-settings-btn { padding: 5px 8px; font-size: 9px; }
 
-  /* Sources bar — rotation one-by-one */
+  /* Sources bar — source à gauche, hamburger à droite */
   #sources-bar {
     overflow-x: hidden !important; flex-wrap: nowrap !important;
-    justify-content: center; padding: 10px 16px;
+    justify-content: space-between !important;
+    align-items: center; padding: 6px 12px;
   }
   #sources-bar .src-item { display: none !important; }
   #sources-bar .src-item.mob-active {
     display: flex !important;
-    font-size: 13px; padding: 8px 18px; gap: 8px;
+    font-size: 13px; padding: 6px 12px; gap: 8px;
   }
   .src-dot { width: 9px !important; height: 9px !important; }
   .src-name { font-size: 13px; }
   .src-time { font-size: 13px; }
+  #mob-hamburger { display: flex !important; }
 
   /* Cacher le bouton À Propos pour laisser le MET se centrer */
   .hd-about { display: none !important; }
 
-  /* Tab nav */
-  #tab-nav {
-    overflow-x: auto; flex-wrap: nowrap !important;
-    justify-content: flex-start; padding: 6px 8px; gap: 6px;
-    -webkit-overflow-scrolling: touch;
-  }
-  .tab-btn { flex-shrink: 0; white-space: nowrap; padding: 9px 14px; font-size: 13px; }
+  /* Tab nav remplacé par le drawer hamburger */
+  #tab-nav { display: none !important; }
 
   /* ── Tab content  ── */
   .tab-content         { display: none !important; flex-direction: column; overflow-y: auto; height: auto !important; }
@@ -1471,6 +1493,21 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     <span class="src-name">SIMULATION</span>
     <span class="src-time" id="time-sim">ACTIF</span>
   </div>
+  <!-- Hamburger — visible uniquement sur mobile -->
+  <button id="mob-hamburger" onclick="toggleMobNav()" title="Navigation">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+      <line x1="3" y1="6"  x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+</div>
+
+<!-- MOBILE NAV DRAWER -->
+<div id="mob-nav-drawer">
+  <button class="mob-tab-btn active" data-tab="mission"      onclick="switchTab('mission');toggleMobNav()">MISSION CONTROL</button>
+  <button class="mob-tab-btn"        data-tab="chronologie"  onclick="switchTab('chronologie');toggleMobNav()">CHRONOLOGIE</button>
+  <button class="mob-tab-btn"        data-tab="description"  onclick="switchTab('description');toggleMobNav()">DESCRIPTION</button>
 </div>
 
 <!-- TAB NAV -->
@@ -4199,8 +4236,17 @@ function switchTab(name) {
   document.getElementById('tab-'+name).classList.add('active');
   const idx = ['mission','chronologie','description'].indexOf(name);
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  // Drawer mobile
+  document.querySelectorAll('.mob-tab-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === name);
+  });
   if (name==='mission'&&!renderer3) { setTimeout(initThree,50); }
   if (name==='chronologie') buildTimeline();
+}
+
+function toggleMobNav() {
+  const drawer = document.getElementById('mob-nav-drawer');
+  if (drawer) drawer.classList.toggle('open');
 }
 
 const LIVE_STREAMS = [
