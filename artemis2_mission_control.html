@@ -1256,11 +1256,14 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   .panel-live .live-frame { height: 52vw; min-height: 200px; }
   .live-btn { font-size: 13px; padding: 8px 0; }
 
-  /* Contrôles 3D */
-  #ctrl3d { top: 6px; right: 6px; padding: 3px; gap: 2px; }
-  .ctrl-btn { padding: 6px 7px; }
-  .ctrl-label { font-size: 10px; }
-  .ctrl-group-label { font-size: 8px; }
+  /* Contrôles 3D — icônes seules, couches masquées */
+  #ctrl3d { top: 6px; right: 6px; padding: 3px; gap: 4px; }
+  #ctrl3d .ctrl-group:last-child { display: none !important; }
+  #ctrl3d .ctrl-label { display: none !important; }
+  #ctrl3d .ctrl-group-label { display: none !important; }
+  #ctrl3d .ctrl-group { padding: 6px; gap: 4px; }
+  #ctrl3d .ctrl-btn { padding: 10px; }
+  #ctrl3d .ctrl-icon { width: 18px !important; height: 18px !important; }
 
   /* Panels : texte lisible */
   .panel-hdr { font-size: 11px; padding: 8px 12px; }
