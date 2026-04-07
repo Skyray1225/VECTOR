@@ -429,9 +429,9 @@ footer a { color: var(--dim); text-decoration: none; }
 footer a:hover { color: var(--muted); }
 
 /* ══════════════════════════════════════════════════════════
-   MOBILE — max-width: 768px
+   MOBILE — max-width: 900px
 ══════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   /* Topbar compact */
   .topbar { height: 54px; padding: 0 12px; }
@@ -511,7 +511,7 @@ footer a:hover { color: var(--muted); }
   footer { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 6px; font-size: 9px; }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .topbar-clock { display: none; }
   .detail-inner { grid-template-columns: 1fr; }
   .mob-card-name { font-size: 18px; }
@@ -880,7 +880,7 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
 
 /* ── MOBILE CARDS ── */
 (function buildMobileCards() {
-  if (window.innerWidth > 768) return;
+  if (window.innerWidth > 900) return;
   const wrap = document.getElementById('mob-mission-cards');
   if (!wrap) return;
   wrap.style.display = 'flex';

@@ -1149,10 +1149,10 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 }
 
 /* ══════════════════════════════════════════════════════════
-   MOBILE — max-width: 768px
+   MOBILE — max-width: 900px
    Approche : colonne unique, contrôle 3D/LIVE via JS uniquement
 ══════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
 
   /* ── Globals ── */
   #app { height: auto !important; min-height: 100svh; }
@@ -1221,8 +1221,15 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   /* Stage 3D/Live */
   .mission-stage { height: 52vw; min-height: 200px; max-height: 46vh; width: 100% !important; }
 
-  /* 3D/LIVE sur mobile : contrôlé par JS (classes mob-hidden) */
-  .mob-hidden { display: none !important; }
+  /* 3D/LIVE sur mobile : contrôlé par classe sur body */
+  /* Par défaut : live masqué, 3D visible */
+  .panel-live { display: none !important; }
+  /* Mode live actif */
+  body.mob-live .panel-live { display: flex !important; }
+  body.mob-live .mission-stage { display: none !important; }
+  /* Mode 3D actif (défaut) */
+  body.mob-3d .mission-stage { display: block !important; }
+  body.mob-3d .panel-live { display: none !important; }
 
   /* Live panel pleine largeur */
   .panel-live { width: 100% !important; }
@@ -1303,7 +1310,7 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
 }
 
 /* ── Très petits écrans (< 420px) ── */
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .tab-btn { padding: 8px 11px; font-size: 12px; }
   .tl-event { grid-template-columns: 78px 1fr; }
   .tl-badge { display: none; }
@@ -3364,29 +3371,25 @@ function onResize3() {
 /* ── SWAP LAYOUT (3D ↔ LIVE) ── */
 let layoutSwapped = false;
 
-function isMobile() { return window.innerWidth <= 768; }
+function isMobile() { return window.innerWidth <= 900; }
 
 function setViewMode(mode) {
   if (isMobile()) {
-    // Sur mobile : show/hide direct, pas de swap DOM
-    const stage     = document.querySelector('.mission-stage');
-    const livePanel = document.querySelector('.panel-live');
+    // Sur mobile : toggle class sur body, CSS fait le reste
     if (mode === 'live') {
-      if (stage)     stage.classList.add('mob-hidden');
-      if (livePanel) livePanel.classList.remove('mob-hidden');
-      // Init iframe si nécessaire
-      if (!liveInited) initOrionLiveView();
+      document.body.classList.add('mob-live');
+      document.body.classList.remove('mob-3d');
+      initOrionLiveView();
     } else {
-      if (stage)     stage.classList.remove('mob-hidden');
-      if (livePanel) livePanel.classList.add('mob-hidden');
+      document.body.classList.add('mob-3d');
+      document.body.classList.remove('mob-live');
       if (!threeInited) setTimeout(initThree, 50);
     }
-    // Sync boutons
     document.getElementById('vmb-3d')  ?.classList.toggle('active', mode === '3d');
     document.getElementById('vmb-live')?.classList.toggle('active', mode === 'live');
     return;
   }
-  // Desktop : swap DOM comme avant
+  // Desktop : swap DOM
   if (mode === 'live' && !layoutSwapped) swapLayout();
   if (mode === '3d'   &&  layoutSwapped) swapLayout();
 }
@@ -4232,10 +4235,9 @@ async function init() {
   updateSourceUI();
   initOrionLiveView();
 
-  // Mobile : hide live panel by default, show 3D
+  // Mobile : initialiser en mode 3D (live masqué par CSS)
   if (isMobile()) {
-    const livePanel = document.querySelector('.panel-live');
-    if (livePanel) livePanel.classList.add('mob-hidden');
+    document.body.classList.add('mob-3d');
   }
 
   // Bootstrap history with simulation until OEM loads
