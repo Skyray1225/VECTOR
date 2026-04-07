@@ -3451,8 +3451,15 @@ function setViewMode(mode) {
       document.body.classList.remove('mob-live');
       if (!threeInited) setTimeout(initThree, 50);
     }
-    document.getElementById('vmb-3d')  ?.classList.toggle('active', mode === '3d');
-    document.getElementById('vmb-live')?.classList.toggle('active', mode === 'live');
+    const btn3d   = document.getElementById('vmb-3d');
+    const btnLive = document.getElementById('vmb-live');
+    if (mode === '3d') {
+      btn3d  ?.classList.add('active');
+      btnLive?.classList.remove('active');
+    } else {
+      btnLive?.classList.add('active');
+      btn3d  ?.classList.remove('active');
+    }
     return;
   }
   // Desktop : swap DOM
