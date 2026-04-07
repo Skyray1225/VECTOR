@@ -1175,12 +1175,16 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   /* Sources bar — rotation one-by-one */
   #sources-bar {
     overflow-x: hidden !important; flex-wrap: nowrap !important;
-    justify-content: center; padding: 0 8px;
+    justify-content: center; padding: 10px 16px;
   }
-  #sources-bar .src-item { display: none !important; font-size: 11px; }
-  #sources-bar .src-item.mob-active { display: flex !important; }
-  .src-name { font-size: 11px; }
-  .src-time { font-size: 11px; }
+  #sources-bar .src-item { display: none !important; }
+  #sources-bar .src-item.mob-active {
+    display: flex !important;
+    font-size: 13px; padding: 8px 18px; gap: 8px;
+  }
+  .src-dot { width: 9px !important; height: 9px !important; }
+  .src-name { font-size: 13px; }
+  .src-time { font-size: 13px; }
 
   /* Cacher le bouton À Propos pour laisser le MET se centrer */
   .hd-about { display: none !important; }
@@ -1192,9 +1196,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
     -webkit-overflow-scrolling: touch;
   }
   .tab-btn { flex-shrink: 0; white-space: nowrap; padding: 9px 14px; font-size: 13px; }
-
-  /* Bandeau métriques mobile */
-  #mob-strip { display: flex; }
 
   /* ── Tab content  ── */
   .tab-content         { display: none !important; flex-direction: column; overflow-y: auto; height: auto !important; }
@@ -1435,24 +1436,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
   </svg>
-</div>
-
-<!-- MOBILE METRICS STRIP -->
-<div id="mob-strip">
-  <div class="mob-metric">
-    <div class="mob-metric-label">Phase</div>
-    <div class="mob-metric-value" id="mob-phase">---</div>
-  </div>
-  <div class="mob-metric-sep"></div>
-  <div class="mob-metric">
-    <div class="mob-metric-label">Dist. Terre</div>
-    <div class="mob-metric-value" id="mob-dist">---</div>
-  </div>
-  <div class="mob-metric-sep"></div>
-  <div class="mob-metric">
-    <div class="mob-metric-label">Vitesse</div>
-    <div class="mob-metric-value" id="mob-spd">---</div>
-  </div>
 </div>
 
 <!-- SOURCES STATUS BAR -->
@@ -3932,9 +3915,6 @@ function updateNav() {
   setVal('v-dist-earth', fmt_km(cA.val)); document.getElementById('dunit-earth').textContent = cA.unit;
   setVal('v-dist-moon',  fmt_km(cM.val)); document.getElementById('dunit-moon').textContent  = cM.unit;
   setVal('v-speed',      cS.val.toFixed(cS.dec)); document.getElementById('dunit-speed').textContent = cS.unit;
-  // Mobile strip
-  const md = document.getElementById('mob-dist'); if (md) md.textContent = fmt_km(cA.val) + ' ' + cA.unit;
-  const ms2 = document.getElementById('mob-spd'); if (ms2) ms2.textContent = cS.val.toFixed(cS.dec) + ' ' + cS.unit;
   setVal('v-vel',        `${state.vel.x.toFixed(2)} / ${state.vel.y.toFixed(2)} / ${state.vel.z.toFixed(2)}`);
   setVal('v-x',          fmt_km(state.pos.x));
   setVal('v-y',          fmt_km(state.pos.y));
@@ -4110,9 +4090,6 @@ function tickClock() {
   document.getElementById('utc-clock').textContent = new Date().toISOString().slice(11,19) + ' UTC';
   const ph = getMissionPhase(new Date());
   document.getElementById('mission-phase').textContent = ph;
-  // Mobile strip
-  const mm = document.getElementById('mob-met');   if (mm) mm.textContent = ms;
-  const mp = document.getElementById('mob-phase'); if (mp) mp.textContent = ph;
 }
 
 // ════════════════════════════════════════════════════════════════
