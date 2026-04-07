@@ -1265,6 +1265,12 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   .vmb-seg { flex: 1; }
   .vmb-btn { flex: 1; padding: 11px 0; font-size: 14px; }
 
+  /* Surbrillance boutons pilotée par la classe body — source unique de vérité */
+  body.mob-3d   #vmb-3d   { background: rgba(0,210,255,.1) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
+  body.mob-live #vmb-live { background: rgba(0,210,255,.1) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
+  body.mob-3d   #vmb-live { background: transparent !important; border-color: rgba(255,255,255,.1) !important; color: var(--muted) !important; }
+  body.mob-live #vmb-3d   { background: transparent !important; border-color: rgba(255,255,255,.1) !important; color: var(--muted) !important; }
+
   /* Stage 3D/Live */
   .mission-stage { height: 52vw; min-height: 200px; max-height: 46vh; width: 100% !important; }
 
@@ -3450,15 +3456,6 @@ function setViewMode(mode) {
       document.body.classList.add('mob-3d');
       document.body.classList.remove('mob-live');
       if (!threeInited) setTimeout(initThree, 50);
-    }
-    const btn3d   = document.getElementById('vmb-3d');
-    const btnLive = document.getElementById('vmb-live');
-    if (mode === '3d') {
-      btn3d  ?.classList.add('active');
-      btnLive?.classList.remove('active');
-    } else {
-      btnLive?.classList.add('active');
-      btn3d  ?.classList.remove('active');
     }
     return;
   }
