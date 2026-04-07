@@ -1187,15 +1187,19 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   .tab-content.active { overflow-y: auto !important; overflow-x: hidden !important; height: auto !important; }
   .panel-live { overflow: visible !important; }
 
-  /* Header */
-  header { padding: 0 10px; height: 52px; }
+  /* Header — 3 blocs : logo gauche | MET centré | phase+UTC droite */
+  header { padding: 0 10px; height: 52px; justify-content: space-between; }
+  .hd-logo       { flex: 1; justify-content: flex-start; }
+  .hd-met        { flex: 0 0 auto; }
+  .hd-right-group{ flex: 1; justify-content: flex-end; }
   .hd-logo-img { height: 36px; }
   .hd-logo span { display: none; }
   .hd-patch { display: none; }
-  #hd-met { font-size: 14px; }
-  #hd-met-label { font-size: 7px; }
+  #met { font-size: 20px; }
+  .hd-met-label { font-size: 7px; }
   #utc-clock, #mission-phase { font-size: 11px; }
-  .hd-settings-btn { padding: 5px 8px; font-size: 9px; }
+  /* Bouton paramètres déplacé dans le hamburger */
+  .hd-settings-btn { display: none !important; }
 
   /* Sources bar — source à gauche, hamburger à droite */
   #sources-bar {
@@ -1509,6 +1513,13 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <button class="mob-tab-btn active" data-tab="mission"      onclick="switchTab('mission');toggleMobNav()">MISSION CONTROL</button>
   <button class="mob-tab-btn"        data-tab="chronologie"  onclick="switchTab('chronologie');toggleMobNav()">CHRONOLOGIE</button>
   <button class="mob-tab-btn"        data-tab="description"  onclick="switchTab('description');toggleMobNav()">DESCRIPTION</button>
+  <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+  <button class="mob-tab-btn" onclick="toggleMobNav();toggleSettings(event)">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+    PARAMÈTRES
+  </button>
 </div>
 
 <!-- TAB NAV -->
