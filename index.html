@@ -433,79 +433,159 @@ footer a:hover { color: var(--muted); }
 ══════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
 
-  /* Topbar compact */
-  .topbar { height: 54px; padding: 0 12px; }
-  .topbar-logo { height: 36px; }
+  /* Topbar */
+  .topbar { height: 56px; padding: 0 14px; }
+  .topbar-logo { height: 34px; }
   .topbar-div { display: none; }
   .topbar-sys { display: none; }
   .topbar-right { gap: 10px; }
   .topbar-clock { font-size: 12px; }
-  .topbar-link { font-size: 10px; padding: 4px 9px; }
+  .topbar-link { font-size: 10px; padding: 5px 10px; }
 
   /* Page wrap */
-  .page-wrap { padding-top: 54px; max-width: 100%; }
+  .page-wrap { padding-top: 56px; max-width: 100%; padding-left: 0; padding-right: 0; }
 
   /* Ident block */
-  .ident-block { grid-template-columns: 1fr; gap: 10px; padding: 16px 14px 14px; }
-  .sys-status { flex-wrap: wrap; gap: 10px; }
+  .ident-block { grid-template-columns: 1fr; gap: 6px; padding: 12px 16px 10px; }
+  .sys-status { flex-wrap: wrap; gap: 8px; }
   .ss-item { font-size: 10px; }
-  .ident-label { font-size: 9px; }
+  .ident-label { font-size: 9px; letter-spacing: .14em; }
 
   /* Section header */
-  .section-header { padding: 12px 14px 10px; }
+  .section-header { padding: 10px 16px 8px; }
   .sh-label { font-size: 10px; }
 
   /* Ticker masqué */
   .ticker-bar { display: none; }
 
-  /* ── Mission table → cartes verticales ── */
-  /* On cache complètement la table et on utilise les cartes JS (voir JS) */
+  /* Table masquée → cartes JS */
   .mission-table { display: none !important; }
 
-  /* ── Cartes mission mobile (injectées par JS) ── */
-  #mob-mission-cards { display: flex; flex-direction: column; gap: 0; }
+  /* ── Cartes mission mobile ── */
+  #mob-mission-cards {
+    display: flex; flex-direction: column;
+    gap: 12px; padding: 10px 12px 24px;
+  }
+
   .mob-card {
-    border-bottom: 1px solid var(--border);
+    border-radius: 8px;
     background: var(--surface);
-    position: relative; overflow: hidden;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
   }
-  .mob-card-strip { height: 3px; width: 100%; }
-  .mob-card-strip.active { background: var(--ok);  box-shadow: 0 0 8px rgba(76,255,171,.3); }
-  .mob-card-strip.future { background: var(--warn); }
-  .mob-card-strip.tbd    { background: var(--dim);  }
-  .mob-card-main {
-    padding: 14px 16px 0;
-    display: flex; align-items: center; gap: 12px;
+  /* Bordure gauche colorée = indicateur de statut */
+  .mob-card::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 4px;
   }
-  .mob-card-patch { width: 34px; height: auto; flex-shrink: 0; filter: drop-shadow(0 1px 4px rgba(0,0,0,.6)); }
-  .mob-card-patch.dim { opacity: .25; }
+  .mob-card.card-active::before  { background: var(--ok); }
+  .mob-card.card-future::before  { background: var(--warn); }
+  .mob-card.card-tbd::before     { background: var(--dim); }
+
+  /* Haut de carte : patch + infos + badge statut */
+  .mob-card-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 16px 12px 20px;
+  }
+  .mob-card-patch {
+    width: 52px; height: 52px; flex-shrink: 0;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.7));
+    border-radius: 50%;
+  }
+  .mob-card-patch.dim { opacity: .2; filter: grayscale(1); }
+  .mob-card-placeholder {
+    width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+  }
   .mob-card-info { flex: 1; min-width: 0; }
   .mob-card-name {
-    font-family: var(--heading); font-size: 20px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .04em; line-height: 1;
+    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em; line-height: 1.1;
+    color: var(--text);
   }
   .mob-card-name.dim { color: var(--dim); }
   .mob-card-sub {
     font-family: var(--mono); font-size: 9px; color: var(--muted);
-    letter-spacing: .06em; text-transform: uppercase; margin-top: 3px;
+    letter-spacing: .08em; text-transform: uppercase; margin-top: 4px;
   }
-  .mob-card-meta {
-    padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  .mob-card-badge-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 16px 0 20px; margin-bottom: 10px;
   }
-  .mob-card-phase { }
-  .mob-card-date {
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
-    letter-spacing: .07em; text-transform: uppercase;
+  .mob-card-date-val {
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    letter-spacing: .06em; text-transform: uppercase;
   }
-  .mob-card-date strong { color: var(--text); font-weight: 400; }
-  .mob-card-footer { padding: 0 16px 14px; }
+  .mob-card-date-val strong { color: var(--text); font-weight: 600; }
+
+  /* CTA button — pleine largeur pour la mission active */
+  .mob-card-cta {
+    margin: 0 16px 16px 20px;
+  }
+  .mob-card-cta a.row-link {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 13px; border-radius: 5px; width: 100%;
+    background: rgba(0,210,255,.08); border: 1px solid rgba(0,210,255,.35);
+    color: var(--accent); font-family: var(--heading); font-size: 15px;
+    font-weight: 700; letter-spacing: .1em; text-decoration: none;
+    text-transform: uppercase; transition: background .15s;
+  }
+  .mob-card-cta a.row-link:active { background: rgba(0,210,255,.18); }
+  .mob-card-cta span.row-link.disabled {
+    display: block; text-align: center; padding: 11px;
+    border: 1px solid var(--border); border-radius: 5px;
+    color: var(--dim); font-family: var(--heading); font-size: 13px;
+    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  }
+
+  /* Phase live strip (active mission uniquement) */
+  .mob-card-phase-strip {
+    margin: 0 16px 12px 20px; padding: 8px 12px;
+    background: rgba(76,255,171,.05); border: 1px solid rgba(76,255,171,.12);
+    border-radius: 4px; cursor: pointer;
+  }
+  .mob-card-phase-label {
+    font-family: var(--mono); font-size: 9px; color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px;
+  }
+  .mob-card-phase-val {
+    font-family: var(--heading); font-size: 14px; font-weight: 700;
+    letter-spacing: .08em; color: var(--ok); text-transform: uppercase;
+  }
+  .mob-card-phase-chevron {
+    float: right; color: var(--muted); font-size: 10px; margin-top: 2px;
+    transition: transform .2s;
+  }
+  .mob-card-phase-strip.open .mob-card-phase-chevron { transform: rotate(180deg); }
 
   /* Detail panel */
-  .detail-panel.open { max-height: 600px; padding: 14px; }
-  .detail-inner { grid-template-columns: 1fr 1fr; gap: 10px 14px; }
-  .detail-field label { font-size: 8px; }
-  .detail-field span  { font-size: 11px; }
-  .detail-desc { font-size: 13px; }
+  .mob-detail-panel {
+    max-height: 0; overflow: hidden;
+    transition: max-height .3s ease;
+    border-top: 1px solid var(--border);
+  }
+  .mob-detail-panel.open { max-height: 500px; }
+  .mob-detail-inner {
+    padding: 14px 16px 16px 20px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
+  }
+  .mob-detail-field label {
+    font-family: var(--mono); font-size: 8px; color: var(--muted);
+    letter-spacing: .1em; text-transform: uppercase; display: block;
+    margin-bottom: 2px;
+  }
+  .mob-detail-field span {
+    font-family: var(--heading); font-size: 13px; font-weight: 700;
+    color: var(--text); letter-spacing: .04em; text-transform: uppercase;
+  }
+  .mob-detail-desc {
+    grid-column: 1 / -1; font-size: 13px; color: var(--muted);
+    line-height: 1.65; border-top: 1px solid var(--border);
+    padding-top: 10px; margin-top: 2px;
+  }
 
   /* Footer */
   footer { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 6px; font-size: 9px; }
@@ -513,8 +593,8 @@ footer a:hover { color: var(--muted); }
 
 @media (max-width: 480px) {
   .topbar-clock { display: none; }
-  .detail-inner { grid-template-columns: 1fr; }
-  .mob-card-name { font-size: 18px; }
+  .mob-card-name { font-size: 20px; }
+  .mob-detail-inner { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -887,89 +967,125 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
 
   const missions = [
     {
-      strip: 'active',
+      cardClass: 'card-active',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
       patchDim: false,
       name: 'ARTEMIS II',
       sub: 'SLS BLOCK 1 · ORION MPCV',
       nameDim: false,
-      phase: `<div class="phase-badge ok"><div class="bd"></div>EN VOL</div>`,
+      badge: `<div class="phase-badge ok"><div class="bd"></div>EN VOL</div>`,
       date: '<strong>01 AVR 2026</strong> · 22:35 UTC',
-      link: '<a href="/artemis2_mission_control.html" class="row-link">OUVRIR →</a>',
-      detail: `<div class="detail-inner">
-        <div class="detail-field"><label>ÉQUIPAGE</label><span>4 ASTRONAUTES</span></div>
-        <div class="detail-field"><label>ORBITE CIBLE</label><span>TRANS-LUNAIRE LIBRE</span></div>
-        <div class="detail-field"><label>DURÉE NOMINALE</label><span>10 JOURS</span></div>
-        <div class="detail-field"><label>SPLASHDOWN PRÉVU</label><span>11 AVR 2026</span></div>
-        <div class="detail-desc">Premier vol habité Artemis. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).</div>
-      </div>`
+      link: '<a href="/artemis2_mission_control.html" class="row-link">OUVRIR LE MISSION CONTROL →</a>',
+      phaseStrip: true,
+      detail: [
+        { label: 'ÉQUIPAGE',         val: '4 ASTRONAUTES' },
+        { label: 'ORBITE CIBLE',     val: 'LIBRE LUNAIRE' },
+        { label: 'DURÉE NOMINALE',   val: '10 JOURS' },
+        { label: 'AMERRISSAGE PRÉVU',val: '11 AVR 2026' },
+        { label: 'DONNÉES POSITION', val: 'JPL HORIZONS' },
+        { label: 'MISE À JOUR',      val: '5 MIN' },
+      ],
+      desc: 'Premier vol habité du programme Artemis. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).'
     },
     {
-      strip: 'future',
+      cardClass: 'card-future',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
       patchDim: true,
       name: 'ARTEMIS III',
       sub: 'SLS BLOCK 1B · ORION / HLS',
       nameDim: true,
-      phase: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
+      badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
       date: '<strong>2027</strong> · TBD',
       link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      detail: `<div class="detail-inner">
-        <div class="detail-desc">Test de manœuvre et d'amarrage avec le HLS (Starship/SpaceX ou Blue Moon/Blue Origin) en orbite lunaire. Prépare Artemis IV.</div>
-      </div>`
+      phaseStrip: false,
+      detail: null,
+      desc: 'Test de manœuvre et d\'amarrage avec le HLS (Starship/SpaceX ou Blue Moon/Blue Origin) en orbite lunaire. Prépare Artemis IV.'
     },
     {
-      strip: 'tbd',
+      cardClass: 'card-tbd',
       patch: null,
       patchDim: true,
       name: '— EN DÉVELOPPEMENT —',
       sub: 'VÉHICULE : TBD',
       nameDim: true,
-      phase: `<div class="phase-badge off">NON PLANIFIÉ</div>`,
+      badge: `<div class="phase-badge off">NON PLANIFIÉ</div>`,
       date: '<strong>—</strong> · TBD',
       link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      detail: null
+      phaseStrip: false,
+      detail: null,
+      desc: null
     }
   ];
 
   missions.forEach((m, i) => {
-    const id = 'mob-detail-' + i;
+    const detailId = 'mob-dp-' + i;
+    const stripId  = 'mob-ps-' + i;
+
     const patchHtml = m.patch
       ? `<img class="mob-card-patch${m.patchDim ? ' dim' : ''}" src="${m.patch}" alt="">`
-      : `<div style="width:34px;height:34px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
-    const detailHtml = m.detail
-      ? `<div id="${id}" class="detail-panel" style="border:none;border-top:1px solid var(--border)">${m.detail}</div>`
+      : `<div class="mob-card-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
+
+    const detailFieldsHtml = m.detail
+      ? m.detail.map(f => `<div class="mob-detail-field"><label>${f.label}</label><span>${f.val}</span></div>`).join('')
       : '';
+
+    const detailDescHtml = m.desc
+      ? `<div class="mob-detail-desc">${m.desc}</div>`
+      : '';
+
+    const hasDetail = m.detail || m.desc;
+    const detailHtml = hasDetail
+      ? `<div id="${detailId}" class="mob-detail-panel">
+           <div class="mob-detail-inner">${detailFieldsHtml}${detailDescHtml}</div>
+         </div>`
+      : '';
+
+    const phaseStripHtml = m.phaseStrip
+      ? `<div class="mob-card-phase-strip" id="${stripId}">
+           <div class="mob-card-phase-label">PHASE EN COURS <span class="mob-card-phase-chevron">▼</span></div>
+           <div class="mob-card-phase-val" id="mob-phase-val-${i}">${getMissionPhase()}</div>
+         </div>`
+      : '';
+
     const card = document.createElement('div');
-    card.className = 'mob-card';
+    card.className = `mob-card ${m.cardClass}`;
     card.innerHTML = `
-      <div class="mob-card-strip ${m.strip}"></div>
-      <div class="mob-card-main">
+      <div class="mob-card-header">
         ${patchHtml}
         <div class="mob-card-info">
           <div class="mob-card-name${m.nameDim ? ' dim' : ''}">${m.name}</div>
           <div class="mob-card-sub">${m.sub}</div>
         </div>
       </div>
-      <div class="mob-card-meta">
-        <div class="mob-card-phase">${m.phase}</div>
-        <div class="mob-card-date">${m.date}</div>
+      <div class="mob-card-badge-row">
+        ${m.badge}
+        <div class="mob-card-date-val">${m.date}</div>
       </div>
-      <div class="mob-card-footer">${m.link}</div>
+      ${phaseStripHtml}
+      <div class="mob-card-cta">${m.link}</div>
       ${detailHtml}
     `;
-    if (m.detail) {
-      card.querySelector('.mob-card-main').style.cursor = 'pointer';
-      card.querySelector('.mob-card-main').addEventListener('click', () => {
-        const dp = document.getElementById(id);
+
+    // Toggle detail via phase strip click
+    if (m.phaseStrip && hasDetail) {
+      const strip = card.querySelector('#' + stripId);
+      strip && strip.addEventListener('click', () => {
+        const dp = card.querySelector('#' + detailId);
         if (!dp) return;
         const isOpen = dp.classList.contains('open');
-        document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('open'));
-        if (!isOpen) requestAnimationFrame(() => dp.classList.add('open'));
+        strip.classList.toggle('open', !isOpen);
+        dp.classList.toggle('open', !isOpen);
       });
     }
+
     wrap.appendChild(card);
   });
+
+  // Update live phase on all active cards
+  setInterval(() => {
+    const el = document.getElementById('mob-phase-val-0');
+    if (el) el.textContent = getMissionPhase();
+  }, 60000);
 })();
 </script>
 </body>
