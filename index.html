@@ -434,69 +434,87 @@ footer a:hover { color: var(--muted); }
 @media (max-width: 768px) {
 
   /* Topbar compact */
-  .topbar { height: 56px; padding: 0 14px; gap: 0; }
-  .topbar-logo { height: 38px; }
-  .topbar-div { margin: 0 12px; }
+  .topbar { height: 54px; padding: 0 12px; }
+  .topbar-logo { height: 36px; }
+  .topbar-div { display: none; }
   .topbar-sys { display: none; }
-  .topbar-right { gap: 12px; }
-  .topbar-clock { font-size: 11px; }
-  .topbar-link { font-size: 9px; padding: 3px 8px; }
+  .topbar-right { gap: 10px; }
+  .topbar-clock { font-size: 12px; }
+  .topbar-link { font-size: 10px; padding: 4px 9px; }
 
   /* Page wrap */
-  .page-wrap { padding-top: 56px; max-width: 100%; }
+  .page-wrap { padding-top: 54px; max-width: 100%; }
 
   /* Ident block */
-  .ident-block { grid-template-columns: 1fr; gap: 12px; padding: 20px 16px 16px; }
-  .sys-status { flex-wrap: wrap; gap: 12px; }
+  .ident-block { grid-template-columns: 1fr; gap: 10px; padding: 16px 14px 14px; }
+  .sys-status { flex-wrap: wrap; gap: 10px; }
+  .ss-item { font-size: 10px; }
+  .ident-label { font-size: 9px; }
 
   /* Section header */
-  .section-header { padding: 14px 16px 10px; }
+  .section-header { padding: 12px 14px 10px; }
+  .sh-label { font-size: 10px; }
 
-  /* Mission table → cards on mobile */
-  .mission-table, .mission-table thead, .mission-table tbody,
-  .mission-table th, .mission-table td, .mission-table tr { display: block; }
-  .mission-table thead { display: none; }
-
-  .mission-row { border-bottom: 1px solid var(--border); padding: 0; }
-  .mission-row td { padding: 0; border: none; }
-
-  /* Status strip: horizontal bar at top of card */
-  .td-status { width: 100% !important; }
-  .status-strip { width: 100%; height: 3px; min-height: 3px; display: block; }
-
-  /* Main card content */
-  .td-name { padding: 14px 16px 0 16px !important; width: auto; }
-  .cell-patch { gap: 12px; }
-  .cell-patch img { width: 32px; }
-  .cell-mission-name { font-size: 18px; }
-  .cell-mission-sub { font-size: 9px; }
-
-  /* Phase badge */
-  .td-phase { padding: 8px 16px !important; width: auto; }
-  .cell-phase { display: flex; align-items: center; gap: 8px; }
-
-  /* Date + link inline */
-  .td-date { padding: 0 16px 4px 16px !important; width: auto; }
-  .td-link { padding: 10px 16px 14px 16px !important; width: auto; text-align: left !important; }
-
-  /* Hide agency and ID columns on mobile */
-  .td-id, .td-agency { display: none !important; }
-
-  /* Detail panel */
-  .detail-panel.open { max-height: 500px; padding: 16px; }
-  .detail-inner { grid-template-columns: 1fr 1fr; gap: 12px 16px; }
-
-  /* Ticker */
+  /* Ticker masqué */
   .ticker-bar { display: none; }
 
+  /* ── Mission table → cartes verticales ── */
+  /* On cache complètement la table et on utilise les cartes JS (voir JS) */
+  .mission-table { display: none !important; }
+
+  /* ── Cartes mission mobile (injectées par JS) ── */
+  #mob-mission-cards { display: flex; flex-direction: column; gap: 0; }
+  .mob-card {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: relative; overflow: hidden;
+  }
+  .mob-card-strip { height: 3px; width: 100%; }
+  .mob-card-strip.active { background: var(--ok);  box-shadow: 0 0 8px rgba(76,255,171,.3); }
+  .mob-card-strip.future { background: var(--warn); }
+  .mob-card-strip.tbd    { background: var(--dim);  }
+  .mob-card-main {
+    padding: 14px 16px 0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .mob-card-patch { width: 34px; height: auto; flex-shrink: 0; filter: drop-shadow(0 1px 4px rgba(0,0,0,.6)); }
+  .mob-card-patch.dim { opacity: .25; }
+  .mob-card-info { flex: 1; min-width: 0; }
+  .mob-card-name {
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .04em; line-height: 1;
+  }
+  .mob-card-name.dim { color: var(--dim); }
+  .mob-card-sub {
+    font-family: var(--mono); font-size: 9px; color: var(--muted);
+    letter-spacing: .06em; text-transform: uppercase; margin-top: 3px;
+  }
+  .mob-card-meta {
+    padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .mob-card-phase { }
+  .mob-card-date {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    letter-spacing: .07em; text-transform: uppercase;
+  }
+  .mob-card-date strong { color: var(--text); font-weight: 400; }
+  .mob-card-footer { padding: 0 16px 14px; }
+
+  /* Detail panel */
+  .detail-panel.open { max-height: 600px; padding: 14px; }
+  .detail-inner { grid-template-columns: 1fr 1fr; gap: 10px 14px; }
+  .detail-field label { font-size: 8px; }
+  .detail-field span  { font-size: 11px; }
+  .detail-desc { font-size: 13px; }
+
   /* Footer */
-  footer { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 6px; }
+  footer { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 6px; font-size: 9px; }
 }
 
 @media (max-width: 420px) {
   .topbar-clock { display: none; }
   .detail-inner { grid-template-columns: 1fr; }
-  .cell-mission-name { font-size: 16px; }
+  .mob-card-name { font-size: 18px; }
 }
 </style>
 </head>
@@ -678,6 +696,9 @@ footer a:hover { color: var(--muted); }
     </tbody>
   </table>
 
+  <!-- MOBILE CARDS (injectées par JS, cachées sur desktop) -->
+  <div id="mob-mission-cards" style="display:none"></div>
+
   <!-- FOOTER INFO ROW -->
   <footer>
     <span>VECTOR · VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION</span>
@@ -856,6 +877,100 @@ function getMissionPhase() {
 
 document.getElementById('hub-phase').textContent = getMissionPhase();
 setInterval(() => { document.getElementById('hub-phase').textContent = getMissionPhase(); }, 60000);
+
+/* ── MOBILE CARDS ── */
+(function buildMobileCards() {
+  if (window.innerWidth > 768) return;
+  const wrap = document.getElementById('mob-mission-cards');
+  if (!wrap) return;
+  wrap.style.display = 'flex';
+
+  const missions = [
+    {
+      strip: 'active',
+      patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
+      patchDim: false,
+      name: 'ARTEMIS II',
+      sub: 'SLS BLOCK 1 · ORION MPCV',
+      nameDim: false,
+      phase: `<div class="phase-badge ok"><div class="bd"></div>EN VOL</div>`,
+      date: '<strong>01 AVR 2026</strong> · 22:35 UTC',
+      link: '<a href="/artemis2_mission_control.html" class="row-link">OUVRIR →</a>',
+      detail: `<div class="detail-inner">
+        <div class="detail-field"><label>ÉQUIPAGE</label><span>4 ASTRONAUTES</span></div>
+        <div class="detail-field"><label>ORBITE CIBLE</label><span>TRANS-LUNAIRE LIBRE</span></div>
+        <div class="detail-field"><label>DURÉE NOMINALE</label><span>10 JOURS</span></div>
+        <div class="detail-field"><label>SPLASHDOWN PRÉVU</label><span>11 AVR 2026</span></div>
+        <div class="detail-desc">Premier vol habité Artemis. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).</div>
+      </div>`
+    },
+    {
+      strip: 'future',
+      patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
+      patchDim: true,
+      name: 'ARTEMIS III',
+      sub: 'SLS BLOCK 1B · ORION / HLS',
+      nameDim: true,
+      phase: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
+      date: '<strong>2027</strong> · TBD',
+      link: '<span class="row-link disabled">INDISPONIBLE</span>',
+      detail: `<div class="detail-inner">
+        <div class="detail-desc">Test de manœuvre et d'amarrage avec le HLS (Starship/SpaceX ou Blue Moon/Blue Origin) en orbite lunaire. Prépare Artemis IV.</div>
+      </div>`
+    },
+    {
+      strip: 'tbd',
+      patch: null,
+      patchDim: true,
+      name: '— EN DÉVELOPPEMENT —',
+      sub: 'VÉHICULE : TBD',
+      nameDim: true,
+      phase: `<div class="phase-badge off">NON PLANIFIÉ</div>`,
+      date: '<strong>—</strong> · TBD',
+      link: '<span class="row-link disabled">INDISPONIBLE</span>',
+      detail: null
+    }
+  ];
+
+  missions.forEach((m, i) => {
+    const id = 'mob-detail-' + i;
+    const patchHtml = m.patch
+      ? `<img class="mob-card-patch${m.patchDim ? ' dim' : ''}" src="${m.patch}" alt="">`
+      : `<div style="width:34px;height:34px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
+    const detailHtml = m.detail
+      ? `<div id="${id}" class="detail-panel" style="border:none;border-top:1px solid var(--border)">${m.detail}</div>`
+      : '';
+    const card = document.createElement('div');
+    card.className = 'mob-card';
+    card.innerHTML = `
+      <div class="mob-card-strip ${m.strip}"></div>
+      <div class="mob-card-main">
+        ${patchHtml}
+        <div class="mob-card-info">
+          <div class="mob-card-name${m.nameDim ? ' dim' : ''}">${m.name}</div>
+          <div class="mob-card-sub">${m.sub}</div>
+        </div>
+      </div>
+      <div class="mob-card-meta">
+        <div class="mob-card-phase">${m.phase}</div>
+        <div class="mob-card-date">${m.date}</div>
+      </div>
+      <div class="mob-card-footer">${m.link}</div>
+      ${detailHtml}
+    `;
+    if (m.detail) {
+      card.querySelector('.mob-card-main').style.cursor = 'pointer';
+      card.querySelector('.mob-card-main').addEventListener('click', () => {
+        const dp = document.getElementById(id);
+        if (!dp) return;
+        const isOpen = dp.classList.contains('open');
+        document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('open'));
+        if (!isOpen) requestAnimationFrame(() => dp.classList.add('open'));
+      });
+    }
+    wrap.appendChild(card);
+  });
+})();
 </script>
 </body>
 </html>
