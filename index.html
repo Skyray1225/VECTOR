@@ -656,7 +656,7 @@ footer a:hover { color: var(--muted); }
   <div class="section-header">
     <span class="sh-label">MISSION REGISTRY</span>
     <div class="sh-sep"></div>
-    <span class="sh-count" id="mission-count">4 ENTRÉES</span>
+    <span class="sh-count" id="mission-count">5 ENTRÉES</span>
   </div>
 
   <!-- MISSION TABLE -->
@@ -718,6 +718,54 @@ footer a:hover { color: var(--muted); }
               <div class="detail-field"><label>DONNÉES POSITION</label><span>JPL HORIZONS / OEM</span></div>
               <div class="detail-field"><label>RAFRAÎCHISSEMENT</label><span>5 MIN</span></div>
               <div class="detail-desc">Premier vol habité du programme Artemis. Orion propulsé par le SLS Block 1 en trajectoire libre de retour autour de la Lune. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).</div>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- ISS -->
+      <tr class="mission-row active" onclick="toggleDetail('d-iss')">
+        <td class="td-status"><span class="status-strip active"></span></td>
+        <td class="td-id"><div class="cell-id">ISS-074</div></td>
+        <td class="td-name">
+          <div class="cell-patch">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d3/ISS_emblem.png" alt="ISS">
+            <div>
+              <div class="cell-mission-name">ISS</div>
+              <div class="cell-mission-sub">LOW EARTH ORBIT · 51.6° · 15.5 ORBITES/J</div>
+            </div>
+          </div>
+        </td>
+        <td class="td-agency">
+          <div class="cell-agency"><strong>NASA · ESA · JAXA · CSA</strong>Roscosmos — Programme ISS</div>
+        </td>
+        <td class="td-phase">
+          <div class="phase-badge ok"><div class="bd"></div>EN ORBITE</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em">EXPÉDITION 74</div>
+        </td>
+        <td class="td-date">
+          <div class="cell-date"><strong>20 NOV 1998</strong>Module Zarya</div>
+        </td>
+        <td class="td-link">
+          <a href="/iss_mission_control.html" class="row-link" onclick="event.stopPropagation()">
+            OUVRIR
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </td>
+      </tr>
+      <tr id="d-iss" class="detail-row" style="display:none">
+        <td colspan="7" style="padding:0">
+          <div class="detail-panel" id="dp-iss">
+            <div class="detail-inner">
+              <div class="detail-field"><label>ÉQUIPAGE</label><span>7 MEMBRES</span></div>
+              <div class="detail-field"><label>EXPÉDITION</label><span>74</span></div>
+              <div class="detail-field"><label>ALTITUDE NOMINALE</label><span>~410 km</span></div>
+              <div class="detail-field"><label>INCLINAISON</label><span>51,6°</span></div>
+              <div class="detail-field"><label>ORBITES / JOUR</label><span>15,5</span></div>
+              <div class="detail-field"><label>HABITÉE EN CONTINU</label><span>DEPUIS NOV 2000</span></div>
+              <div class="detail-desc">Station spatiale internationale en orbite basse, habitée sans interruption depuis le 2 novembre 2000. Collaboration entre NASA, Roscosmos, ESA, JAXA et CSA — 109 m d'envergure, 419 t. Expédition 74 : Kud-Sverchkov (CDR/Roscosmos), Fedyaev, Mikaev (Roscosmos), Adenot (ESA), Meir, Hathaway, Williams (NASA).</div>
             </div>
           </div>
         </td>
@@ -1013,6 +1061,27 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
         { label: 'MISE À JOUR',      val: '5 MIN' },
       ],
       desc: 'Premier vol habité du programme Artemis. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).'
+    },
+    {
+      cardClass: 'card-active',
+      patch: 'https://upload.wikimedia.org/wikipedia/commons/d/d3/ISS_emblem.png',
+      patchDim: false,
+      name: 'ISS',
+      sub: 'LOW EARTH ORBIT · 51.6° · ~410 km',
+      nameDim: false,
+      badge: `<div class="phase-badge ok"><div class="bd"></div>EN ORBITE</div>`,
+      date: '<strong>20 NOV 1998</strong> · Module Zarya',
+      link: '<a href="/iss_mission_control.html" class="row-link">OUVRIR LE MISSION CONTROL →</a>',
+      phaseStrip: false,
+      detail: [
+        { label: 'ÉQUIPAGE',           val: '7 MEMBRES' },
+        { label: 'EXPÉDITION',         val: '74' },
+        { label: 'ALTITUDE',           val: '~410 km' },
+        { label: 'INCLINAISON',        val: '51,6°' },
+        { label: 'ORBITES / JOUR',     val: '15,5' },
+        { label: 'HABITÉE DEPUIS',     val: '2 NOV 2000' },
+      ],
+      desc: 'Station spatiale internationale habitée sans interruption depuis novembre 2000. Collaboration NASA · Roscosmos · ESA · JAXA · CSA. Expédition 74 : Kud-Sverchkov (CDR), Adenot (ESA), Meir, Hathaway, Williams (NASA).'
     },
     {
       cardClass: 'card-future',
