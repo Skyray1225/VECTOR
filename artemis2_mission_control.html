@@ -1172,14 +1172,18 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   #utc-clock, #mission-phase { font-size: 11px; }
   .hd-settings-btn { padding: 5px 8px; font-size: 9px; }
 
-  /* Sources bar */
+  /* Sources bar — rotation one-by-one */
   #sources-bar {
-    overflow-x: auto; flex-wrap: nowrap !important;
-    -webkit-overflow-scrolling: touch; padding: 0 8px;
+    overflow-x: hidden !important; flex-wrap: nowrap !important;
+    justify-content: center; padding: 0 8px;
   }
-  .src-item { flex-shrink: 0; font-size: 9px; }
-  .src-name { font-size: 9px; }
-  .src-time { font-size: 9px; }
+  #sources-bar .src-item { display: none !important; font-size: 11px; }
+  #sources-bar .src-item.mob-active { display: flex !important; }
+  .src-name { font-size: 11px; }
+  .src-time { font-size: 11px; }
+
+  /* Cacher le bouton À Propos pour laisser le MET se centrer */
+  .hd-about { display: none !important; }
 
   /* Tab nav */
   #tab-nav {
@@ -1438,11 +1442,6 @@ a.panel-src:hover, .panel-src a:hover { opacity: 1; }
   <div class="mob-metric">
     <div class="mob-metric-label">Phase</div>
     <div class="mob-metric-value" id="mob-phase">---</div>
-  </div>
-  <div class="mob-metric-sep"></div>
-  <div class="mob-metric">
-    <div class="mob-metric-label">MET</div>
-    <div class="mob-metric-value" id="mob-met">---</div>
   </div>
   <div class="mob-metric-sep"></div>
   <div class="mob-metric">
@@ -3388,6 +3387,18 @@ let layoutSwapped = false;
 
 function isMobile() { return window.innerWidth <= 900; }
 
+function startSrcRotation() {
+  const items = Array.from(document.querySelectorAll('#sources-bar .src-item'));
+  if (!items.length) return;
+  let idx = 0;
+  items[idx].classList.add('mob-active');
+  setInterval(() => {
+    items[idx].classList.remove('mob-active');
+    idx = (idx + 1) % items.length;
+    items[idx].classList.add('mob-active');
+  }, 3000);
+}
+
 function setViewMode(mode) {
   if (isMobile()) {
     // Sur mobile : toggle class sur body, CSS fait le reste
@@ -4255,6 +4266,7 @@ async function init() {
   // Mobile : initialiser en mode 3D (live masqué par CSS)
   if (isMobile()) {
     document.body.classList.add('mob-3d');
+    startSrcRotation();
   }
 
   // Bootstrap history with simulation until OEM loads
