@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VECTOR — ISS Mission Control</title>
+<link rel="icon" type="image/png" href="/vector_favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<style>
+:root {
+  --bg:      #0b1119;
+  --panel:   #121a24;
+  --border:  #2b3a4a;
+  --accent:  #6bb8d6;
+  --ok:      #4cc38a;
+  --warn:    #d5a451;
+  --alert:   #d96b73;
+  --text:    #e6edf3;
+  --muted:   #97a6b5;
+  --mono:    'Share Tech Mono', monospace;
+  --head:    'Barlow Condensed', sans-serif;
+  --body:    'Barlow', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; min-height: 100%; font-family: var(--body); background: var(--bg); color: var(--text); }
+body { background: radial-gradient(circle at top, rgba(107,184,214,.07), transparent 36%), #0b1119; }
+
+/* ── Scanline ── */
+#scanline { position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(255,255,255,.01) 4px, rgba(255,255,255,.01) 5px);
+  opacity: .07; }
+
+/* ── Header ── */
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0 18px; min-height: 68px; background: #0d1520; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.hd-left { display: flex; align-items: center; gap: 14px; }
+.hd-left img.logo { height: 50px; width: auto; }
+.hd-chip { display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 6px;
+  border: 1px solid rgba(107,184,214,.2); border-radius: 4px; background: rgba(107,184,214,.06); }
+.hd-chip img { width: 24px; height: 24px; object-fit: contain; }
+.hd-chip span { font-family: var(--head); font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent); text-transform: uppercase; }
+.hd-center { text-align: center; }
+.hd-center-label { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+#exp-elapsed { font-family: var(--mono); font-size: 22px; color: var(--ok); letter-spacing: .04em; }
+.hd-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+#utc-clock { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+#phase-label { font-size: 13px; color: var(--warn); letter-spacing: .08em; text-transform: uppercase; font-family: var(--head); }
+.hd-link { display: inline-block; padding: 4px 10px; border: 1px solid rgba(107,184,214,.35); border-radius: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--accent); text-decoration: none; text-transform: uppercase; font-family: var(--head); }
+
+/* ── Sources bar ── */
+#sources-bar { display: flex; gap: 8px; padding: 8px 18px; background: #101720; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.src-item { display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+  background: #18222e; border: 1px solid var(--border); border-radius: 3px; font-size: 11px; color: var(--muted); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.dot.ok   { background: var(--ok); }
+.dot.warn { background: var(--warn); }
+.dot.err  { background: var(--alert); }
+.src-name { font-weight: 600; color: var(--text); }
+.src-time { font-family: var(--mono); font-size: 10px; }
+
+/* ── Tab nav ── */
+#tab-nav { display: flex; gap: 8px; padding: 10px 18px 8px; background: #101720; border-bottom: 1px solid var(--border); }
+.tab-btn { background: transparent; border: 1px solid var(--border); color: var(--muted);
+  font-family: var(--head); font-weight: 600; font-size: 14px; letter-spacing: .05em;
+  padding: 9px 18px; cursor: pointer; border-radius: 3px; transition: all .15s; }
+.tab-btn:hover, .tab-btn.active { color: var(--text); background: #213140; border-color: var(--accent); }
+
+/* ── Panes ── */
+.pane { display: none; padding: 14px; }
+.pane.active { display: block; }
+
+/* ── Grid ── */
+.grid3 { display: grid; grid-template-columns: minmax(300px,380px) minmax(400px,1fr) minmax(300px,380px); gap: 10px; align-items: start; }
+.col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+/* ── Panels ── */
+.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.panel-hdr { background: #17212c; padding: 9px 13px; border-bottom: 1px solid var(--border);
+  font-family: var(--head); font-size: 12px; font-weight: 700; letter-spacing: .08em; color: #d7e2ea; text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center; }
+.panel-hdr a { font-family: var(--mono); font-size: 10px; color: var(--accent); text-decoration: none; font-weight: 400; letter-spacing: 0; }
+.panel-hdr .upd { font-family: var(--mono); font-size: 10px; color: var(--muted); font-weight: 400; }
+.panel-body { padding: 12px 13px; }
+
+/* ── Data grid ── */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.datum { padding: 10px; background: #0f151d; border: 1px solid rgba(255,255,255,.05); border-radius: 4px; }
+.datum-label { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 5px; }
+.datum-value { font-family: var(--mono); font-size: 17px; color: var(--text); }
+.datum-value.ok   { color: var(--ok); }
+.datum-value.warn { color: var(--warn); }
+.datum-value.na   { color: var(--muted); font-size: 13px; }
+.datum-sub { margin-top: 4px; font-size: 11px; color: var(--muted); }
+
+/* ── Survol card ── */
+.survol-card { padding: 12px; border: 1px solid rgba(107,184,214,.15); background: rgba(107,184,214,.05); border-radius: 4px; }
+.survol-main { font-family: var(--head); font-size: 24px; color: var(--text); line-height: 1; margin-bottom: 6px; }
+.survol-sub  { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; color: var(--muted); }
+
+/* ── View mode bar ── */
+.vmb { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 4px; }
+.vmb-label { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+.vmb-seg { display: flex; gap: 4px; }
+.vmb-btn { padding: 7px 14px; border: 1px solid var(--border); border-radius: 3px;
+  background: #18222e; color: var(--muted); font-family: var(--head); font-size: 11px;
+  font-weight: 600; letter-spacing: .06em; cursor: pointer; text-transform: uppercase; }
+.vmb-btn.active { background: #213140; border-color: var(--accent); color: var(--accent); }
+
+/* ── Central card ── */
+#card-map { position: relative; width: 625px; max-width: 100%; height: 325px;
+  background: #070c12; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+#card-map iframe { display: block; width: 100%; height: 100%; border: 0; }
+#card-map-attr { position: absolute; left: 10px; bottom: 10px; z-index: 4;
+  font-family: var(--mono); font-size: 9px; color: var(--muted);
+  background: rgba(5,8,15,.85); border: 1px solid var(--border); border-radius: 3px; padding: 4px 7px; }
+#card-live { width: 625px; max-width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+#card-live .live-hdr { background: #17212c; padding: 9px 13px; border-bottom: 1px solid var(--border);
+  font-family: var(--head); font-size: 12px; font-weight: 700; letter-spacing: .08em; color: #d7e2ea; text-transform: uppercase; }
+#card-live .live-body { padding: 12px; }
+.live-src-btns { display: flex; gap: 6px; margin-bottom: 10px; }
+.live-src-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 3px;
+  background: #18222e; color: var(--muted); font-family: var(--head); font-size: 11px;
+  font-weight: 600; letter-spacing: .06em; cursor: pointer; text-transform: uppercase; }
+.live-src-btn.active { background: #213140; border-color: var(--accent); color: var(--accent); }
+.live-frame-wrap { height: 310px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #000; }
+.live-frame-wrap iframe { width: 100%; height: 100%; border: 0; }
+.live-note { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.live-ext { display: inline-block; margin-top: 6px; font-family: var(--head); font-size: 11px; letter-spacing: .07em; color: var(--accent); text-decoration: none; text-transform: uppercase; }
+
+/* ── Center column ── */
+.center-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.stage-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Mini timeline ── */
+.mini-tl { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.mini-tl-hdr { padding: 9px 13px; background: #17212c; border-bottom: 1px solid var(--border);
+  font-family: var(--head); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.mini-tl-body { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mini-step { padding: 9px; background: #0f151d; border: 1px solid rgba(255,255,255,.05); border-radius: 4px; }
+.mini-step-kicker { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+.mini-step-title { margin-top: 5px; font-family: var(--head); font-size: 15px; color: var(--text); }
+.mini-step-time  { margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+/* ── Crew ── */
+.crew-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.crew-card { background: #17212c; border: 1px solid rgba(255,255,255,.05); border-radius: 4px; padding: 10px; }
+.crew-name { font-family: var(--head); font-size: 16px; color: var(--text); }
+.crew-meta { margin-top: 4px; font-family: var(--mono); font-size: 10px; letter-spacing: .07em; color: var(--accent); text-transform: uppercase; }
+.crew-sub  { margin-top: 6px; font-size: 12px; color: var(--muted); }
+
+/* ── Feed ── */
+.feed { display: flex; flex-direction: column; gap: 8px; }
+.feed-item { padding: 10px; background: #0f151d; border: 1px solid rgba(255,255,255,.05); border-radius: 4px; }
+.feed-kicker { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+.feed-title  { margin-top: 5px; font-family: var(--head); font-size: 15px; color: var(--text); line-height: 1.15; }
+.feed-time   { margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+/* ── Log ── */
+#log-feed { font-family: var(--mono); font-size: 10px; display: flex; flex-direction: column; gap: 4px; max-height: 160px; overflow-y: auto; }
+.log-ok   { color: var(--ok); }
+.log-warn { color: var(--warn); }
+.log-err  { color: var(--alert); }
+.log-info { color: var(--muted); }
+
+/* ── Kp bar ── */
+.kp-track { height: 7px; background: #1a2840; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.kp-fill  { height: 100%; width: 0; background: var(--ok); transition: width .4s; }
+
+/* ── Chronologie ── */
+.tl-wrap { background: #080f18; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.tl-hero { padding: 24px 22px 18px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(to top, #080f18 0%, rgba(8,15,24,.2) 60%),
+              url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/International_Space_Station_after_undocking_of_STS-132.jpg/1280px-International_Space_Station_after_undocking_of_STS-132.jpg') center 45%/cover; }
+.tl-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; }
+.tl-title  { margin-top: 10px; font-family: var(--head); font-size: clamp(28px,4vw,48px); line-height: .95; }
+.tl-title span { color: var(--accent); }
+.tl-progress { padding: 14px 22px; border-bottom: 1px solid var(--border); }
+.tl-prog-label { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.tl-prog-track { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.tl-prog-fill  { height: 100%; width: 0; background: linear-gradient(90deg, var(--ok), var(--accent)); }
+.tl-list { padding: 12px 22px 24px; display: flex; flex-direction: column; gap: 10px; }
+.tl-event { display: grid; grid-template-columns: 155px 80px 1fr; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--border); border-left: 3px solid rgba(255,255,255,.12); border-radius: 4px; background: rgba(255,255,255,.012); }
+.tl-event.past    { border-left-color: #607384; }
+.tl-event.current { border-left-color: var(--ok);   background: rgba(76,195,138,.05); }
+.tl-event.future  { border-left-color: var(--accent); background: rgba(107,184,214,.04); }
+.tl-date { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.tl-badge { display: inline-flex; align-items: center; justify-content: center; min-height: 24px;
+  padding: 3px 7px; border-radius: 2px; font-family: var(--mono); font-size: 10px; text-transform: uppercase; }
+.badge-past    { background: rgba(90,122,150,.2); color: var(--muted); }
+.badge-current { background: rgba(76,195,138,.18); color: var(--ok); }
+.badge-future  { background: rgba(107,184,214,.12); color: var(--accent); }
+.tl-event-title { font-family: var(--head); font-size: 17px; color: var(--text); }
+.tl-event-desc  { margin-top: 4px; font-size: 12px; color: var(--muted); }
+.tl-countdown   { margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+/* ── Description ── */
+.desc-wrap { background: #080f18; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.desc-hero { padding: 30px 24px 22px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(to top, #080f18 0%, rgba(8,15,24,.22) 55%),
+              url('https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/International_Space_Station_after_undocking_of_STS-132.jpg/1280px-International_Space_Station_after_undocking_of_STS-132.jpg') center 45%/cover; }
+.desc-hero-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: .2em; color: var(--accent); text-transform: uppercase; }
+.desc-hero-title  { margin-top: 10px; font-family: var(--head); font-size: clamp(32px,4vw,52px); line-height: .94; }
+.desc-hero-title span { color: var(--accent); }
+.desc-hero-body   { max-width: 820px; margin-top: 12px; font-size: 15px; color: #d4dfe8; }
+.desc-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); }
+.desc-stat { background: #0e1a27; padding: 14px 18px; }
+.desc-stat-label { font-family: var(--mono); font-size: 9px; letter-spacing: .16em; color: var(--muted); text-transform: uppercase; }
+.desc-stat-value { margin-top: 7px; font-family: var(--head); font-size: 22px; color: var(--text); }
+.desc-section { padding: 22px 24px; border-top: 1px solid var(--border); }
+.desc-section-kicker { font-family: var(--mono); font-size: 10px; letter-spacing: .18em; color: var(--accent); text-transform: uppercase; }
+.desc-section-title  { margin-top: 7px; font-family: var(--head); font-size: 26px; color: var(--text); }
+.desc-body { margin-top: 10px; max-width: 900px; font-size: 15px; color: #c8d5df; line-height: 1.6; }
+.desc-grid { margin-top: 14px; display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+.desc-card { background: #0e1a27; border: 1px solid var(--border); border-radius: 4px; padding: 14px; }
+.desc-card-kicker { font-family: var(--mono); font-size: 9px; letter-spacing: .14em; color: var(--accent); text-transform: uppercase; }
+.desc-card-title  { margin-top: 7px; font-family: var(--head); font-size: 17px; color: var(--text); }
+.desc-card-body   { margin-top: 7px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.desc-sources a   { color: var(--accent); text-decoration: none; }
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .grid3 { grid-template-columns: minmax(280px,340px) minmax(0,1fr); }
+  .grid3 > .col:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 840px) {
+  .grid3 { grid-template-columns: 1fr; }
+  .data-grid, .crew-grid, .desc-stats, .desc-grid, .mini-tl-body { grid-template-columns: 1fr; }
+  .tl-event { grid-template-columns: 1fr; }
+  #card-map, #card-live { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div id="scanline"></div>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header>
+  <div class="hd-left">
+    <a href="/"><img class="logo" src="/vector_logo.png" alt="VECTOR"></a>
+    <div class="hd-chip">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/ISS_emblem.png/250px-ISS_emblem.png" alt="ISS">
+      <span>ISS / Expedition 74</span>
+    </div>
+  </div>
+  <div class="hd-center">
+    <div class="hd-center-label">Temps Expédition</div>
+    <div id="exp-elapsed">J+000 00:00:00</div>
+  </div>
+  <div class="hd-right">
+    <div id="utc-clock">UTC --:--:--</div>
+    <div id="phase-label">Orbites basses — nominal</div>
+    <a class="hd-link" href="/">Accueil</a>
+  </div>
+</header>
+
+<!-- ── Sources bar ────────────────────────────────────────────────────── -->
+<div id="sources-bar">
+  <div class="src-item"><span class="dot" id="dot-telemetry"></span><span class="src-name">TÉLÉMÉTRIE</span>&nbsp;<span class="src-time" id="src-telemetry">INIT</span></div>
+  <div class="src-item"><span class="dot" id="dot-crew"></span><span class="src-name">ÉQUIPAGE</span>&nbsp;<span class="src-time" id="src-crew">INIT</span></div>
+  <div class="src-item"><span class="dot" id="dot-events"></span><span class="src-name">OPS</span>&nbsp;<span class="src-time" id="src-events">INIT</span></div>
+  <div class="src-item"><span class="dot" id="dot-swpc"></span><span class="src-name">SWPC</span>&nbsp;<span class="src-time" id="src-swpc">INIT</span></div>
+</div>
+
+<!-- ── Tab nav ────────────────────────────────────────────────────────── -->
+<nav id="tab-nav">
+  <button class="tab-btn active" data-tab="pane-mission">MISSION CONTROL</button>
+  <button class="tab-btn" data-tab="pane-chronologie">CHRONOLOGIE</button>
+  <button class="tab-btn" data-tab="pane-description">DESCRIPTION</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     PANE 1 — MISSION CONTROL
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="pane-mission" class="pane active">
+  <div class="grid3">
+
+    <!-- Left column -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Navigation — ISS</span>
+          <span class="upd" id="upd-nav">---</span>
+        </div>
+        <div class="panel-body">
+          <div class="data-grid">
+            <div class="datum"><div class="datum-label">Latitude</div><div class="datum-value" id="nav-lat">--</div></div>
+            <div class="datum"><div class="datum-label">Longitude</div><div class="datum-value" id="nav-lon">--</div></div>
+            <div class="datum"><div class="datum-label">Altitude</div><div class="datum-value" id="nav-alt">--</div></div>
+            <div class="datum"><div class="datum-label">Vitesse</div><div class="datum-value" id="nav-spd">--</div></div>
+            <div class="datum"><div class="datum-label">Période</div><div class="datum-value" id="nav-per">92.7 min</div></div>
+            <div class="datum"><div class="datum-label">Inclinaison</div><div class="datum-value">51.6°</div></div>
+            <div class="datum"><div class="datum-label">Éclairage</div><div class="datum-value" id="nav-day">--</div></div>
+            <div class="datum"><div class="datum-label">Source</div><div class="datum-value" id="nav-src" style="font-size:12px">--</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr"><span>Survol actuel</span></div>
+        <div class="panel-body">
+          <div class="survol-card">
+            <div class="survol-main" id="geo-region">Analyse…</div>
+            <div class="survol-sub"  id="geo-sub">En attente de propagation</div>
+          </div>
+          <div class="data-grid" style="margin-top:10px">
+            <div class="datum"><div class="datum-label">Hémisphère</div><div class="datum-value" id="geo-hemi">--</div></div>
+            <div class="datum"><div class="datum-label">Type de zone</div><div class="datum-value" id="geo-zone">--</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Météo spatiale — NOAA SWPC</span>
+          <a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener">NOAA</a>
+        </div>
+        <div class="panel-body">
+          <div class="data-grid">
+            <div class="datum">
+              <div class="datum-label">Kp planétaire</div>
+              <div class="datum-value" id="swpc-kp">--</div>
+              <div class="kp-track"><div class="kp-fill" id="kp-fill"></div></div>
+            </div>
+            <div class="datum"><div class="datum-label">Champ Bz</div><div class="datum-value" id="swpc-bz">--</div></div>
+            <div class="datum"><div class="datum-label">Vent solaire</div><div class="datum-value" id="swpc-wind">--</div></div>
+            <div class="datum"><div class="datum-label">Flux X-Ray</div><div class="datum-value" id="swpc-xray">--</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /left -->
+
+    <!-- Center column -->
+    <div class="center-col">
+      <div class="stage-wrap">
+        <div class="vmb">
+          <span class="vmb-label">Stage central</span>
+          <div class="vmb-seg">
+            <button class="vmb-btn active" id="btn-map">Map</button>
+            <button class="vmb-btn"        id="btn-live">Live</button>
+          </div>
+        </div>
+
+        <!-- Map card -->
+        <div id="card-map">
+          <iframe src="https://isstracker.spaceflight.esa.int/" title="ISS Tracker ESA" allowfullscreen></iframe>
+          <div id="card-map-attr">ESA ISS Tracker</div>
+        </div>
+
+        <!-- Live card (hidden by default) -->
+        <div id="card-live" style="display:none">
+          <div class="live-hdr">Flux Direct ISS</div>
+          <div class="live-body">
+            <div class="live-src-btns">
+              <button class="live-src-btn active" id="btn-src-nasa">NASA Live</button>
+              <button class="live-src-btn"        id="btn-src-tv">NASA TV</button>
+            </div>
+            <div class="live-frame-wrap">
+              <iframe id="live-iframe"
+                src="https://www.youtube.com/embed/zPH5KtjJFaQ?autoplay=1&rel=0"
+                title="ISS Live" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <div class="live-note" id="live-note">Vue Terre en direct — ISS HD Earth Viewing Experiment.</div>
+            <a class="live-ext" id="live-link" href="https://www.youtube.com/watch?v=zPH5KtjJFaQ" target="_blank" rel="noopener">Ouvrir la source →</a>
+          </div>
+        </div>
+
+        <!-- Mini timeline -->
+        <div class="mini-tl">
+          <div class="mini-tl-hdr">Prochains événements</div>
+          <div class="mini-tl-body" id="mini-tl-body">
+            <div class="mini-step"><div class="mini-step-kicker">ISS OPS</div><div class="mini-step-title">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /center -->
+
+    <!-- Right column -->
+    <div class="col">
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Cabine &amp; Support-vie</span>
+          <span class="upd">PUBLIC LIMITÉ</span>
+        </div>
+        <div class="panel-body">
+          <div class="data-grid">
+            <div class="datum"><div class="datum-label">Température</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
+            <div class="datum"><div class="datum-label">Humidité</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
+            <div class="datum"><div class="datum-label">Pression</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
+            <div class="datum"><div class="datum-label">CO₂</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Équipage</span>
+          <a href="https://www.nasa.gov/mission/expedition-74/" target="_blank" rel="noopener">NASA</a>
+        </div>
+        <div class="panel-body">
+          <div class="crew-grid" id="crew-grid">
+            <div class="crew-card"><div class="crew-name">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Opérations &amp; Véhicules</span>
+          <a href="https://www.nasa.gov/blogs/spacestation/" target="_blank" rel="noopener">NASA BLOG</a>
+        </div>
+        <div class="panel-body">
+          <div class="feed" id="ops-feed">
+            <div class="feed-item"><div class="feed-title">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr"><span>Journal d'acquisition</span></div>
+        <div class="panel-body">
+          <div id="log-feed"></div>
+        </div>
+      </div>
+    </div><!-- /right -->
+
+  </div><!-- /grid3 -->
+</div><!-- /pane-mission -->
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     PANE 2 — CHRONOLOGIE
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="pane-chronologie" class="pane">
+  <div class="tl-wrap">
+    <div class="tl-hero">
+      <div class="tl-kicker">Station Spatiale Internationale · 1998 — 2030</div>
+      <div class="tl-title">Chronologie des <span>missions ISS</span></div>
+    </div>
+    <div class="tl-progress">
+      <div class="tl-prog-label">Expedition 74 — Déc 2025 → Août 2026 (est.)</div>
+      <div class="tl-prog-track"><div class="tl-prog-fill" id="tl-fill"></div></div>
+    </div>
+    <div class="tl-list" id="tl-list"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     PANE 3 — DESCRIPTION
+     ══════════════════════════════════════════════════════════════════════ -->
+<div id="pane-description" class="pane">
+  <div class="desc-wrap">
+    <div class="desc-hero">
+      <div class="desc-hero-kicker">Station Spatiale Internationale · En orbite depuis 1998</div>
+      <div class="desc-hero-title">ISS — <span>25 ans</span> de présence<br>humaine continue</div>
+      <p class="desc-hero-body">
+        À 420 km d'altitude, l'ISS est la plus grande structure habitée jamais placée en orbite.
+        Fruit d'un partenariat entre cinq agences — NASA, Roscosmos, ESA, JAXA, CSA —
+        elle tourne autour de la Terre 15,5 fois par jour et n'a jamais été inoccupée depuis novembre 2000.
+      </p>
+    </div>
+    <div class="desc-stats">
+      <div class="desc-stat"><div class="desc-stat-label">Altitude</div><div class="desc-stat-value">~420 km</div></div>
+      <div class="desc-stat"><div class="desc-stat-label">Vitesse</div><div class="desc-stat-value">7.66 km/s</div></div>
+      <div class="desc-stat"><div class="desc-stat-label">Surface habitable</div><div class="desc-stat-value">388 m²</div></div>
+      <div class="desc-stat"><div class="desc-stat-label">Envergure solaire</div><div class="desc-stat-value">109 m</div></div>
+    </div>
+    <div class="desc-section">
+      <div class="desc-section-kicker">Histoire</div>
+      <div class="desc-section-title">De Zarya à aujourd'hui</div>
+      <p class="desc-body">Le 20 novembre 1998, le module Zarya quitte Baïkonour. La construction s'étale sur 13 ans
+        et mobilise plus de 30 vols navette. En novembre 2000, Expedition 1 installe le premier équipage permanent.
+        Depuis, la Station n'a jamais été inoccupée. L'assemblage principal est déclaré complet en 2011.</p>
+      <div class="desc-grid">
+        <div class="desc-card">
+          <div class="desc-card-kicker">1998 — 2011</div>
+          <div class="desc-card-title">Assemblage</div>
+          <div class="desc-card-body">42 vols, 14 nations, plus de 200 sorties extravéhiculaires pour connecter les modules, poutres et panneaux solaires. Masse finale : 420 tonnes.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">2011 — Présent</div>
+          <div class="desc-card-title">Phase opérationnelle</div>
+          <div class="desc-card-body">Rotations d'équipages tous les ~6 mois. Plus de 3 000 expériences scientifiques menées à bord, couvrant biologie, physique, médecine spatiale.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">2020 — Présent</div>
+          <div class="desc-card-title">Ère commerciale</div>
+          <div class="desc-card-body">SpaceX Crew Dragon assure les rotations NASA. Cygnus et Dragon Cargo assurent le ravitaillement. Axiom embarque les premiers astronautes commerciaux.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">2025 — 2030</div>
+          <div class="desc-card-title">Fin de vie planifiée</div>
+          <div class="desc-card-body">Désorbitisation contrôlée prévue avant 2030. Axiom Space, Blue Origin (Orbital Reef) et Sierra Space prendront le relais en orbite basse.</div>
+        </div>
+      </div>
+    </div>
+    <div class="desc-section">
+      <div class="desc-section-kicker">Partenariat</div>
+      <div class="desc-section-title">Cinq agences, un objectif</div>
+      <div class="desc-grid">
+        <div class="desc-card">
+          <div class="desc-card-kicker">NASA — États-Unis</div>
+          <div class="desc-card-title">Agence coordinatrice</div>
+          <div class="desc-card-body">Gère les segments USOS. Coordonne les rotations Crew Dragon et l'ensemble des activités scientifiques côté américain.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">Roscosmos — Russie</div>
+          <div class="desc-card-title">Segment russe</div>
+          <div class="desc-card-body">Opère Zarya, Zvezda, Nauka. Assure les rotations Soyouz et les vols cargo Progress. Partenaire fondateur depuis 1998.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">ESA — Europe</div>
+          <div class="desc-card-title">Module Columbus</div>
+          <div class="desc-card-body">Laboratoire Columbus actif depuis 2008. L'ESA a développé l'ATV cargo et la plateforme externe Bartolomeo. Participation aux rotations régulières.</div>
+        </div>
+        <div class="desc-card">
+          <div class="desc-card-kicker">JAXA &amp; CSA</div>
+          <div class="desc-card-title">Kibô &amp; Canadarm2</div>
+          <div class="desc-card-body">JAXA exploite Kibô, le plus grand laboratoire pressurisé. Le bras Canadarm2 (CSA) est indispensable pour les opérations externes et l'amarrage.</div>
+        </div>
+      </div>
+    </div>
+    <div class="desc-section">
+      <div class="desc-section-kicker">Sources officielles</div>
+      <p class="desc-body desc-sources">
+        <a href="https://www.nasa.gov/international-space-station/" target="_blank" rel="noopener">NASA ISS</a> ·
+        <a href="https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/International_Space_Station" target="_blank" rel="noopener">ESA ISS</a> ·
+        <a href="https://isstracker.spaceflight.esa.int/" target="_blank" rel="noopener">ESA ISS Tracker</a> ·
+        <a href="https://www.nasa.gov/mission/expedition-74/" target="_blank" rel="noopener">Expedition 74</a> ·
+        <a href="https://www.swpc.noaa.gov/" target="_blank" rel="noopener">NOAA SWPC</a> ·
+        <a href="https://celestrak.org/" target="_blank" rel="noopener">CelesTrak</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     SCRIPT
+     ══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Constants ─────────────────────────────────────────────────────────────────
+var EXP_START = new Date('2025-12-08T00:00:00Z');
+var EXP_END   = new Date('2026-08-01T00:00:00Z');
+
+var LIVE_SOURCES = {
+  nasa: {
+    src:  'https://www.youtube.com/embed/zPH5KtjJFaQ?autoplay=1&rel=0',
+    link: 'https://www.youtube.com/watch?v=zPH5KtjJFaQ',
+    note: 'Vue Terre en direct — ISS HD Earth Viewing Experiment.'
+  },
+  tv: {
+    src:  'https://www.youtube.com/embed/live_stream?channel=UCVTomc35agH1muX6R6wMtkg&autoplay=1',
+    link: 'https://www.nasa.gov/nasatv/',
+    note: 'NASA TV — couverture officielle des opérations Mission Control.'
+  }
+};
+
+var ISS_MILESTONES = [
+  { date:'1998-11-20', title:'Lancement module Zarya',          desc:'Premier élément de l\'ISS mis en orbite depuis Baïkonour.', type:'Jalon' },
+  { date:'1998-12-04', title:'Module Unity (Node 1)',            desc:'Navette Endeavour (STS-88) — premier nœud américain.', type:'Jalon' },
+  { date:'2000-07-12', title:'Module Zvezda',                    desc:'Propulsion principale du segment russe.', type:'Jalon' },
+  { date:'2000-11-02', title:'Expedition 1 — Premier équipage', desc:'Shepherd, Gidzenko, Krikalev : premier séjour permanent.', type:'Expédition' },
+  { date:'2001-02-07', title:'Module Destiny',                   desc:'Laboratoire américain principal livré par Atlantis (STS-98).', type:'Jalon' },
+  { date:'2008-02-07', title:'Module Columbus (ESA)',            desc:'Laboratoire européen installé par Atlantis (STS-122).', type:'Jalon' },
+  { date:'2008-03-11', title:'Module Kibô — JAXA',              desc:'Premier élément du laboratoire japonais livré par Endeavour.', type:'Jalon' },
+  { date:'2011-05-16', title:'Assemblage complet',              desc:'Station à sa configuration définitive : 420 t, 109 m d\'envergure.', type:'Jalon' },
+  { date:'2020-11-15', title:'Crew-1 SpaceX — Ère commerciale', desc:'Premier vol opérationnel Crew Dragon vers l\'ISS.', type:'Expédition' },
+  { date:'2024-03-04', title:'Expedition 71 / Crew-8',          desc:'Matthew Dominick, Michael Barratt, Jeanette Epps, Alexander Grebenkin.', type:'Expédition' },
+  { date:'2024-09-28', title:'Expedition 72 / Crew-9',          desc:'Wilmore & Williams restent après l\'allongement de la mission Starliner.', type:'Expédition' },
+  { date:'2025-03-16', title:'Expedition 73 / Crew-10',         desc:'Rotation d\'équipage, transfert de commandement.', type:'Expédition' },
+  { date:'2025-12-08', title:'Expedition 74 — En cours',        desc:'Équipage actuel. Rotation prévue mi-2026 avec Crew-11.', type:'Expédition' },
+  { date:'2026-07-01', title:'Expedition 75 / Crew-11 (est.)', desc:'Prochaine rotation planifiée.', type:'À venir' },
+  { date:'2030-01-01', title:'Désorbitisation ISS (planif.)',   desc:'Rentrée contrôlée dans l\'océan Pacifique.', type:'Jalon' }
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var st = {
+  lat: null, lon: null, alt: null, speedKmh: null, speedKms: null,
+  visibility: null, source: null,
+  crew: [], events: [], swpc: {}
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function $(id) { return document.getElementById(id); }
+
+function setText(id, v) {
+  var el = $(id);
+  if (el) el.textContent = v;
+}
+
+function setDot(key, state) {
+  var dot = $('dot-' + key);
+  if (!dot) return;
+  dot.className = 'dot ' + state;
+}
+
+function setSrc(key, label) {
+  var el = $('src-' + key);
+  if (el) el.textContent = label;
+}
+
+function log(msg, cls) {
+  var feed = $('log-feed');
+  if (!feed) return;
+  var d = document.createElement('div');
+  d.className = cls || 'log-info';
+  d.textContent = '[' + new Date().toISOString().slice(11,19) + '] ' + msg;
+  feed.prepend(d);
+  while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+}
+
+function fmtDeg(v, pos, neg) {
+  if (v == null) return '--';
+  return Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
+}
+
+function classifyRegion(lat, lon) {
+  if (lat > 67 || lat < -67) return { label: lat > 0 ? 'Arctique orbital' : 'Océan Austral', sub: 'Survol polaire haute latitude', zone: 'Polaire' };
+  if (lat >= 24 && lat <= 50 && lon >= -126 && lon <= -66) return { label: 'Amérique du Nord', sub: 'Couloir orbital nord-américain', zone: 'Continent' };
+  if (lat >= -55 && lat <= 13 && lon >= -82 && lon <= -34) return { label: 'Amérique du Sud', sub: 'Survol continental sud-américain', zone: 'Continent' };
+  if (lat >= 35 && lat <= 72 && lon >= -11 && lon <= 40)   return { label: 'Europe', sub: 'Arc Europe / Méditerranée', zone: 'Continent' };
+  if (lat >= -35 && lat <= 37 && lon >= -20 && lon <= 52)  return { label: 'Afrique', sub: 'Survol continental africain', zone: 'Continent' };
+  if (lat >= 5 && lat <= 55 && lon >= 60 && lon <= 150)    return { label: 'Asie', sub: 'Arc central asiatique', zone: 'Continent' };
+  if (lat >= -47 && lat <= -10 && lon >= 112 && lon <= 180) return { label: 'Australie / Océanie', sub: 'Corridor sud Pacifique', zone: 'Continent' };
+  if (lon > -80 && lon < 20)   return { label: 'Océan Atlantique', sub: 'Survol maritime atlantique', zone: 'Océan' };
+  if (lon >= 20 && lon < 145)  return { label: 'Océan Indien', sub: 'Survol maritime indo-océanique', zone: 'Océan' };
+  return { label: 'Océan Pacifique', sub: 'Survol maritime pacifique', zone: 'Océan' };
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderNav() {
+  setText('nav-lat', fmtDeg(st.lat, 'N', 'S'));
+  setText('nav-lon', fmtDeg(st.lon, 'E', 'W'));
+  setText('nav-alt', st.alt != null ? st.alt.toFixed(1) + ' km' : '--');
+  setText('nav-spd', st.speedKms != null ? st.speedKms.toFixed(2) + ' km/s' : (st.speedKmh != null ? (st.speedKmh / 3600).toFixed(2) + ' km/s' : '--'));
+  setText('nav-day', st.visibility === 'daylight' ? 'Jour orbital' : st.visibility === 'eclipsed' ? 'Éclipse' : '--');
+  setText('nav-src', st.source || '--');
+  setText('upd-nav', new Date().toISOString().slice(11, 19) + 'Z');
+
+  if (st.lat != null) {
+    var r = classifyRegion(st.lat, st.lon);
+    setText('geo-region', r.label);
+    setText('geo-sub',    r.sub);
+    setText('geo-hemi',   (st.lat >= 0 ? 'Nord' : 'Sud') + ' / ' + (st.lon >= 0 ? 'Est' : 'Ouest'));
+    setText('geo-zone',   r.zone);
+    setText('phase-label', 'Orbites basses — ' + (st.visibility === 'daylight' ? 'jour orbital' : 'éclipse'));
+  }
+}
+
+function renderCrew() {
+  var grid = $('crew-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  if (!st.crew.length) {
+    grid.innerHTML = '<div class="crew-card"><div class="crew-name">Données indisponibles</div></div>';
+    return;
+  }
+  st.crew.forEach(function(m) {
+    var d = document.createElement('div');
+    d.className = 'crew-card';
+    d.innerHTML = '<div class="crew-name">' + esc(m.name) + '</div>' +
+      '<div class="crew-meta">' + esc(m.agency || '') + (m.role ? ' · ' + esc(m.role) : '') + '</div>' +
+      (m.accessMission ? '<div class="crew-sub">' + esc(m.accessMission) + '</div>' : '');
+    grid.appendChild(d);
+  });
+}
+
+function renderEvents() {
+  var feed = $('ops-feed');
+  if (!feed) return;
+  feed.innerHTML = '';
+  var items = st.events.slice(0, 5);
+  if (!items.length) {
+    feed.innerHTML = '<div class="feed-item"><div class="feed-title">Aucun événement disponible</div></div>';
+    return;
+  }
+  items.forEach(function(ev) {
+    var d = document.createElement('div');
+    d.className = 'feed-item';
+    d.innerHTML = '<div class="feed-kicker">' + esc(ev.type || 'Station Ops') + ' · ' + esc(ev.source || '') + '</div>' +
+      '<div class="feed-title">' + esc(ev.title) + '</div>' +
+      (ev.date ? '<div class="feed-time">' + ev.date.slice(0, 16).replace('T', ' ') + '</div>' : '');
+    feed.appendChild(d);
+  });
+}
+
+function renderMiniTimeline() {
+  var body = $('mini-tl-body');
+  if (!body) return;
+  var now = Date.now();
+  var upcoming = st.events
+    .filter(function(ev) { return ev.date && new Date(ev.date).getTime() > now - 86400000; })
+    .slice(0, 4);
+  if (!upcoming.length) { body.innerHTML = '<div class="mini-step"><div class="mini-step-title">Aucun événement planifié</div></div>'; return; }
+  body.innerHTML = '';
+  upcoming.forEach(function(ev) {
+    var d = document.createElement('div');
+    d.className = 'mini-step';
+    d.innerHTML = '<div class="mini-step-kicker">' + esc(ev.type || 'EVENT') + '</div>' +
+      '<div class="mini-step-title">' + esc(ev.title) + '</div>' +
+      (ev.date ? '<div class="mini-step-time">' + ev.date.slice(0, 16).replace('T', ' ') + '</div>' : '');
+    body.appendChild(d);
+  });
+}
+
+function renderTimeline() {
+  var fill = $('tl-fill');
+  var list = $('tl-list');
+  if (!fill || !list) return;
+
+  var now = Date.now();
+  var pct = Math.max(0, Math.min(100, (now - EXP_START.getTime()) / (EXP_END - EXP_START) * 100));
+  fill.style.width = pct.toFixed(1) + '%';
+
+  var dynEvents = st.events.map(function(ev) {
+    return { date: ev.date ? ev.date.slice(0, 10) : null, title: ev.title, desc: ev.description || '', type: ev.type || 'Ops' };
+  }).filter(function(ev) { return ev.date; });
+
+  var all = ISS_MILESTONES.concat(dynEvents).sort(function(a, b) {
+    return new Date(a.date) - new Date(b.date);
+  });
+
+  list.innerHTML = '';
+  all.forEach(function(ev) {
+    var ts = new Date(ev.date).getTime();
+    var state = ts < now - 3600000 ? 'past' : ts > now ? 'future' : 'current';
+    var badge = { past: 'badge-past', current: 'badge-current', future: 'badge-future' }[state];
+    var label = { past: 'PASSÉ', current: 'EN COURS', future: 'À VENIR' }[state];
+    var countdown = ts > now
+      ? 'T-' + Math.floor((ts - now) / 3600000) + 'h ' + Math.floor(((ts - now) % 3600000) / 60000) + 'm'
+      : '';
+
+    var d = document.createElement('div');
+    d.className = 'tl-event ' + state;
+    d.innerHTML =
+      '<div class="tl-date">' + ev.date.slice(0, 10) + '</div>' +
+      '<div class="tl-badge ' + badge + '">' + label + '</div>' +
+      '<div><div class="tl-event-title">' + esc(ev.title) + '</div>' +
+      '<div class="tl-event-desc">' + esc(ev.desc) + '</div>' +
+      (countdown ? '<div class="tl-countdown">' + countdown + '</div>' : '') + '</div>';
+    list.appendChild(d);
+  });
+}
+
+function renderSWPC() {
+  var sw = st.swpc;
+  var kpVal = sw.kp != null ? Number(sw.kp) : null;
+  setText('swpc-kp',   kpVal != null ? kpVal.toFixed(1) : '--');
+  setText('swpc-bz',   sw.bz   != null ? sw.bz.toFixed(1) + ' nT' : '--');
+  setText('swpc-wind', sw.wind != null ? sw.wind.toFixed(0) + ' km/s' : '--');
+  setText('swpc-xray', sw.xray || '--');
+  var bar = $('kp-fill');
+  if (bar && kpVal != null) {
+    bar.style.width = Math.min(100, kpVal / 9 * 100).toFixed(1) + '%';
+    bar.style.background = kpVal < 4 ? 'var(--ok)' : kpVal < 7 ? 'var(--warn)' : 'var(--alert)';
+  }
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Clock ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  setText('utc-clock', 'UTC ' + new Date().toISOString().slice(11, 19));
+  var ms    = Date.now() - EXP_START.getTime();
+  var total = Math.max(0, Math.floor(ms / 1000));
+  var d = Math.floor(total / 86400);
+  var h = Math.floor((total % 86400) / 3600);
+  var m = Math.floor((total % 3600) / 60);
+  var s = total % 60;
+  setText('exp-elapsed',
+    'J+' + String(d).padStart(3,'0') + ' ' +
+    String(h).padStart(2,'0') + ':' +
+    String(m).padStart(2,'0') + ':' +
+    String(s).padStart(2,'0'));
+}
+
+// ── Data fetching ─────────────────────────────────────────────────────────────
+async function fetchTelemetry() {
+  try {
+    var r = await fetch('/api/iss-telemetry');
+    var data = await r.json();
+    if (data.status !== 'OK') throw new Error(data.error || 'Error');
+    st.lat        = data.geodetic.lat;
+    st.lon        = data.geodetic.lon;
+    st.alt        = data.geodetic.alt;
+    st.speedKmh   = data.geodetic.speedKmh;
+    st.speedKms   = data.speedKms;
+    st.visibility = data.geodetic.visibility;
+    st.source     = data.source || 'NORAD TLE';
+    setDot('telemetry', 'ok');
+    setSrc('telemetry', (data.source || 'TLE') + ' · ' + new Date().toISOString().slice(11,16) + 'Z');
+    renderNav();
+    log('Télémétrie OK — ' + st.lat.toFixed(2) + '° ' + st.lon.toFixed(2) + '°', 'log-ok');
+  } catch(e) {
+    setDot('telemetry', 'err');
+    setSrc('telemetry', 'OFFLINE');
+    log('Télémétrie erreur : ' + e.message, 'log-err');
+  }
+}
+
+async function fetchCrew() {
+  try {
+    var r = await fetch('/api/iss-crew');
+    var data = await r.json();
+    if (data.status !== 'OK') throw new Error(data.error || 'Error');
+    st.crew = data.crew || [];
+    setDot('crew', 'ok');
+    setSrc('crew', (data.expedition && data.expedition.name ? data.expedition.name.toUpperCase() : 'EXP 74') + ' · ' + new Date().toISOString().slice(11,16) + 'Z');
+    renderCrew();
+    log('Équipage OK — ' + st.crew.length + ' membres', 'log-ok');
+  } catch(e) {
+    setDot('crew', 'err');
+    setSrc('crew', 'OFFLINE');
+    log('Équipage erreur : ' + e.message, 'log-err');
+  }
+}
+
+async function fetchEvents() {
+  try {
+    var r = await fetch('/api/iss-events');
+    var data = await r.json();
+    if (data.status !== 'OK') throw new Error(data.error || 'Error');
+    st.events = data.events || [];
+    setDot('events', 'ok');
+    setSrc('events', 'NASA+LL2 · ' + new Date().toISOString().slice(11,16) + 'Z');
+    renderEvents();
+    renderMiniTimeline();
+    log('Events OK — ' + st.events.length + ' entrées', 'log-ok');
+  } catch(e) {
+    setDot('events', 'err');
+    setSrc('events', 'OFFLINE');
+    log('Events erreur : ' + e.message, 'log-err');
+  }
+}
+
+async function fetchSWPC() {
+  var BASE = 'https://services.swpc.noaa.gov';
+  try {
+    var [plasma, mag, kpData, xray] = await Promise.all([
+      fetch(BASE + '/products/solar-wind/plasma-5-minute.json').then(function(r) { return r.json(); }).catch(function() { return null; }),
+      fetch(BASE + '/products/solar-wind/mag-5-minute.json').then(function(r) { return r.json(); }).catch(function() { return null; }),
+      fetch(BASE + '/products/noaa-planetary-k-index.json').then(function(r) { return r.json(); }).catch(function() { return null; }),
+      fetch(BASE + '/json/goes/primary/xrays-6-hour.json').then(function(r) { return r.json(); }).catch(function() { return null; })
+    ]);
+    var kpRow = Array.isArray(kpData) ? kpData[kpData.length - 1] : null;
+    var magRow = Array.isArray(mag) ? mag[mag.length - 1] : null;
+    var plasmaRow = Array.isArray(plasma) ? plasma[plasma.length - 1] : null;
+    var xrayRow = Array.isArray(xray) ? xray[xray.length - 1] : null;
+    st.swpc = {
+      kp:   kpRow    ? Number(kpRow[1])    : null,
+      bz:   magRow   ? Number(magRow[6])   : null,
+      wind: plasmaRow ? Number(plasmaRow[2]) : null,
+      xray: xrayRow  ? String(xrayRow.flux || '--') : '--'
+    };
+    setDot('swpc', 'ok');
+    setSrc('swpc', 'NOAA SWPC · ' + new Date().toISOString().slice(11,16) + 'Z');
+    renderSWPC();
+    log('SWPC OK', 'log-ok');
+  } catch(e) {
+    setDot('swpc', 'err');
+    setSrc('swpc', 'OFFLINE');
+    log('SWPC erreur : ' + e.message, 'log-err');
+  }
+}
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+
+  // 1. TAB NAVIGATION
+  var tabBtns = document.querySelectorAll('#tab-nav .tab-btn');
+  var panes   = document.querySelectorAll('.pane');
+
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var target = btn.getAttribute('data-tab');
+
+      tabBtns.forEach(function(b) { b.classList.remove('active'); });
+      panes.forEach(function(p) { p.classList.remove('active'); });
+
+      btn.classList.add('active');
+      var pane = document.getElementById(target);
+      if (pane) pane.classList.add('active');
+
+      if (target === 'pane-chronologie') renderTimeline();
+    });
+  });
+
+  // 2. MAP / LIVE TOGGLE
+  var btnMap   = $('btn-map');
+  var btnLive  = $('btn-live');
+  var cardMap  = $('card-map');
+  var cardLive = $('card-live');
+
+  btnMap.addEventListener('click', function() {
+    btnMap.classList.add('active');
+    btnLive.classList.remove('active');
+    cardMap.style.display  = '';
+    cardLive.style.display = 'none';
+  });
+
+  btnLive.addEventListener('click', function() {
+    btnLive.classList.add('active');
+    btnMap.classList.remove('active');
+    cardLive.style.display = '';
+    cardMap.style.display  = 'none';
+  });
+
+  // 3. LIVE SOURCE SWITCH
+  var btnSrcNasa = $('btn-src-nasa');
+  var btnSrcTv   = $('btn-src-tv');
+
+  btnSrcNasa.addEventListener('click', function() {
+    var cfg = LIVE_SOURCES.nasa;
+    $('live-iframe').src = cfg.src;
+    $('live-link').href  = cfg.link;
+    $('live-note').textContent = cfg.note;
+    btnSrcNasa.classList.add('active');
+    btnSrcTv.classList.remove('active');
+  });
+
+  btnSrcTv.addEventListener('click', function() {
+    var cfg = LIVE_SOURCES.tv;
+    $('live-iframe').src = cfg.src;
+    $('live-link').href  = cfg.link;
+    $('live-note').textContent = cfg.note;
+    btnSrcTv.classList.add('active');
+    btnSrcNasa.classList.remove('active');
+  });
+
+  // 4. CLOCK
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // 5. DATA
+  fetchTelemetry();
+  fetchCrew();
+  fetchEvents();
+  fetchSWPC();
+
+  setInterval(fetchTelemetry, 10000);
+  setInterval(fetchSWPC,      60000);
+  setInterval(fetchEvents,    900000);
+  setInterval(fetchCrew,      21600000);
+});
+</script>
+</body>
+</html>

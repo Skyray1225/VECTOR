@@ -3,6 +3,7 @@
     { "source": "/", "destination": "/index.html" }
   ],
   "functions": {
-    "api/oem.js": { "maxDuration": 30 }
+    "api/oem.js":           { "maxDuration": 30 },
+    "api/iss-telemetry.js": { "maxDuration": 30 }
   }
 }
