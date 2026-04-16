@@ -997,26 +997,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var lfInterval = null;
   var TRAIL_MAX = 80;
 
-  /* ISS SVG icon — rotated to face direction of travel (bearingDeg = 0 → North) */
+  /* ISS SVG icon — wrapper div carries the rotation (more reliable than SVG transform) */
   function makeIssIcon(bearingDeg) {
-    var rot = bearingDeg || 0;
-    // The SVG "front" is up (North). After rotation it faces the direction of travel.
-    // Triangle tip at top = direction arrow; cross arms = solar panels.
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"' +
-      ' style="transform:rotate(' + rot + 'deg);transform-origin:center">' +
-      // outer halo
+    var rot = (bearingDeg || 0).toFixed(1);
+    var inner =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">' +
       '<circle cx="20" cy="20" r="16" fill="none" stroke="#00d2ff" stroke-width="0.8" stroke-opacity=".25"/>' +
-      // solar panel arms (horizontal — perpendicular to travel)
       '<line x1="2"  y1="20" x2="11" y2="20" stroke="#00d2ff" stroke-width="1.4" stroke-opacity=".7"/>' +
       '<line x1="29" y1="20" x2="38" y2="20" stroke="#00d2ff" stroke-width="1.4" stroke-opacity=".7"/>' +
-      // body dot
       '<circle cx="20" cy="20" r="4" fill="#00d2ff"/>' +
-      // direction arrow — small triangle pointing up (= direction of travel after rotation)
       '<polygon points="20,5 16.5,13 23.5,13" fill="#00d2ff" fill-opacity=".9"/>' +
       '</svg>';
+    var html = '<div style="width:40px;height:40px;transform:rotate(' + rot + 'deg);transform-origin:20px 20px">' + inner + '</div>';
     return L.divIcon({
-      html: svg,
+      html: html,
       className: 'lf-iss-icon',
       iconSize: [40, 40],
       iconAnchor: [20, 20],
@@ -1032,6 +1026,19 @@ document.addEventListener('DOMContentLoaded', function() {
     var x = Math.cos(lat1 * DEG) * Math.sin(lat2 * DEG) -
             Math.sin(lat1 * DEG) * Math.cos(lat2 * DEG) * Math.cos(dLon);
     return (Math.atan2(y, x) / DEG + 360) % 360;
+  }
+
+  /* Heading toward the future TLE track — always points toward the yellow line */
+  function getISSHeading(lat, lon) {
+    if (!lfSatrec) return 0;
+    var RAD = 180 / Math.PI;
+    // propagate 60s ahead for a stable direction
+    var futureDate = new Date(Date.now() + 60000);
+    var pv = satellite.propagate(lfSatrec, futureDate);
+    if (!pv || !pv.position) return 0;
+    var gmst = satellite.gstime(futureDate);
+    var geo  = satellite.eciToGeodetic(pv.position, gmst);
+    return computeBearing(lat, lon, geo.latitude * RAD, geo.longitude * RAD);
   }
 
   var lfSatrec = null; // satellite.js parsed TLE record
@@ -1112,21 +1119,17 @@ document.addEventListener('DOMContentLoaded', function() {
       color: '#00d2ff', weight: 2.5, opacity: 0.75, smoothFactor: 1
     }).addTo(lfMap);
 
-    /* marker — rotated to face direction of travel */
-    var bearing = 0;
-    if (lfTrail.length >= 2) {
-      var prev = lfTrail[lfTrail.length - 2];
-      bearing = computeBearing(prev.lat, prev.lng, lat, lon);
-    }
+    /* marker — cap dérivé du TLE futur → flèche toujours vers le trait jaune */
+    var heading = getISSHeading(lat, lon);
     lfMarker.setLatLng(latlng);
-    lfMarker.setIcon(makeIssIcon(bearing));
+    lfMarker.setIcon(makeIssIcon(heading));
     lfMarker.getPopup().setContent(
       '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;line-height:1.8;color:#c8d8e4">' +
       '<b style="color:#00d2ff">ISS</b><br>' +
       'Lat&nbsp;&nbsp;' + lat.toFixed(4) + '°<br>' +
       'Lon&nbsp;&nbsp;' + lon.toFixed(4) + '°<br>' +
       'Alt&nbsp;&nbsp;' + alt.toFixed(1) + ' km<br>' +
-      'Cap&nbsp;&nbsp;' + Math.round(bearing) + '°<br>' +
+      'Cap&nbsp;&nbsp;' + Math.round(heading) + '°<br>' +
       'Vit&nbsp;&nbsp;' + (speedKmh ? speedKmh.toFixed(0) + ' km/h' : '—') +
       '</div>'
     );
