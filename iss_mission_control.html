@@ -112,12 +112,6 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .vmb-btn.active { background: #213140; border-color: var(--accent); color: var(--accent); }
 
 /* ── Central card ── */
-#card-map { position: relative; width: 625px; max-width: 100%; height: 325px;
-  background: #070c12; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-#card-map iframe { display: block; width: 100%; height: 100%; border: 0; }
-#card-map-attr { position: absolute; left: 10px; bottom: 10px; z-index: 4;
-  font-family: var(--mono); font-size: 9px; color: var(--muted);
-  background: rgba(5,8,15,.85); border: 1px solid var(--border); border-radius: 3px; padding: 4px 7px; }
 #card-live { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
 #card-live .live-hdr { background: #17212c; padding: 8px 13px; border-bottom: 1px solid var(--border);
   display: flex; align-items: center; gap: 10px;
@@ -247,7 +241,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
   .grid3 { grid-template-columns: 1fr; }
   .data-grid, .crew-grid, .desc-stats, .desc-grid, .mini-tl-body { grid-template-columns: 1fr; }
   .tl-event { grid-template-columns: 1fr; }
-  #card-map, #card-live { width: 100%; }
+  #card-live { width: 100%; }
 }
 </style>
 </head>
@@ -356,20 +350,13 @@ header { display: flex; align-items: center; justify-content: space-between; gap
         <div class="vmb">
           <span class="vmb-label">Stage central</span>
           <div class="vmb-seg">
-            <button class="vmb-btn active" id="btn-map">Map ESA</button>
-            <button class="vmb-btn"        id="btn-live">Live</button>
-            <button class="vmb-btn"        id="btn-leaflet">Leaflet ✦</button>
+            <button class="vmb-btn active" id="btn-live">Live</button>
+            <button class="vmb-btn"        id="btn-leaflet">Carte</button>
           </div>
         </div>
 
-        <!-- Map card -->
-        <div id="card-map">
-          <iframe src="https://isstracker.spaceflight.esa.int/" title="ISS Tracker ESA" allowfullscreen></iframe>
-          <div id="card-map-attr">ESA ISS Tracker</div>
-        </div>
-
-        <!-- Live card (hidden by default) -->
-        <div id="card-live" style="display:none">
+        <!-- Live card (visible by default) -->
+        <div id="card-live">
           <div class="live-hdr">
             <span>Flux Direct ISS</span>
             <div class="live-src-btns">
@@ -926,25 +913,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // 2. MAP / LIVE / LEAFLET TOGGLE
-  var btnMap     = $('btn-map');
+  // 2. LIVE / CARTE TOGGLE
   var btnLive    = $('btn-live');
   var btnLeaflet = $('btn-leaflet');
-  var cardMap    = $('card-map');
   var cardLive   = $('card-live');
   var cardLeaflet= $('card-leaflet');
 
   function switchStage(active) {
-    [btnMap, btnLive, btnLeaflet].forEach(function(b) { b.classList.remove('active'); });
-    [cardMap, cardLive, cardLeaflet].forEach(function(c) { c.style.display = 'none'; });
-    if (active === 'map')     { btnMap.classList.add('active');     cardMap.style.display = ''; }
-    if (active === 'live')    { btnLive.classList.add('active');    cardLive.style.display = ''; }
-    if (active === 'leaflet') { btnLeaflet.classList.add('active'); cardLeaflet.style.display = ''; initLeaflet(); }
+    [btnLive, btnLeaflet].forEach(function(b) { b.classList.remove('active'); });
+    [cardLive, cardLeaflet].forEach(function(c) { c.style.display = 'none'; });
+    if (active === 'live')  { btnLive.classList.add('active');    cardLive.style.display = ''; }
+    if (active === 'carte') { btnLeaflet.classList.add('active'); cardLeaflet.style.display = ''; initLeaflet(); }
   }
 
-  btnMap.addEventListener('click',     function() { switchStage('map'); });
   btnLive.addEventListener('click',    function() { switchStage('live'); });
-  btnLeaflet.addEventListener('click', function() { switchStage('leaflet'); });
+  btnLeaflet.addEventListener('click', function() { switchStage('carte'); });
 
   // 3. LIVE SOURCE SWITCH
   var btnSrcNasa = $('btn-src-nasa');

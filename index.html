@@ -656,7 +656,7 @@ footer a:hover { color: var(--muted); }
   <div class="section-header">
     <span class="sh-label">MISSION REGISTRY</span>
     <div class="sh-sep"></div>
-    <span class="sh-count" id="mission-count">5 ENTRÉES</span>
+    <span class="sh-count" id="mission-count">4 ENTRÉES</span>
   </div>
 
   <!-- MISSION TABLE -->
@@ -673,55 +673,6 @@ footer a:hover { color: var(--muted); }
       </tr>
     </thead>
     <tbody>
-
-      <!-- ARTEMIS II -->
-      <tr class="mission-row active" onclick="toggleDetail('d-artemis2')">
-        <td class="td-status"><span class="status-strip future"></span></td>
-        <td class="td-id"><div class="cell-id">ATM-002</div></td>
-        <td class="td-name">
-          <div class="cell-patch">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="">
-            <div>
-              <div class="cell-mission-name">ARTEMIS II</div>
-              <div class="cell-mission-sub">SLS BLOCK 1 · ORION MPCV</div>
-            </div>
-          </div>
-        </td>
-        <td class="td-agency">
-          <div class="cell-agency"><strong>NASA / CSA</strong>Programme Artemis</div>
-        </td>
-        <td class="td-phase">
-          <div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>
-          <div id="hub-phase" style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em"></div>
-        </td>
-        <td class="td-date">
-          <div class="cell-date"><strong>01 AVR 2026</strong>22:35 UTC</div>
-        </td>
-        <td class="td-link">
-          <a href="/artemis2_mission_control.html" class="row-link" onclick="event.stopPropagation()">
-            OUVRIR
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </a>
-        </td>
-      </tr>
-      <!-- detail panel -->
-      <tr id="d-artemis2" class="detail-row" style="display:none">
-        <td colspan="7" style="padding:0">
-          <div class="detail-panel" id="dp-artemis2">
-            <div class="detail-inner">
-              <div class="detail-field"><label>ÉQUIPAGE</label><span>4 ASTRONAUTES</span></div>
-              <div class="detail-field"><label>ORBITE CIBLE</label><span>TRANS-LUNAIRE LIBRE</span></div>
-              <div class="detail-field"><label>DURÉE NOMINALE</label><span>10 JOURS</span></div>
-              <div class="detail-field"><label>SPLASHDOWN PRÉVU</label><span>11 AVR 2026</span></div>
-              <div class="detail-field"><label>DONNÉES POSITION</label><span>JPL HORIZONS / OEM</span></div>
-              <div class="detail-field"><label>RAFRAÎCHISSEMENT</label><span>5 MIN</span></div>
-              <div class="detail-desc">Premier vol habité du programme Artemis. Orion propulsé par le SLS Block 1 en trajectoire libre de retour autour de la Lune. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).</div>
-            </div>
-          </div>
-        </td>
-      </tr>
 
       <!-- ISS -->
       <tr class="mission-row active" onclick="location.href='/iss_mission_control.html'">
@@ -838,6 +789,37 @@ footer a:hover { color: var(--muted); }
 
   <!-- MOBILE CARDS (injectées par JS, cachées sur desktop) -->
   <div id="mob-mission-cards" style="display:none"></div>
+
+  <!-- ARCHIVES -->
+  <div class="section-header" style="margin-top:24px">
+    <span class="sh-label">ARCHIVES</span>
+    <div class="sh-sep"></div>
+    <span class="sh-count">1 MISSION</span>
+  </div>
+  <table class="mission-table">
+    <tbody>
+      <tr class="mission-row">
+        <td class="td-status"><span class="status-strip tbd"></span></td>
+        <td class="td-id"><div class="cell-id" style="color:var(--dim)">ATM-002</div></td>
+        <td class="td-name">
+          <div class="cell-patch cell-locked">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="" style="opacity:.35;filter:grayscale(.6)">
+            <div>
+              <div class="cell-mission-name" style="color:var(--dim)">ARTEMIS II</div>
+              <div class="cell-mission-sub">SLS BLOCK 1 · ORION MPCV</div>
+            </div>
+          </div>
+        </td>
+        <td class="td-agency"><div class="cell-agency" style="opacity:.5"><strong>NASA / CSA</strong>Programme Artemis</div></td>
+        <td class="td-phase">
+          <div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:5px;letter-spacing:.07em">01 AVR – 11 AVR 2026</div>
+        </td>
+        <td class="td-date"><div class="cell-date" style="opacity:.5"><strong>01 AVR 2026</strong>22:35 UTC</div></td>
+        <td class="td-link"><span class="row-link disabled">ARCHIVÉ</span></td>
+      </tr>
+    </tbody>
+  </table>
 
   <!-- FOOTER INFO ROW -->
   <footer>
@@ -1015,8 +997,8 @@ function getMissionPhase() {
   render(); setInterval(render, 5000);
 })();
 
-document.getElementById('hub-phase').textContent = getMissionPhase();
-setInterval(() => { document.getElementById('hub-phase').textContent = getMissionPhase(); }, 60000);
+var _hp = document.getElementById('hub-phase');
+if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textContent = getMissionPhase(); }, 60000); }
 
 /* ── MOBILE CARDS ── */
 (function buildMobileCards() {
@@ -1026,27 +1008,6 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
   wrap.style.display = 'flex';
 
   const missions = [
-    {
-      cardClass: 'card-future',
-      patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
-      patchDim: false,
-      name: 'ARTEMIS II',
-      sub: 'SLS BLOCK 1 · ORION MPCV',
-      nameDim: false,
-      badge: `<div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>`,
-      date: '<strong>01 AVR 2026</strong> · 22:35 UTC',
-      link: '<a href="/artemis2_mission_control.html" class="row-link">OUVRIR LE MISSION CONTROL →</a>',
-      phaseStrip: true,
-      detail: [
-        { label: 'ÉQUIPAGE',         val: '4 ASTRONAUTES' },
-        { label: 'ORBITE CIBLE',     val: 'LIBRE LUNAIRE' },
-        { label: 'DURÉE NOMINALE',   val: '10 JOURS' },
-        { label: 'AMERRISSAGE PRÉVU',val: '11 AVR 2026' },
-        { label: 'DONNÉES POSITION', val: 'JPL HORIZONS' },
-        { label: 'MISE À JOUR',      val: '5 MIN' },
-      ],
-      desc: 'Premier vol habité du programme Artemis. Reid Wiseman (CDR), Victor Glover (PLT), Christina Koch (MS), Jeremy Hansen (MS).'
-    },
     {
       cardClass: 'card-active',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/ISS_emblem.png/240px-ISS_emblem.png',
