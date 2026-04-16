@@ -7,6 +7,7 @@
 <link rel="icon" type="image/png" href="/vector_favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightstreamer-client-web@9.2.0/lightstreamer.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <style>
@@ -407,14 +408,30 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <div class="panel">
         <div class="panel-hdr">
           <span>Cabine &amp; Support-vie</span>
-          <span class="upd">PUBLIC LIMITÉ</span>
+          <a href="https://demos.lightstreamer.com/ISSLive/" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:9px;color:var(--muted);text-decoration:none;letter-spacing:.1em">ISS LIVE</a>
         </div>
         <div class="panel-body">
           <div class="data-grid">
-            <div class="datum"><div class="datum-label">Température</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
-            <div class="datum"><div class="datum-label">Humidité</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
-            <div class="datum"><div class="datum-label">Pression</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
-            <div class="datum"><div class="datum-label">CO₂</div><div class="datum-value na">N/D</div><div class="datum-sub">Non public</div></div>
+            <div class="datum">
+              <div class="datum-label">Température</div>
+              <div class="datum-value na" id="env-temp">—</div>
+              <div class="datum-sub" id="env-temp-sub">Chargement…</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Humidité relative</div>
+              <div class="datum-value na" id="env-hum">—</div>
+              <div class="datum-sub" id="env-hum-sub">Chargement…</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Pression cabine</div>
+              <div class="datum-value na" id="env-press">—</div>
+              <div class="datum-sub" id="env-press-sub">Chargement…</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">CO₂ partiel</div>
+              <div class="datum-value na" id="env-co2">—</div>
+              <div class="datum-sub" id="env-co2-sub">Chargement…</div>
+            </div>
           </div>
         </div>
       </div>
@@ -966,6 +983,66 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(fetchEvents,    900000);
   setInterval(fetchCrew,      21600000);
 });
+
+/* ════════════════════════════════════════
+   ISS LIVE — CABIN TELEMETRY (Lightstreamer)
+   Items: NODE3000005=pressure, NODE3000008=temp,
+          NODE3000009=humidity, AIRLOCK000049=CO2
+════════════════════════════════════════ */
+(function initCabinTelemetry() {
+  if (typeof LightstreamerClient === 'undefined') return;
+
+  var client = new LightstreamerClient('https://push.lightstreamer.com', 'ISSLIVE');
+  client.connectionOptions.setSlowingEnabled(false);
+
+  // Map item → { elVal, elSub, unit, label }
+  var ITEMS = {
+    'NODE3000008': { val: 'env-temp',   sub: 'env-temp-sub',   unit: '°C',   label: 'Node 3 Lab' },
+    'NODE3000009': { val: 'env-hum',    sub: 'env-hum-sub',    unit: '%RH',  label: 'Node 3 Lab' },
+    'NODE3000005': { val: 'env-press',  sub: 'env-press-sub',  unit: 'kPa',  label: 'Node 3 Lab' },
+    'AIRLOCK000049':{ val: 'env-co2',  sub: 'env-co2-sub',    unit: 'mmHg', label: 'Airlock' },
+  };
+
+  var sub = new Subscription(
+    'MERGE',
+    Object.keys(ITEMS),
+    ['Value', 'CalibratedData', 'TimeStamp', 'Status.Color']
+  );
+  sub.setDataAdapter('ISSLIVE');
+  sub.setRequestedSnapshot('yes');
+
+  sub.addListener({
+    onItemUpdate: function(update) {
+      var item  = update.getItemName();
+      var cfg   = ITEMS[item];
+      if (!cfg) return;
+
+      var raw  = update.getValue('CalibratedData') || update.getValue('Value') || '';
+      var ts   = update.getValue('TimeStamp') || '';
+      var color= update.getValue('Status.Color') || 'grey';
+
+      var num = parseFloat(raw);
+      if (isNaN(num)) return;
+
+      var elVal = document.getElementById(cfg.val);
+      var elSub = document.getElementById(cfg.sub);
+      if (!elVal) return;
+
+      elVal.textContent = num.toFixed(2) + ' ' + cfg.unit;
+      elVal.className   = 'datum-value' + (color === 'red' ? ' alert' : color === 'yellow' ? ' warn' : ' ok');
+      if (elSub) elSub.textContent = cfg.label + (ts ? ' · ' + new Date(parseFloat(ts) * 1000).toLocaleTimeString('fr-FR') : '');
+    },
+    onSubscriptionError: function(code, msg) {
+      ['env-temp-sub','env-hum-sub','env-press-sub','env-co2-sub'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = 'Flux indisponible (' + code + ')';
+      });
+    }
+  });
+
+  client.subscribe(sub);
+  client.connect();
+})();
 
 /* ════════════════════════════════════════
    LEAFLET ISS TRACKER
