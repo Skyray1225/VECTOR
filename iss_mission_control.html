@@ -1246,15 +1246,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var poly = lfBuildTermPoly(new Date());
     if (lfTermLayer) { lfMap.removeLayer(lfTermLayer); lfTermLayer = null; }
     if (!poly) return;
-    lfTermLayer = L.polygon(poly, {
-      color:       '#1a3f60',
-      weight:      1,
-      opacity:     0.8,
-      fillColor:   '#04111f',
-      fillOpacity: 0.58,
-      smoothFactor: 2,
-      interactive: false,
-    }).addTo(lfMap);
+    var style = {
+      color: '#1a3f60', weight: 1, opacity: 0.8,
+      fillColor: '#04111f', fillOpacity: 0.58,
+      smoothFactor: 2, interactive: false,
+    };
+    // Main copy + one adjacent copy on each side (±360°)
+    var layers = [-360, 0, 360].map(function(offset) {
+      return L.polygon(poly.map(function(pt) {
+        return [pt[0], pt[1] + offset];
+      }), style);
+    });
+    lfTermLayer = L.layerGroup(layers).addTo(lfMap);
   }
   var TRAIL_MAX = 80;
 
