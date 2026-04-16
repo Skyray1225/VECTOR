@@ -46,9 +46,8 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .hd-chip span { font-family: var(--head); font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--accent); text-transform: uppercase; }
 .hd-center { text-align: center; }
 .hd-center-label { font-family: var(--mono); font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
-#exp-elapsed { font-family: var(--mono); font-size: 22px; color: var(--ok); letter-spacing: .04em; }
 .hd-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
-#utc-clock { font-family: var(--mono); font-size: 14px; color: var(--muted); }
+#utc-clock { font-family: var(--mono); font-size: 22px; color: var(--ok); letter-spacing: .04em; }
 #phase-label { font-size: 13px; color: var(--warn); letter-spacing: .08em; text-transform: uppercase; font-family: var(--head); }
 .hd-link { display: inline-block; padding: 4px 10px; border: 1px solid rgba(107,184,214,.35); border-radius: 3px;
   font-size: 10px; font-weight: 700; letter-spacing: .1em; color: var(--accent); text-decoration: none; text-transform: uppercase; font-family: var(--head); }
@@ -56,13 +55,25 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 /* ── Sources bar ── */
 #sources-bar { display: flex; gap: 8px; padding: 8px 18px; background: #101720; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .src-item { display: flex; align-items: center; gap: 6px; padding: 5px 10px;
-  background: #18222e; border: 1px solid var(--border); border-radius: 3px; font-size: 11px; color: var(--muted); }
+  background: #18222e; border: 1px solid var(--border); border-radius: 3px; font-size: 11px; color: var(--muted); transition: border-color .3s; }
+.src-item.src-err { border-color: var(--alert); background: #1f1014; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
 .dot.ok   { background: var(--ok); }
 .dot.warn { background: var(--warn); }
 .dot.err  { background: var(--alert); }
 .src-name { font-weight: 600; color: var(--text); }
 .src-time { font-family: var(--mono); font-size: 10px; }
+
+/* ── Source alert banner ── */
+#src-alert-bar {
+  display: none; align-items: center; gap: 10px;
+  padding: 9px 18px; background: #2a0d0d; border-bottom: 2px solid var(--alert);
+  font-family: var(--mono); font-size: 11px; color: #ff6b6b; letter-spacing: .06em;
+}
+#src-alert-bar.visible { display: flex; }
+#src-alert-bar .alert-icon { font-size: 14px; flex-shrink: 0; }
+#src-alert-bar .alert-msg  { flex: 1; }
+#src-alert-bar .alert-list { font-weight: 700; color: #ff9090; }
 
 /* ── Tab nav ── */
 #tab-nav { display: flex; gap: 8px; padding: 10px 18px 8px; background: #101720; border-bottom: 1px solid var(--border); }
@@ -269,11 +280,10 @@ header { display: flex; align-items: center; justify-content: space-between; gap
     </div>
   </div>
   <div class="hd-center">
-    <div class="hd-center-label">Temps Expédition</div>
-    <div id="exp-elapsed">J+000 00:00:00</div>
+    <div class="hd-center-label">Temps universel coordonné</div>
+    <div id="utc-clock">UTC --:--:--</div>
   </div>
   <div class="hd-right">
-    <div id="utc-clock">UTC --:--:--</div>
     <div id="phase-label">Orbites basses — nominal</div>
     <a class="hd-link" href="/">Accueil</a>
   </div>
@@ -281,10 +291,19 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 
 <!-- ── Sources bar ────────────────────────────────────────────────────── -->
 <div id="sources-bar">
-  <div class="src-item"><span class="dot" id="dot-telemetry"></span><span class="src-name">TÉLÉMÉTRIE</span>&nbsp;<span class="src-time" id="src-telemetry">INIT</span></div>
-  <div class="src-item"><span class="dot" id="dot-crew"></span><span class="src-name">ÉQUIPAGE</span>&nbsp;<span class="src-time" id="src-crew">INIT</span></div>
-  <div class="src-item"><span class="dot" id="dot-events"></span><span class="src-name">OPS</span>&nbsp;<span class="src-time" id="src-events">INIT</span></div>
-  <div class="src-item"><span class="dot" id="dot-swpc"></span><span class="src-name">SWPC</span>&nbsp;<span class="src-time" id="src-swpc">INIT</span></div>
+  <div class="src-item" id="si-telemetry"><span class="dot" id="dot-telemetry"></span><span class="src-name">TÉLÉMÉTRIE</span>&nbsp;<span class="src-time" id="src-telemetry">INIT</span></div>
+  <div class="src-item" id="si-tle"><span class="dot" id="dot-tle"></span><span class="src-name">TLE</span>&nbsp;<span class="src-time" id="src-tle">INIT</span></div>
+  <div class="src-item" id="si-cabin"><span class="dot" id="dot-cabin"></span><span class="src-name">CABINE</span>&nbsp;<span class="src-time" id="src-cabin">INIT</span></div>
+  <div class="src-item" id="si-crew"><span class="dot" id="dot-crew"></span><span class="src-name">ÉQUIPAGE</span>&nbsp;<span class="src-time" id="src-crew">INIT</span></div>
+  <div class="src-item" id="si-docking"><span class="dot" id="dot-docking"></span><span class="src-name">AMARRAGE</span>&nbsp;<span class="src-time" id="src-docking">INIT</span></div>
+  <div class="src-item" id="si-events"><span class="dot" id="dot-events"></span><span class="src-name">OPS</span>&nbsp;<span class="src-time" id="src-events">INIT</span></div>
+  <div class="src-item" id="si-swpc"><span class="dot" id="dot-swpc"></span><span class="src-name">SWPC</span>&nbsp;<span class="src-time" id="src-swpc">INIT</span></div>
+</div>
+
+<!-- ── Source alert banner ───────────────────────────────────────────── -->
+<div id="src-alert-bar">
+  <span class="alert-icon">⚠</span>
+  <span class="alert-msg">SOURCE(S) INDISPONIBLE(S) :&nbsp;<span class="alert-list" id="alert-src-list"></span>&nbsp;— Certaines données peuvent être absentes ou obsolètes.</span>
 </div>
 
 <!-- ── Tab nav ────────────────────────────────────────────────────────── -->
@@ -305,7 +324,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
       <div class="panel">
         <div class="panel-hdr">
           <span>Navigation — ISS</span>
-          <span class="upd" id="upd-nav">---</span>
+          <a href="https://wheretheiss.at" target="_blank" rel="noopener">wheretheiss.at / NORAD TLE</a>
         </div>
         <div class="panel-body">
           <div class="data-grid">
@@ -316,7 +335,6 @@ header { display: flex; align-items: center; justify-content: space-between; gap
             <div class="datum"><div class="datum-label">Période</div><div class="datum-value" id="nav-per">92.7 min</div></div>
             <div class="datum"><div class="datum-label">Inclinaison</div><div class="datum-value">51.6°</div></div>
             <div class="datum"><div class="datum-label">Éclairage</div><div class="datum-value" id="nav-day">--</div></div>
-            <div class="datum"><div class="datum-label">Source</div><div class="datum-value" id="nav-src" style="font-size:12px">--</div></div>
           </div>
         </div>
       </div>
@@ -351,6 +369,13 @@ header { display: flex; align-items: center; justify-content: space-between; gap
             <div class="datum"><div class="datum-label">Vent solaire</div><div class="datum-value" id="swpc-wind">--</div></div>
             <div class="datum"><div class="datum-label">Flux X-Ray</div><div class="datum-value" id="swpc-xray">--</div></div>
           </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hdr"><span>Journal d'acquisition</span></div>
+        <div class="panel-body">
+          <div id="log-feed"></div>
         </div>
       </div>
     </div><!-- /left -->
@@ -411,6 +436,18 @@ header { display: flex; align-items: center; justify-content: space-between; gap
           </div>
         </div>
       </div>
+
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>Opérations &amp; Véhicules</span>
+          <a href="https://www.nasa.gov/blogs/spacestation/" target="_blank" rel="noopener">NASA BLOG</a>
+        </div>
+        <div class="panel-body">
+          <div class="feed" id="ops-feed">
+            <div class="feed-item"><div class="feed-title">Chargement…</div></div>
+          </div>
+        </div>
+      </div>
     </div><!-- /center -->
 
     <!-- Right column -->
@@ -444,31 +481,6 @@ header { display: flex; align-items: center; justify-content: space-between; gap
             </div>
           </div>
 
-          <!-- ── ÉLECTRICITÉ ── -->
-          <div class="panel-sep">ÉLECTRICITÉ</div>
-          <div class="data-grid">
-            <div class="datum">
-              <div class="datum-label">Phase orbitale</div>
-              <div class="datum-value na" id="pwr-phase">—</div>
-              <div class="datum-sub">TLE · satellite.js</div>
-            </div>
-            <div class="datum">
-              <div class="datum-label">Batteries</div>
-              <div class="datum-value na" id="pwr-bat">—</div>
-              <div class="datum-sub">8 × BCDU</div>
-            </div>
-            <div class="datum">
-              <div class="datum-label">Panneaux babord</div>
-              <div class="datum-value na" id="pwr-port">—</div>
-              <div class="datum-sub">4 × SAW port</div>
-            </div>
-            <div class="datum">
-              <div class="datum-label">Panneaux tribord</div>
-              <div class="datum-value na" id="pwr-stbd">—</div>
-              <div class="datum-sub">4 × SAW tribord</div>
-            </div>
-          </div>
-
           <!-- ── AMARRAGE ── -->
           <div class="panel-sep">AMARRAGE</div>
           <div id="docking-list">
@@ -490,24 +502,6 @@ header { display: flex; align-items: center; justify-content: space-between; gap
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-hdr">
-          <span>Opérations &amp; Véhicules</span>
-          <a href="https://www.nasa.gov/blogs/spacestation/" target="_blank" rel="noopener">NASA BLOG</a>
-        </div>
-        <div class="panel-body">
-          <div class="feed" id="ops-feed">
-            <div class="feed-item"><div class="feed-title">Chargement…</div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-hdr"><span>Journal d'acquisition</span></div>
-        <div class="panel-body">
-          <div id="log-feed"></div>
-        </div>
-      </div>
     </div><!-- /right -->
 
   </div><!-- /grid3 -->
@@ -673,15 +667,42 @@ function setText(id, v) {
   if (el) el.textContent = v;
 }
 
+// Source labels for the alert banner
+var SRC_LABELS = {
+  telemetry: 'TÉLÉMÉTRIE', tle: 'TLE', cabin: 'CABINE',
+  crew: 'ÉQUIPAGE', docking: 'AMARRAGE', events: 'OPS', swpc: 'SWPC'
+};
+
 function setDot(key, state) {
   var dot = $('dot-' + key);
   if (!dot) return;
   dot.className = 'dot ' + state;
+  var item = $('si-' + key);
+  if (item) {
+    item.classList.toggle('src-err', state === 'err');
+  }
+  checkSourceAlerts();
 }
 
 function setSrc(key, label) {
   var el = $('src-' + key);
   if (el) el.textContent = label;
+}
+
+function checkSourceAlerts() {
+  var bar = $('src-alert-bar');
+  var listEl = $('alert-src-list');
+  if (!bar || !listEl) return;
+  var failed = Object.keys(SRC_LABELS).filter(function(k) {
+    var dot = $('dot-' + k);
+    return dot && dot.classList.contains('err');
+  });
+  if (failed.length > 0) {
+    listEl.textContent = failed.map(function(k) { return SRC_LABELS[k]; }).join(' · ');
+    bar.classList.add('visible');
+  } else {
+    bar.classList.remove('visible');
+  }
 }
 
 function log(msg, cls) {
@@ -719,7 +740,6 @@ function renderNav() {
   setText('nav-alt', st.alt != null ? st.alt.toFixed(1) + ' km' : '--');
   setText('nav-spd', st.speedKms != null ? st.speedKms.toFixed(2) + ' km/s' : (st.speedKmh != null ? (st.speedKmh / 3600).toFixed(2) + ' km/s' : '--'));
   setText('nav-day', st.visibility === 'daylight' ? 'Jour orbital' : st.visibility === 'eclipsed' ? 'Nuit orbitale' : '--');
-  setText('nav-src', st.source || '--');
   setText('upd-nav', new Date().toISOString().slice(11, 19) + 'Z');
 
   if (st.lat != null) {
@@ -733,7 +753,82 @@ function renderNav() {
   renderPower();
 }
 
-// ── Power section (derived from orbital phase) ─────────────────────────────
+// ── Power section (derived from orbital phase + beta angle estimate) ─────────
+var _pwrPhaseStart = null; // Date when current solar/eclipse phase began
+var _pwrPrevPhase  = null; // 'daylight' | 'eclipsed'
+
+// ISS orbital constants
+var _ISS_DAYLIGHT_MIN = 57;  // minutes per sunlit arc (~57 min)
+var _ISS_ECLIPSE_MIN  = 35;  // minutes per eclipse arc (~35 min)
+var _ISS_SAW_PEAK_KW  = 31;  // kW peak per SAW array (4 arrays × 2 sides = 8 total)
+
+// Battery SoC bounds: discharge never below ~30%, full charge ~100%
+var _BAT_FULL = 100;
+var _BAT_LOW  = 30;
+
+// Compute ISS beta angle in degrees (angle between orbital plane and sun).
+// Uses TLE-derived position/velocity (ECI) and SunCalc sun direction.
+// Returns null if data unavailable.
+function computeBetaDeg() {
+  try {
+    var satrec = window._issSatrec;
+    if (!satrec || typeof satellite === 'undefined' || typeof SunCalc === 'undefined') return null;
+    var now = new Date();
+    var pv  = satellite.propagate(satrec, now);
+    if (!pv || !pv.position || !pv.velocity) return null;
+
+    // Orbital normal = pos × vel (ECI)
+    var p = pv.position, v = pv.velocity;
+    var nx = p.y * v.z - p.z * v.y;
+    var ny = p.z * v.x - p.x * v.z;
+    var nz = p.x * v.y - p.y * v.x;
+    var nLen = Math.sqrt(nx*nx + ny*ny + nz*nz);
+    if (nLen === 0) return null;
+    nx /= nLen; ny /= nLen; nz /= nLen;
+
+    // Sun direction: from SunCalc azimuth+altitude at subsatellite point
+    // Use ECI sun vector via simple low-precision formula
+    var sunPos = SunCalc.getPosition(now, 0, 0); // az/alt from centre
+    // Convert sun RA/dec: SunCalc doesn't give ECI directly.
+    // Use Meeus-style approach: days since J2000
+    var jd  = now / 86400000 + 2440587.5;
+    var n   = jd - 2451545.0;
+    var L   = (280.460 + 0.9856474 * n) * Math.PI / 180;
+    var g   = (357.528 + 0.9856003 * n) * Math.PI / 180;
+    var lam = L + (1.915 * Math.sin(g) + 0.020 * Math.sin(2*g)) * Math.PI / 180;
+    var eps = (23.439 - 0.0000004 * n) * Math.PI / 180;
+    var sx = Math.cos(lam);
+    var sy = Math.cos(eps) * Math.sin(lam);
+    var sz = Math.sin(eps) * Math.sin(lam);
+
+    // Beta = 90° - angle between orbital normal and sun direction
+    var dot = nx*sx + ny*sy + nz*sz;
+    // dot = cos(angle between normal and sun); beta = 90 - angle
+    return Math.asin(Math.max(-1, Math.min(1, dot))) * 180 / Math.PI;
+  } catch(e) { return null; }
+}
+
+// Estimate per-side solar array production (kW) based on beta angle.
+// At beta=0° (sun perpendicular to orbit plane): both sides see ~full sun each half orbit.
+// At high beta (>~50°): one side always lit, other barely lit.
+// We use a simplified model: effective illumination factor per side.
+// Returns { port: kW, stbd: kW }
+function estimateSolarKW(beta) {
+  if (beta === null) return null;
+  var b = Math.abs(beta);
+  // Each SAW side: 4 arrays × ~31 kW peak = ~124 kW max per side
+  // At beta=0°, arrays are edge-on at solstice, roughly 84 kW effective per side on average
+  // Simplified: use cos(beta) factor for total, split ±5% port vs stbd for asymmetry appearance
+  var total = 4 * _ISS_SAW_PEAK_KW * Math.cos(b * Math.PI / 180);
+  total = Math.max(0, total);
+  // At low beta, both sides contribute similarly
+  // At high beta, ram side sees more sun — simplified split
+  var asym = Math.min(0.3, b / 180);
+  var port  = total * (0.5 + asym);
+  var stbd  = total * (0.5 - asym);
+  return { port: Math.round(port), stbd: Math.round(stbd) };
+}
+
 function renderPower() {
   var solar   = st.visibility === 'daylight';
   var eclipse = st.visibility === 'eclipsed';
@@ -745,16 +840,60 @@ function renderPower() {
   var stEl  = document.getElementById('pwr-stbd');
   if (!phEl) return;
 
+  var now   = new Date();
+  var phase = solar ? 'daylight' : 'eclipsed';
+
+  // Track phase transitions
+  if (phase !== _pwrPrevPhase) {
+    _pwrPhaseStart = now;
+    _pwrPrevPhase  = phase;
+  }
+  var elapsedMin = _pwrPhaseStart ? (now - _pwrPhaseStart) / 60000 : 0;
+
+  // Battery SoC estimate
+  var soc;
   if (solar) {
-    phEl.textContent  = '☀ Solaire';  phEl.className  = 'datum-value ok';
-    batEl.textContent = 'Charge';      batEl.className = 'datum-value ok';
-    poEl.textContent  = 'Actif';       poEl.className  = 'datum-value ok';
-    stEl.textContent  = 'Actif';       stEl.className  = 'datum-value ok';
+    // Charging: from _BAT_LOW up to _BAT_FULL over _ISS_DAYLIGHT_MIN minutes
+    var t = Math.min(1, elapsedMin / _ISS_DAYLIGHT_MIN);
+    soc = _BAT_LOW + (_BAT_FULL - _BAT_LOW) * t;
   } else {
-    phEl.textContent  = '🌑 Nuit';     phEl.className  = 'datum-value warn';
-    batEl.textContent = 'Décharge';    batEl.className = 'datum-value warn';
-    poEl.textContent  = 'Inactif';     poEl.className  = 'datum-value na';
-    stEl.textContent  = 'Inactif';     stEl.className  = 'datum-value na';
+    // Discharging: from _BAT_FULL down to _BAT_LOW over _ISS_ECLIPSE_MIN minutes
+    var t = Math.min(1, elapsedMin / _ISS_ECLIPSE_MIN);
+    soc = _BAT_FULL - (_BAT_FULL - _BAT_LOW) * t;
+  }
+  soc = Math.round(soc);
+
+  // Solar panel estimate
+  var beta = computeBetaDeg();
+  var kw   = solar ? estimateSolarKW(beta) : null;
+
+  if (solar) {
+    phEl.textContent = '☀ Solaire';
+    phEl.className   = 'datum-value ok';
+
+    batEl.textContent = '~' + soc + '% · charge (est.)';
+    batEl.className   = 'datum-value ok';
+
+    if (kw) {
+      poEl.textContent = '~' + kw.port + ' kW (est.)';
+      stEl.textContent = '~' + kw.stbd + ' kW (est.)';
+    } else {
+      poEl.textContent = 'Actif';
+      stEl.textContent = 'Actif';
+    }
+    poEl.className = 'datum-value ok';
+    stEl.className = 'datum-value ok';
+  } else {
+    phEl.textContent  = '🌑 Nuit';
+    phEl.className    = 'datum-value warn';
+
+    batEl.textContent = '~' + soc + '% · décharge (est.)';
+    batEl.className   = 'datum-value warn';
+
+    poEl.textContent = '0 kW';
+    stEl.textContent = '0 kW';
+    poEl.className   = 'datum-value na';
+    stEl.className   = 'datum-value na';
   }
 }
 
@@ -773,10 +912,18 @@ function renderDocking() {
     else if (/starliner/i.test(d.vehicle)) color = '#7070ff';
     else if (/dream chaser/i.test(d.vehicle)) color = '#a070ff';
 
-    // match crew members by spacecraft name
+    // match crew members by spacecraft name (exact, then fuzzy by vehicle family)
+    var vLow = d.vehicle.trim().toLowerCase();
     var crew = st.crew.filter(function(c) {
-      return c.accessMission &&
-        c.accessMission.trim().toLowerCase() === d.vehicle.trim().toLowerCase();
+      if (!c.accessMission) return false;
+      var am = c.accessMission.trim().toLowerCase();
+      if (am === vLow) return true;
+      // LL2 uses physical vehicle name (e.g. "Crew Dragon Freedom")
+      // corquaid uses mission name (e.g. "Crew-12 Dragon") — match by family keyword
+      if (am.includes('dragon')      && vLow.includes('dragon'))      return true;
+      if (am.includes('starliner')   && vLow.includes('starliner'))   return true;
+      if (am.includes('dream chaser') && vLow.includes('dream chaser')) return true;
+      return false;
     });
 
     var detail = esc(d.port) + ' · ';
@@ -820,9 +967,14 @@ async function fetchDocking() {
     var data = await r.json();
     if (data.status !== 'OK') throw new Error('API error');
     st.docking = data.docked || [];
+    var srcLabel = data.source && data.source.includes('SpaceLaunchNow') ? 'LL2 · ' : 'STATIQUE · ';
+    setDot('docking', 'ok');
+    setSrc('docking', srcLabel + new Date().toISOString().slice(11,16) + 'Z');
     renderDocking();
     log('Amarrage OK — ' + st.docking.length + ' véhicules', 'log-ok');
   } catch(e) {
+    setDot('docking', 'err');
+    setSrc('docking', 'OFFLINE');
     log('Amarrage erreur : ' + e.message, 'log-err');
   }
 }
@@ -944,17 +1096,6 @@ function esc(s) {
 // ── Clock ─────────────────────────────────────────────────────────────────────
 function updateClock() {
   setText('utc-clock', 'UTC ' + new Date().toISOString().slice(11, 19));
-  var ms    = Date.now() - EXP_START.getTime();
-  var total = Math.max(0, Math.floor(ms / 1000));
-  var d = Math.floor(total / 86400);
-  var h = Math.floor((total % 86400) / 3600);
-  var m = Math.floor((total % 3600) / 60);
-  var s = total % 60;
-  setText('exp-elapsed',
-    'J+' + String(d).padStart(3,'0') + ' ' +
-    String(h).padStart(2,'0') + ':' +
-    String(m).padStart(2,'0') + ':' +
-    String(s).padStart(2,'0'));
 }
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
@@ -1132,16 +1273,67 @@ document.addEventListener('DOMContentLoaded', function() {
    NODE3000005 = Urine Tank Qty (%)
 ════════════════════════════════════════ */
 (function initCabinTelemetry() {
-  if (typeof LightstreamerClient === 'undefined') return;
+  if (typeof LightstreamerClient === 'undefined') {
+    setDot('cabin', 'err');
+    setSrc('cabin', 'OFFLINE');
+    return;
+  }
 
   var client = new LightstreamerClient('https://push.lightstreamer.com', 'ISSLIVE');
   client.connectionOptions.setSlowingEnabled(false);
+
+  // Track connection status
+  var _cabinConnected = false;
+  var _cabinErrTimer  = null;
+  client.addListener({
+    onStatusChange: function(status) {
+      if (status === 'CONNECTED:WS-STREAMING' || status === 'CONNECTED:HTTP-STREAMING') {
+        _cabinConnected = true;
+        if (_cabinErrTimer) { clearTimeout(_cabinErrTimer); _cabinErrTimer = null; }
+        setDot('cabin', 'ok');
+        setSrc('cabin', 'LIGHTSTREAMER · ' + new Date().toISOString().slice(11,16) + 'Z');
+      } else if (status === 'DISCONNECTED' || status === 'DISCONNECTED:WILL-RETRY' || status === 'DISCONNECTED:TRYING-RECOVERY') {
+        if (_cabinConnected) {
+          setDot('cabin', 'warn');
+          setSrc('cabin', 'RECONNEXION…');
+        } else {
+          // Give 15 s to connect before flagging as error
+          if (!_cabinErrTimer) {
+            _cabinErrTimer = setTimeout(function() {
+              setDot('cabin', 'err');
+              setSrc('cabin', 'OFFLINE');
+            }, 15000);
+          }
+        }
+      }
+    }
+  });
 
   // CalibratedData for partial pressures is already in mmHg (not PSIA despite PUIList label)
   // ppO2: mmHg → kPa for display (÷7.5006); ppCO2: show directly in mmHg
   function mmhg2kpa(v) { return (v / 7.5006).toFixed(1) + ' kPa'; }
   function mmhg(v)     { return v.toFixed(2) + ' mmHg'; }
   function pct(v)      { return v.toFixed(1) + ' %'; }
+
+  // Valid ranges — applied AFTER unit conversion (display units)
+  // Values outside these ranges are physically impossible → flag as H.R. (Hors Plage)
+  var VALID_RANGES = {
+    'NODE3000001': { min: 15,  max: 30,  conv: function(mmhgVal) { return mmhgVal / 7.5006; } }, // ppO2 kPa
+    'NODE3000003': { min: 0,   max: 15,  conv: function(v) { return v; } },                       // ppCO2 mmHg
+    'NODE3000009': { min: 0,   max: 100, conv: function(v) { return v; } },                       // eau %
+    'NODE3000005': { min: 0,   max: 100, conv: function(v) { return v; } },                       // urine %
+  };
+
+  function validateCabin(item, rawNum) {
+    var range = VALID_RANGES[item];
+    if (!range) return rawNum;
+    var converted = range.conv(rawNum);
+    if (converted < range.min || converted > range.max) {
+      console.warn('[VECTOR] Telemetry out of range — ' + item + ': ' + converted.toFixed(3));
+      return null; // signal hors plage
+    }
+    return rawNum; // retourne la valeur brute (la fmt s'en charge)
+  }
 
   var ITEMS = {
     'NODE3000001': { val: 'env-o2',    sub: 'env-o2-sub',    fmt: mmhg2kpa, label: 'Node 3 (ETHOS)' },
@@ -1174,11 +1366,22 @@ document.addEventListener('DOMContentLoaded', function() {
       var elSub = document.getElementById(cfg.sub);
       if (!elVal) return;
 
-      elVal.textContent = cfg.fmt(num);
+      var validated = validateCabin(item, num);
+      if (validated === null) {
+        // Hors plage — valeur physiquement impossible, on n'affiche pas
+        elVal.textContent = 'H.R.';
+        elVal.className   = 'datum-value alert';
+        if (elSub) elSub.textContent = 'Hors plage · signal ignoré';
+        return;
+      }
+
+      elVal.textContent = cfg.fmt(validated);
       elVal.className   = 'datum-value' + (color === 'red' ? ' alert' : color === 'yellow' ? ' warn' : ' ok');
       if (elSub) elSub.textContent = cfg.label + (ts ? ' · ' + new Date(parseFloat(ts) * 1000).toLocaleTimeString('fr-FR') : '');
     },
     onSubscriptionError: function(code, msg) {
+      setDot('cabin', 'err');
+      setSrc('cabin', 'ERR ' + code);
       ['env-o2-sub','env-co2-sub','env-water-sub','env-urine-sub'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = 'Flux indisponible (' + code + ')';
@@ -1316,8 +1519,17 @@ document.addEventListener('DOMContentLoaded', function() {
       // lines[0]=name, lines[1]=TLE1, lines[2]=TLE2
       if (lines.length >= 3) {
         lfSatrec = satellite.twoline2satrec(lines[1], lines[2]);
+        window._issSatrec = lfSatrec; // expose for power section beta angle computation
+        setDot('tle', 'ok');
+        setSrc('tle', 'CELESTRAK · ' + new Date().toISOString().slice(11,16) + 'Z');
+      } else {
+        throw new Error('Format TLE invalide');
       }
-    } catch(e) { lfSatrec = null; }
+    } catch(e) {
+      lfSatrec = null;
+      setDot('tle', 'err');
+      setSrc('tle', 'OFFLINE');
+    }
   }
 
   /* Propagate orbit with satellite.js, split at antimeridian crossings */
@@ -1470,6 +1682,9 @@ document.addEventListener('DOMContentLoaded', function() {
       setInterval(fetchTLE, 2 * 3600 * 1000);
     });
   };
+
+  // Fetch TLE immediately on page load (dot status independent of map open)
+  fetchTLE();
 })();
 </script>
 </body>
