@@ -661,7 +661,7 @@ var ISS_MILESTONES = [
 var st = {
   lat: null, lon: null, alt: null, speedKmh: null, speedKms: null,
   visibility: null, source: null,
-  crew: [], events: [], swpc: {}
+  crew: [], events: [], swpc: {}, docking: []
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -757,46 +757,73 @@ function renderPower() {
   }
 }
 
-// ── Docking — derived from crew API (spacecraft field) ─────────────────────
+// ── Docking — api/iss-docking + crew API for crew counts ──────────────────
 function renderDocking() {
   var list = document.getElementById('docking-list');
-  if (!list || !st.crew.length) return;
-
-  var vessels = {};
-  st.crew.forEach(function(c) {
-    var key = c.accessMission || 'Inconnu';
-    if (!vessels[key]) vessels[key] = { name: key, members: [] };
-    vessels[key].members.push(c);
-  });
+  if (!list || !st.docking.length) return;
 
   var html = '';
-  Object.keys(vessels).forEach(function(k) {
-    var v = vessels[k];
-    var n = v.name;
-    var type  = 'Vaisseau';
-    var color = 'var(--accent)';
-    if (/dragon/i.test(n))           { type = 'Crew Dragon';  color = '#00d2ff'; }
-    else if (/soyuz|soyouz/i.test(n)){ type = 'Soyouz';       color = '#4db8ff'; }
-    else if (/progress/i.test(n))    { type = 'Progress';      color = '#7aa0b8'; }
-    else if (/starliner/i.test(n))   { type = 'Starliner';     color = '#7070ff'; }
-    else if (/dream chaser/i.test(n)){ type = 'Dream Chaser';  color = '#a070ff'; }
+  st.docking.forEach(function(d) {
+    var color = '#7aa0b8';
+    if      (/dragon/i.test(d.vehicle))    color = '#00d2ff';
+    else if (/soyuz|soyouz/i.test(d.vehicle)) color = '#4db8ff';
+    else if (/progress/i.test(d.vehicle))  color = '#3d7070';
+    else if (/cygnus/i.test(d.vehicle))    color = '#7070aa';
+    else if (/starliner/i.test(d.vehicle)) color = '#7070ff';
+    else if (/dream chaser/i.test(d.vehicle)) color = '#a070ff';
 
-    var agencies = v.members
-      .map(function(m) { return m.agency; })
-      .filter(function(a, i, arr) { return arr.indexOf(a) === i; });
+    // match crew members by spacecraft name
+    var crew = st.crew.filter(function(c) {
+      return c.accessMission &&
+        c.accessMission.trim().toLowerCase() === d.vehicle.trim().toLowerCase();
+    });
+
+    var detail = esc(d.port) + ' · ';
+    if (d.type === 'crew') {
+      detail += crew.length ? crew.length + ' pers. à bord' : 'Équipage';
+    } else {
+      detail += 'Cargo';
+    }
+
+    var tags = '';
+    if (crew.length) {
+      var agencies = crew
+        .map(function(c) { return c.agency; })
+        .filter(function(a, i, arr) { return arr.indexOf(a) === i; });
+      tags = '<div class="dock-card-crew">' +
+        agencies.map(function(a) { return '<span class="dock-tag">' + esc(a) + '</span>'; }).join('') +
+        '</div>';
+    } else {
+      tags = '<div class="dock-card-crew"><span class="dock-tag">' + esc(d.agency) + '</span></div>';
+    }
+
+    var since = d.dockedSince
+      ? '<div class="dock-card-detail" style="margin-top:2px;opacity:.65">amarré depuis ' + esc(d.dockedSince) + '</div>'
+      : '';
 
     html +=
       '<div class="dock-card" style="border-left-color:' + color + '">' +
-        '<div class="dock-card-name">' + esc(n) + '</div>' +
-        '<div class="dock-card-detail">' + esc(type) + ' · ' + v.members.length + ' pers.</div>' +
-        '<div class="dock-card-crew">' +
-          agencies.map(function(a) { return '<span class="dock-tag">' + esc(a) + '</span>'; }).join('') +
-        '</div>' +
+        '<div class="dock-card-name">' + esc(d.vehicle) + '</div>' +
+        '<div class="dock-card-detail">' + detail + '</div>' +
+        since + tags +
       '</div>';
   });
 
   list.innerHTML = html ||
     '<div class="datum-sub" style="text-align:center;padding:8px">Aucun vaisseau amarré</div>';
+}
+
+async function fetchDocking() {
+  try {
+    var r = await fetch('/api/iss-docking');
+    var data = await r.json();
+    if (data.status !== 'OK') throw new Error('API error');
+    st.docking = data.docked || [];
+    renderDocking();
+    log('Amarrage OK — ' + st.docking.length + ' véhicules', 'log-ok');
+  } catch(e) {
+    log('Amarrage erreur : ' + e.message, 'log-err');
+  }
 }
 
 function renderCrew() {
@@ -815,7 +842,7 @@ function renderCrew() {
       (m.accessMission ? '<div class="crew-sub">' + esc(m.accessMission) + '</div>' : '');
     grid.appendChild(d);
   });
-  renderDocking();
+  renderDocking(); // re-render docking to update crew counts
 }
 
 function renderEvents() {
@@ -1087,6 +1114,7 @@ document.addEventListener('DOMContentLoaded', function() {
   fetchCrew();
   fetchEvents();
   fetchSWPC();
+  fetchDocking();
 
   setInterval(fetchTelemetry, 10000);
   setInterval(fetchSWPC,      60000);
