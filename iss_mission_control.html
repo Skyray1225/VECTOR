@@ -413,24 +413,24 @@ header { display: flex; align-items: center; justify-content: space-between; gap
         <div class="panel-body">
           <div class="data-grid">
             <div class="datum">
-              <div class="datum-label">Température</div>
-              <div class="datum-value na" id="env-temp">—</div>
-              <div class="datum-sub" id="env-temp-sub">Chargement…</div>
+              <div class="datum-label">ppO₂ Node 3</div>
+              <div class="datum-value na" id="env-o2">—</div>
+              <div class="datum-sub" id="env-o2-sub">Chargement…</div>
             </div>
             <div class="datum">
-              <div class="datum-label">Humidité relative</div>
-              <div class="datum-value na" id="env-hum">—</div>
-              <div class="datum-sub" id="env-hum-sub">Chargement…</div>
-            </div>
-            <div class="datum">
-              <div class="datum-label">Pression cabine</div>
-              <div class="datum-value na" id="env-press">—</div>
-              <div class="datum-sub" id="env-press-sub">Chargement…</div>
-            </div>
-            <div class="datum">
-              <div class="datum-label">CO₂ partiel</div>
+              <div class="datum-label">ppCO₂ Node 3</div>
               <div class="datum-value na" id="env-co2">—</div>
               <div class="datum-sub" id="env-co2-sub">Chargement…</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Eau potable</div>
+              <div class="datum-value na" id="env-water">—</div>
+              <div class="datum-sub" id="env-water-sub">Chargement…</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Réserv. urine</div>
+              <div class="datum-value na" id="env-urine">—</div>
+              <div class="datum-sub" id="env-urine-sub">Chargement…</div>
             </div>
           </div>
         </div>
@@ -985,10 +985,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /* ════════════════════════════════════════
-   ISS LIVE — CABIN TELEMETRY (Lightstreamer)
-   All 8 demo items subscribed so console shows real values.
-   Open DevTools > Console and look for [ISS TELEM] lines to
-   identify which MSID maps to which physical measurement.
+   ISS LIVE — CABIN TELEMETRY (Lightstreamer / ISSLIVE adapter)
+   Source: PUIList.xml ETHOS discipline (Lightstreamer demo repo)
+   NODE3000001 = Node 3 ppO2  (PSIA → kPa ×6.895)
+   NODE3000003 = Node 3 ppCO2 (PSIA → mmHg ×51.715)
+   NODE3000009 = Clean Water Tank Qty (%)
+   NODE3000005 = Urine Tank Qty (%)
 ════════════════════════════════════════ */
 (function initCabinTelemetry() {
   if (typeof LightstreamerClient === 'undefined') return;
@@ -996,67 +998,48 @@ document.addEventListener('DOMContentLoaded', function() {
   var client = new LightstreamerClient('https://push.lightstreamer.com', 'ISSLIVE');
   client.connectionOptions.setSlowingEnabled(false);
 
-  // Items wired to the UI (best-guess mapping, may be corrected after inspection)
-  // NODE3000008 returned ~5 °C → likely dew-point, NOT air temp
-  // NODE3000005 is the next candidate for cabin air temperature
-  var UI_ITEMS = {
-    'NODE3000005': { val: 'env-temp',   sub: 'env-temp-sub',   unit: '°C',   label: 'Node 3' },
-    'NODE3000009': { val: 'env-hum',    sub: 'env-hum-sub',    unit: '%RH',  label: 'Node 3' },
-    'AIRLOCK000005':{ val: 'env-press', sub: 'env-press-sub',  unit: 'kPa',  label: 'Airlock' },
-    'AIRLOCK000049':{ val: 'env-co2',   sub: 'env-co2-sub',    unit: 'mmHg', label: 'Airlock' },
-  };
+  // convert: raw PSIA value → display value + unit string
+  function psia2kpa(v)  { return (v * 6.895).toFixed(2) + ' kPa'; }
+  function psia2mmhg(v) { return (v * 51.715).toFixed(2) + ' mmHg'; }
+  function pct(v)       { return v.toFixed(1) + ' %'; }
 
-  // All 8 known demo items — subscribed for diagnostic console logging only
-  var ALL_ITEMS = [
-    'TIME_000001',
-    'NODE3000005', 'NODE3000008', 'NODE3000009',
-    'AIRLOCK000005', 'AIRLOCK000049',
-    'S0000005', 'P1000003'
-  ];
+  var ITEMS = {
+    'NODE3000001': { val: 'env-o2',    sub: 'env-o2-sub',    fmt: psia2kpa,  label: 'Node 3 (ETHOS)' },
+    'NODE3000003': { val: 'env-co2',   sub: 'env-co2-sub',   fmt: psia2mmhg, label: 'Node 3 (ETHOS)' },
+    'NODE3000009': { val: 'env-water', sub: 'env-water-sub', fmt: pct,       label: 'Node 3 (ETHOS)' },
+    'NODE3000005': { val: 'env-urine', sub: 'env-urine-sub', fmt: pct,       label: 'Node 3 (ETHOS)' },
+  };
 
   var sub = new Subscription(
     'MERGE',
-    ALL_ITEMS,
+    Object.keys(ITEMS),
     ['Value', 'CalibratedData', 'TimeStamp', 'Status.Color']
   );
   sub.setRequestedSnapshot('yes');
 
   sub.addListener({
     onItemUpdate: function(update) {
-      var item  = update.getItemName();
-      var calVal = update.getValue('CalibratedData') || update.getValue('Value') || '';
-      var rawVal = update.getValue('Value') || '';
-      var color  = update.getValue('Status.Color') || 'grey';
-      var ts     = update.getValue('TimeStamp') || '';
-
-      // ── Diagnostic log — visible in DevTools console ─────────────────────
-      if (calVal !== '') {
-        console.log(
-          '[ISS TELEM] ' + item +
-          '  calibrated=' + calVal +
-          '  raw=' + rawVal +
-          '  color=' + color
-        );
-      }
-
-      // ── Update UI for mapped items ────────────────────────────────────────
-      var cfg = UI_ITEMS[item];
+      var item   = update.getItemName();
+      var cfg    = ITEMS[item];
       if (!cfg) return;
 
-      var num = parseFloat(calVal);
+      var raw   = update.getValue('CalibratedData') || update.getValue('Value') || '';
+      var ts    = update.getValue('TimeStamp') || '';
+      var color = update.getValue('Status.Color') || 'grey';
+
+      var num = parseFloat(raw);
       if (isNaN(num)) return;
 
       var elVal = document.getElementById(cfg.val);
       var elSub = document.getElementById(cfg.sub);
       if (!elVal) return;
 
-      elVal.textContent = num.toFixed(2) + ' ' + cfg.unit;
+      elVal.textContent = cfg.fmt(num);
       elVal.className   = 'datum-value' + (color === 'red' ? ' alert' : color === 'yellow' ? ' warn' : ' ok');
       if (elSub) elSub.textContent = cfg.label + (ts ? ' · ' + new Date(parseFloat(ts) * 1000).toLocaleTimeString('fr-FR') : '');
     },
     onSubscriptionError: function(code, msg) {
-      console.warn('[ISS TELEM] Subscription error', code, msg);
-      ['env-temp-sub','env-hum-sub','env-press-sub','env-co2-sub'].forEach(function(id) {
+      ['env-o2-sub','env-co2-sub','env-water-sub','env-urine-sub'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = 'Flux indisponible (' + code + ')';
       });
