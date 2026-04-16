@@ -986,8 +986,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* ════════════════════════════════════════
    ISS LIVE — CABIN TELEMETRY (Lightstreamer)
-   Items: NODE3000005=pressure, NODE3000008=temp,
-          NODE3000009=humidity, AIRLOCK000049=CO2
+   All 8 demo items subscribed so console shows real values.
+   Open DevTools > Console and look for [ISS TELEM] lines to
+   identify which MSID maps to which physical measurement.
 ════════════════════════════════════════ */
 (function initCabinTelemetry() {
   if (typeof LightstreamerClient === 'undefined') return;
@@ -995,17 +996,27 @@ document.addEventListener('DOMContentLoaded', function() {
   var client = new LightstreamerClient('https://push.lightstreamer.com', 'ISSLIVE');
   client.connectionOptions.setSlowingEnabled(false);
 
-  // Map item → { elVal, elSub, unit, label }
-  var ITEMS = {
-    'NODE3000008': { val: 'env-temp',   sub: 'env-temp-sub',   unit: '°C',   label: 'Node 3 Lab' },
-    'NODE3000009': { val: 'env-hum',    sub: 'env-hum-sub',    unit: '%RH',  label: 'Node 3 Lab' },
-    'NODE3000005': { val: 'env-press',  sub: 'env-press-sub',  unit: 'kPa',  label: 'Node 3 Lab' },
-    'AIRLOCK000049':{ val: 'env-co2',  sub: 'env-co2-sub',    unit: 'mmHg', label: 'Airlock' },
+  // Items wired to the UI (best-guess mapping, may be corrected after inspection)
+  // NODE3000008 returned ~5 °C → likely dew-point, NOT air temp
+  // NODE3000005 is the next candidate for cabin air temperature
+  var UI_ITEMS = {
+    'NODE3000005': { val: 'env-temp',   sub: 'env-temp-sub',   unit: '°C',   label: 'Node 3' },
+    'NODE3000009': { val: 'env-hum',    sub: 'env-hum-sub',    unit: '%RH',  label: 'Node 3' },
+    'AIRLOCK000005':{ val: 'env-press', sub: 'env-press-sub',  unit: 'kPa',  label: 'Airlock' },
+    'AIRLOCK000049':{ val: 'env-co2',   sub: 'env-co2-sub',    unit: 'mmHg', label: 'Airlock' },
   };
+
+  // All 8 known demo items — subscribed for diagnostic console logging only
+  var ALL_ITEMS = [
+    'TIME_000001',
+    'NODE3000005', 'NODE3000008', 'NODE3000009',
+    'AIRLOCK000005', 'AIRLOCK000049',
+    'S0000005', 'P1000003'
+  ];
 
   var sub = new Subscription(
     'MERGE',
-    Object.keys(ITEMS),
+    ALL_ITEMS,
     ['Value', 'CalibratedData', 'TimeStamp', 'Status.Color']
   );
   sub.setRequestedSnapshot('yes');
@@ -1013,14 +1024,26 @@ document.addEventListener('DOMContentLoaded', function() {
   sub.addListener({
     onItemUpdate: function(update) {
       var item  = update.getItemName();
-      var cfg   = ITEMS[item];
+      var calVal = update.getValue('CalibratedData') || update.getValue('Value') || '';
+      var rawVal = update.getValue('Value') || '';
+      var color  = update.getValue('Status.Color') || 'grey';
+      var ts     = update.getValue('TimeStamp') || '';
+
+      // ── Diagnostic log — visible in DevTools console ─────────────────────
+      if (calVal !== '') {
+        console.log(
+          '[ISS TELEM] ' + item +
+          '  calibrated=' + calVal +
+          '  raw=' + rawVal +
+          '  color=' + color
+        );
+      }
+
+      // ── Update UI for mapped items ────────────────────────────────────────
+      var cfg = UI_ITEMS[item];
       if (!cfg) return;
 
-      var raw  = update.getValue('CalibratedData') || update.getValue('Value') || '';
-      var ts   = update.getValue('TimeStamp') || '';
-      var color= update.getValue('Status.Color') || 'grey';
-
-      var num = parseFloat(raw);
+      var num = parseFloat(calVal);
       if (isNaN(num)) return;
 
       var elVal = document.getElementById(cfg.val);
@@ -1032,6 +1055,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (elSub) elSub.textContent = cfg.label + (ts ? ' · ' + new Date(parseFloat(ts) * 1000).toLocaleTimeString('fr-FR') : '');
     },
     onSubscriptionError: function(code, msg) {
+      console.warn('[ISS TELEM] Subscription error', code, msg);
       ['env-temp-sub','env-hum-sub','env-press-sub','env-co2-sub'].forEach(function(id) {
         var el = document.getElementById(id);
         if (el) el.textContent = 'Flux indisponible (' + code + ')';
