@@ -1019,20 +1019,71 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  /* Compute a ±90-min ground track (Keplerian approximation) */
-  function groundTrack(lat, lon, alt) {
-    var R = 6371 + alt;
-    var period = 2 * Math.PI * Math.sqrt(Math.pow(R, 3) / 3.986e5); // seconds
-    var angRate = 360 / period; // °/s orbital
-    var earthRate = 360 / 86400; // °/s Earth rotation
-    var pts = [];
-    for (var t = -45 * 60; t <= 90 * 60; t += 30) {
-      var dLon = (angRate - earthRate) * t;
-      var lngVal = ((lon + dLon + 180) % 360 + 360) % 360 - 180;
-      pts.push([lat, lngVal]);
-    }
-    return pts;
+  var lfSatrec = null; // satellite.js parsed TLE record
+
+  /* Fetch TLE from CelesTrak and parse with satellite.js */
+  async function fetchTLE() {
+    try {
+      var r = await fetch('https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=TLE');
+      var txt = await r.text();
+      var lines = txt.trim().split('\n').map(function(l){ return l.trim(); });
+      // lines[0]=name, lines[1]=TLE1, lines[2]=TLE2
+      if (lines.length >= 3) {
+        lfSatrec = satellite.twoline2satrec(lines[1], lines[2]);
+      }
+    } catch(e) { lfSatrec = null; }
   }
+
+  /* Propagate orbit with satellite.js, split at antimeridian crossings */
+  function computeGroundTrack(nowMs) {
+    if (!lfSatrec) return { past: [], future: [] };
+
+    var RAD = 180 / Math.PI;
+    var past = [], future = [];
+    var prevLon = null;
+
+    // Past: -100 min → now (stepped every 30s)
+    var pastSeg = [];
+    for (var dt = -100 * 60; dt <= 0; dt += 30) {
+      var d = new Date(nowMs + dt * 1000);
+      var pv = satellite.propagate(lfSatrec, d);
+      if (!pv.position) continue;
+      var gmst = satellite.gstime(d);
+      var geo  = satellite.eciToGeodetic(pv.position, gmst);
+      var lat  = geo.latitude  * RAD;
+      var lon  = geo.longitude * RAD;
+      if (prevLon !== null && Math.abs(lon - prevLon) > 180) {
+        past.push(pastSeg); pastSeg = [];
+      }
+      pastSeg.push([lat, lon]);
+      prevLon = lon;
+    }
+    if (pastSeg.length) past.push(pastSeg);
+
+    // Future: now → +100 min
+    prevLon = null;
+    var futureSeg = [];
+    for (var dt2 = 0; dt2 <= 100 * 60; dt2 += 30) {
+      var d2 = new Date(nowMs + dt2 * 1000);
+      var pv2 = satellite.propagate(lfSatrec, d2);
+      if (!pv2.position) continue;
+      var gmst2 = satellite.gstime(d2);
+      var geo2  = satellite.eciToGeodetic(pv2.position, gmst2);
+      var lat2  = geo2.latitude  * RAD;
+      var lon2  = geo2.longitude * RAD;
+      if (prevLon !== null && Math.abs(lon2 - prevLon) > 180) {
+        future.push(futureSeg); futureSeg = [];
+      }
+      futureSeg.push([lat2, lon2]);
+      prevLon = lon2;
+    }
+    if (futureSeg.length) future.push(futureSeg);
+
+    return { past: past, future: future };
+  }
+
+  var lfOrbitPast   = [];
+  var lfOrbitFuture = [];
 
   function updateLeaflet(lat, lon, alt, speedKmh) {
     if (!lfMap) return;
@@ -1050,20 +1101,32 @@ document.addEventListener('DOMContentLoaded', function() {
       '</div>'
     );
 
-    /* trail */
+    /* trail (positions réelles collectées toutes les 8s) */
     lfTrail.push({lat: lat, lng: lon});
     if (lfTrail.length > TRAIL_MAX) lfTrail.shift();
     if (lfTrailLine) lfMap.removeLayer(lfTrailLine);
     lfTrailLine = L.polyline(lfTrail.map(function(p){ return [p.lat, p.lng]; }), {
-      color: '#00d2ff', weight: 2, opacity: 0.6, smoothFactor: 1
+      color: '#00d2ff', weight: 2.5, opacity: 0.75, smoothFactor: 1
     }).addTo(lfMap);
 
-    /* orbit prediction */
-    if (lfOrbitLine) lfMap.removeLayer(lfOrbitLine);
-    var track = groundTrack(lat, lon, alt);
-    lfOrbitLine = L.polyline(track, {
-      color: '#00d2ff', weight: 1.2, opacity: 0.28, dashArray: '5 4', smoothFactor: 2
-    }).addTo(lfMap);
+    /* trajectoire TLE (passé + futur) */
+    lfOrbitPast.forEach(function(l)   { lfMap.removeLayer(l); });
+    lfOrbitFuture.forEach(function(l) { lfMap.removeLayer(l); });
+    lfOrbitPast = []; lfOrbitFuture = [];
+
+    if (lfSatrec) {
+      var track = computeGroundTrack(Date.now());
+      track.past.forEach(function(seg) {
+        lfOrbitPast.push(L.polyline(seg, {
+          color: '#00d2ff', weight: 1.2, opacity: 0.22, dashArray: '4 4'
+        }).addTo(lfMap));
+      });
+      track.future.forEach(function(seg) {
+        lfOrbitFuture.push(L.polyline(seg, {
+          color: '#00d2ff', weight: 1.5, opacity: 0.45, dashArray: '6 3'
+        }).addTo(lfMap));
+      });
+    }
 
     /* HUD */
     var coords = $('lf-coords');
@@ -1106,9 +1169,13 @@ document.addEventListener('DOMContentLoaded', function() {
       .addTo(lfMap)
       .bindPopup('', { className: 'lf-popup', maxWidth: 180 });
 
-    /* First fetch then poll */
-    lfFetch();
-    lfInterval = setInterval(lfFetch, 8000);
+    /* Fetch TLE first, then start position polling */
+    fetchTLE().then(function() {
+      lfFetch();
+      lfInterval = setInterval(lfFetch, 8000);
+      // Refresh TLE every 2 hours
+      setInterval(fetchTLE, 2 * 3600 * 1000);
+    });
   };
 })();
 </script>
