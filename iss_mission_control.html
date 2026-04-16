@@ -998,16 +998,17 @@ document.addEventListener('DOMContentLoaded', function() {
   var client = new LightstreamerClient('https://push.lightstreamer.com', 'ISSLIVE');
   client.connectionOptions.setSlowingEnabled(false);
 
-  // convert: raw PSIA value → display value + unit string
-  function psia2kpa(v)  { return (v * 6.895).toFixed(2) + ' kPa'; }
-  function psia2mmhg(v) { return (v * 51.715).toFixed(2) + ' mmHg'; }
-  function pct(v)       { return v.toFixed(1) + ' %'; }
+  // CalibratedData for partial pressures is already in mmHg (not PSIA despite PUIList label)
+  // ppO2: mmHg → kPa for display (÷7.5006); ppCO2: show directly in mmHg
+  function mmhg2kpa(v) { return (v / 7.5006).toFixed(1) + ' kPa'; }
+  function mmhg(v)     { return v.toFixed(2) + ' mmHg'; }
+  function pct(v)      { return v.toFixed(1) + ' %'; }
 
   var ITEMS = {
-    'NODE3000001': { val: 'env-o2',    sub: 'env-o2-sub',    fmt: psia2kpa,  label: 'Node 3 (ETHOS)' },
-    'NODE3000003': { val: 'env-co2',   sub: 'env-co2-sub',   fmt: psia2mmhg, label: 'Node 3 (ETHOS)' },
-    'NODE3000009': { val: 'env-water', sub: 'env-water-sub', fmt: pct,       label: 'Node 3 (ETHOS)' },
-    'NODE3000005': { val: 'env-urine', sub: 'env-urine-sub', fmt: pct,       label: 'Node 3 (ETHOS)' },
+    'NODE3000001': { val: 'env-o2',    sub: 'env-o2-sub',    fmt: mmhg2kpa, label: 'Node 3 (ETHOS)' },
+    'NODE3000003': { val: 'env-co2',   sub: 'env-co2-sub',   fmt: mmhg,     label: 'Node 3 (ETHOS)' },
+    'NODE3000009': { val: 'env-water', sub: 'env-water-sub', fmt: pct,      label: 'Node 3 (ETHOS)' },
+    'NODE3000005': { val: 'env-urine', sub: 'env-urine-sub', fmt: pct,      label: 'Node 3 (ETHOS)' },
   };
 
   var sub = new Subscription(
