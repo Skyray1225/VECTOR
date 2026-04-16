@@ -96,6 +96,15 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 .datum-value.warn { color: var(--warn); }
 .datum-value.na   { color: var(--muted); font-size: 13px; }
 .datum-sub { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.panel-sep { margin: 14px 0 8px; font-family: var(--mono); font-size: 9px; color: var(--muted);
+  letter-spacing: .15em; text-transform: uppercase; border-bottom: 1px solid rgba(200,216,228,.1); padding-bottom: 4px; }
+.dock-card { background: #0f151d; border: 1px solid rgba(255,255,255,.05); border-left: 3px solid var(--accent);
+  border-radius: 4px; padding: 9px 12px; margin-bottom: 6px; }
+.dock-card-name { font-family: var(--mono); font-size: 12px; color: var(--text); font-weight: 600; letter-spacing: .04em; }
+.dock-card-detail { margin-top: 4px; font-size: 11px; color: var(--muted); }
+.dock-card-crew { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+.dock-tag { font-family: var(--mono); font-size: 9px; padding: 2px 6px; border-radius: 2px;
+  background: rgba(255,255,255,.07); color: var(--muted); letter-spacing: .08em; }
 
 /* ── Survol card ── */
 .survol-card { padding: 12px; border: 1px solid rgba(107,184,214,.15); background: rgba(107,184,214,.05); border-radius: 4px; }
@@ -433,6 +442,38 @@ header { display: flex; align-items: center; justify-content: space-between; gap
               <div class="datum-sub" id="env-urine-sub">Chargement…</div>
             </div>
           </div>
+
+          <!-- ── ÉLECTRICITÉ ── -->
+          <div class="panel-sep">ÉLECTRICITÉ</div>
+          <div class="data-grid">
+            <div class="datum">
+              <div class="datum-label">Phase orbitale</div>
+              <div class="datum-value na" id="pwr-phase">—</div>
+              <div class="datum-sub">TLE · satellite.js</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Batteries</div>
+              <div class="datum-value na" id="pwr-bat">—</div>
+              <div class="datum-sub">8 × BCDU</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Panneaux babord</div>
+              <div class="datum-value na" id="pwr-port">—</div>
+              <div class="datum-sub">4 × SAW port</div>
+            </div>
+            <div class="datum">
+              <div class="datum-label">Panneaux tribord</div>
+              <div class="datum-value na" id="pwr-stbd">—</div>
+              <div class="datum-sub">4 × SAW tribord</div>
+            </div>
+          </div>
+
+          <!-- ── AMARRAGE ── -->
+          <div class="panel-sep">AMARRAGE</div>
+          <div id="docking-list">
+            <div class="datum-sub" style="text-align:center;padding:8px">Chargement…</div>
+          </div>
+
         </div>
       </div>
 
@@ -688,6 +729,74 @@ function renderNav() {
     setText('geo-zone',   r.zone);
     setText('phase-label', 'Orbites basses — ' + (st.visibility === 'daylight' ? 'jour orbital' : 'éclipse'));
   }
+  renderPower();
+}
+
+// ── Power section (derived from orbital phase) ─────────────────────────────
+function renderPower() {
+  var solar   = st.visibility === 'daylight';
+  var eclipse = st.visibility === 'eclipsed';
+  if (!solar && !eclipse) return;
+
+  var phEl  = document.getElementById('pwr-phase');
+  var batEl = document.getElementById('pwr-bat');
+  var poEl  = document.getElementById('pwr-port');
+  var stEl  = document.getElementById('pwr-stbd');
+  if (!phEl) return;
+
+  if (solar) {
+    phEl.textContent  = '☀ Solaire';  phEl.className  = 'datum-value ok';
+    batEl.textContent = 'Charge';      batEl.className = 'datum-value ok';
+    poEl.textContent  = 'Actif';       poEl.className  = 'datum-value ok';
+    stEl.textContent  = 'Actif';       stEl.className  = 'datum-value ok';
+  } else {
+    phEl.textContent  = '🌑 Éclipse'; phEl.className  = 'datum-value warn';
+    batEl.textContent = 'Décharge';    batEl.className = 'datum-value warn';
+    poEl.textContent  = 'Inactif';     poEl.className  = 'datum-value na';
+    stEl.textContent  = 'Inactif';     stEl.className  = 'datum-value na';
+  }
+}
+
+// ── Docking — derived from crew API (spacecraft field) ─────────────────────
+function renderDocking() {
+  var list = document.getElementById('docking-list');
+  if (!list || !st.crew.length) return;
+
+  var vessels = {};
+  st.crew.forEach(function(c) {
+    var key = c.accessMission || 'Inconnu';
+    if (!vessels[key]) vessels[key] = { name: key, members: [] };
+    vessels[key].members.push(c);
+  });
+
+  var html = '';
+  Object.keys(vessels).forEach(function(k) {
+    var v = vessels[k];
+    var n = v.name;
+    var type  = 'Vaisseau';
+    var color = 'var(--accent)';
+    if (/dragon/i.test(n))           { type = 'Crew Dragon';  color = '#00d2ff'; }
+    else if (/soyuz|soyouz/i.test(n)){ type = 'Soyouz';       color = '#4db8ff'; }
+    else if (/progress/i.test(n))    { type = 'Progress';      color = '#7aa0b8'; }
+    else if (/starliner/i.test(n))   { type = 'Starliner';     color = '#7070ff'; }
+    else if (/dream chaser/i.test(n)){ type = 'Dream Chaser';  color = '#a070ff'; }
+
+    var agencies = v.members
+      .map(function(m) { return m.agency; })
+      .filter(function(a, i, arr) { return arr.indexOf(a) === i; });
+
+    html +=
+      '<div class="dock-card" style="border-left-color:' + color + '">' +
+        '<div class="dock-card-name">' + esc(n) + '</div>' +
+        '<div class="dock-card-detail">' + esc(type) + ' · ' + v.members.length + ' pers.</div>' +
+        '<div class="dock-card-crew">' +
+          agencies.map(function(a) { return '<span class="dock-tag">' + esc(a) + '</span>'; }).join('') +
+        '</div>' +
+      '</div>';
+  });
+
+  list.innerHTML = html ||
+    '<div class="datum-sub" style="text-align:center;padding:8px">Aucun vaisseau amarré</div>';
 }
 
 function renderCrew() {
@@ -706,6 +815,7 @@ function renderCrew() {
       (m.accessMission ? '<div class="crew-sub">' + esc(m.accessMission) + '</div>' : '');
     grid.appendChild(d);
   });
+  renderDocking();
 }
 
 function renderEvents() {
