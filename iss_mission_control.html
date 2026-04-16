@@ -116,19 +116,21 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 #card-map-attr { position: absolute; left: 10px; bottom: 10px; z-index: 4;
   font-family: var(--mono); font-size: 9px; color: var(--muted);
   background: rgba(5,8,15,.85); border: 1px solid var(--border); border-radius: 3px; padding: 4px 7px; }
-#card-live { width: 625px; max-width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-#card-live .live-hdr { background: #17212c; padding: 9px 13px; border-bottom: 1px solid var(--border);
+#card-live { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+#card-live .live-hdr { background: #17212c; padding: 8px 13px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
   font-family: var(--head); font-size: 12px; font-weight: 700; letter-spacing: .08em; color: #d7e2ea; text-transform: uppercase; }
-#card-live .live-body { padding: 12px; }
-.live-src-btns { display: flex; gap: 6px; margin-bottom: 10px; }
-.live-src-btn { padding: 6px 12px; border: 1px solid var(--border); border-radius: 3px;
+#card-live .live-body { padding: 0; }
+.live-src-btns { display: flex; gap: 6px; }
+.live-src-btn { padding: 4px 10px; border: 1px solid var(--border); border-radius: 3px;
   background: #18222e; color: var(--muted); font-family: var(--head); font-size: 11px;
   font-weight: 600; letter-spacing: .06em; cursor: pointer; text-transform: uppercase; }
 .live-src-btn.active { background: #213140; border-color: var(--accent); color: var(--accent); }
-.live-frame-wrap { height: 310px; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: #000; }
-.live-frame-wrap iframe { width: 100%; height: 100%; border: 0; }
-.live-note { margin-top: 8px; font-size: 12px; color: var(--muted); }
-.live-ext { display: inline-block; margin-top: 6px; font-family: var(--head); font-size: 11px; letter-spacing: .07em; color: var(--accent); text-decoration: none; text-transform: uppercase; }
+.live-frame-wrap { position: relative; width: 100%; padding-top: 56.25%; background: #000; }
+.live-frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.live-footer { display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; border-top: 1px solid var(--border); background: #0b1420; }
+.live-note { font-size: 11px; color: var(--muted); }
+.live-ext { font-family: var(--head); font-size: 11px; letter-spacing: .07em; color: var(--accent); text-decoration: none; text-transform: uppercase; }
 
 /* ── Center column ── */
 .center-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
@@ -352,18 +354,22 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 
         <!-- Live card (hidden by default) -->
         <div id="card-live" style="display:none">
-          <div class="live-hdr">Flux Direct ISS</div>
-          <div class="live-body">
+          <div class="live-hdr">
+            <span>Flux Direct ISS</span>
             <div class="live-src-btns">
               <button class="live-src-btn active" id="btn-src-nasa">NASA Live</button>
               <button class="live-src-btn"        id="btn-src-tv">NASA TV</button>
             </div>
+          </div>
+          <div class="live-body">
             <div class="live-frame-wrap">
               <iframe id="live-iframe"
                 src="https://www.youtube.com/embed/zPH5KtjJFaQ?autoplay=1&rel=0"
                 title="ISS Live" allowfullscreen allow="autoplay; encrypted-media"></iframe>
             </div>
-            <div class="live-note" id="live-note">Vue Terre en direct — ISS HD Earth Viewing Experiment.</div>
+          </div>
+          <div class="live-footer">
+            <span class="live-note" id="live-note">Vue Terre en direct — ISS HD Earth Viewing Experiment.</span>
             <a class="live-ext" id="live-link" href="https://www.youtube.com/watch?v=zPH5KtjJFaQ" target="_blank" rel="noopener">Ouvrir la source →</a>
           </div>
         </div>
