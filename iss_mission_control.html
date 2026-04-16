@@ -717,7 +717,7 @@ function renderNav() {
   setText('nav-lon', fmtDeg(st.lon, 'E', 'W'));
   setText('nav-alt', st.alt != null ? st.alt.toFixed(1) + ' km' : '--');
   setText('nav-spd', st.speedKms != null ? st.speedKms.toFixed(2) + ' km/s' : (st.speedKmh != null ? (st.speedKmh / 3600).toFixed(2) + ' km/s' : '--'));
-  setText('nav-day', st.visibility === 'daylight' ? 'Jour orbital' : st.visibility === 'eclipsed' ? 'Éclipse' : '--');
+  setText('nav-day', st.visibility === 'daylight' ? 'Jour orbital' : st.visibility === 'eclipsed' ? 'Nuit orbitale' : '--');
   setText('nav-src', st.source || '--');
   setText('upd-nav', new Date().toISOString().slice(11, 19) + 'Z');
 
@@ -727,7 +727,7 @@ function renderNav() {
     setText('geo-sub',    r.sub);
     setText('geo-hemi',   (st.lat >= 0 ? 'Nord' : 'Sud') + ' / ' + (st.lon >= 0 ? 'Est' : 'Ouest'));
     setText('geo-zone',   r.zone);
-    setText('phase-label', 'Orbites basses — ' + (st.visibility === 'daylight' ? 'jour orbital' : 'éclipse'));
+    setText('phase-label', 'Orbites basses — ' + (st.visibility === 'daylight' ? 'jour orbital' : 'nuit orbitale'));
   }
   renderPower();
 }
@@ -750,7 +750,7 @@ function renderPower() {
     poEl.textContent  = 'Actif';       poEl.className  = 'datum-value ok';
     stEl.textContent  = 'Actif';       stEl.className  = 'datum-value ok';
   } else {
-    phEl.textContent  = '🌑 Éclipse'; phEl.className  = 'datum-value warn';
+    phEl.textContent  = '🌑 Nuit';     phEl.className  = 'datum-value warn';
     batEl.textContent = 'Décharge';    batEl.className = 'datum-value warn';
     poEl.textContent  = 'Inactif';     poEl.className  = 'datum-value na';
     stEl.textContent  = 'Inactif';     stEl.className  = 'datum-value na';
