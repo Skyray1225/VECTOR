@@ -676,7 +676,7 @@ footer a:hover { color: var(--muted); }
 
       <!-- ARTEMIS II -->
       <tr class="mission-row active" onclick="toggleDetail('d-artemis2')">
-        <td class="td-status"><span class="status-strip active"></span></td>
+        <td class="td-status"><span class="status-strip future"></span></td>
         <td class="td-id"><div class="cell-id">ATM-002</div></td>
         <td class="td-name">
           <div class="cell-patch">
@@ -691,7 +691,7 @@ footer a:hover { color: var(--muted); }
           <div class="cell-agency"><strong>NASA / CSA</strong>Programme Artemis</div>
         </td>
         <td class="td-phase">
-          <div class="phase-badge ok"><div class="bd"></div>EN VOL</div>
+          <div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>
           <div id="hub-phase" style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em"></div>
         </td>
         <td class="td-date">
@@ -1027,13 +1027,13 @@ setInterval(() => { document.getElementById('hub-phase').textContent = getMissio
 
   const missions = [
     {
-      cardClass: 'card-active',
+      cardClass: 'card-future',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png',
       patchDim: false,
       name: 'ARTEMIS II',
       sub: 'SLS BLOCK 1 · ORION MPCV',
       nameDim: false,
-      badge: `<div class="phase-badge ok"><div class="bd"></div>EN VOL</div>`,
+      badge: `<div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>`,
       date: '<strong>01 AVR 2026</strong> · 22:35 UTC',
       link: '<a href="/artemis2_mission_control.html" class="row-link">OUVRIR LE MISSION CONTROL →</a>',
       phaseStrip: true,
