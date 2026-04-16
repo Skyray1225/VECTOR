@@ -7,6 +7,8 @@
 <link rel="icon" type="image/png" href="/vector_favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/satellite.js@5.0.0/dist/satellite.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <style>
 :root {
   --bg:      #0b1119;
@@ -135,6 +137,19 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 /* ── Center column ── */
 .center-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .stage-wrap { display: flex; flex-direction: column; gap: 10px; }
+
+/* ── Leaflet overrides ── */
+#lf-map .leaflet-container { background: #06111f; }
+#lf-map .leaflet-tile { filter: brightness(.72) saturate(.55) hue-rotate(185deg); }
+#lf-map .leaflet-control-attribution { background: rgba(6,13,22,.85) !important; color: #4a6070 !important; font-size: 9px !important; }
+#lf-map .leaflet-control-attribution a { color: #4a6070 !important; }
+#lf-map .leaflet-control-zoom a { background: #0e1a2a !important; color: #7aa0b8 !important; border-color: rgba(255,255,255,.08) !important; }
+#lf-map .leaflet-control-zoom a:hover { background: #162436 !important; color: #00d2ff !important; }
+.lf-iss-icon { filter: drop-shadow(0 0 6px rgba(0,210,255,.9)); }
+.lf-orbit-path { stroke: #00d2ff; stroke-width: 1.5; stroke-opacity: .55; fill: none; stroke-dasharray: 4 3; }
+.lf-popup .leaflet-popup-content-wrapper { background: #0b1523; border: 1px solid #2b3a4a; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,.6); padding: 0; }
+.lf-popup .leaflet-popup-content { margin: 10px 14px; }
+.lf-popup .leaflet-popup-tip-container { display: none; }
 
 /* ── Mini timeline ── */
 .mini-tl { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
@@ -341,8 +356,9 @@ header { display: flex; align-items: center; justify-content: space-between; gap
         <div class="vmb">
           <span class="vmb-label">Stage central</span>
           <div class="vmb-seg">
-            <button class="vmb-btn active" id="btn-map">Map</button>
+            <button class="vmb-btn active" id="btn-map">Map ESA</button>
             <button class="vmb-btn"        id="btn-live">Live</button>
+            <button class="vmb-btn"        id="btn-leaflet">Leaflet ✦</button>
           </div>
         </div>
 
@@ -371,6 +387,21 @@ header { display: flex; align-items: center; justify-content: space-between; gap
           <div class="live-footer">
             <span class="live-note" id="live-note">Vue Terre en direct — ISS HD Earth Viewing Experiment.</span>
             <a class="live-ext" id="live-link" href="https://www.youtube.com/watch?v=zPH5KtjJFaQ" target="_blank" rel="noopener">Ouvrir la source →</a>
+          </div>
+        </div>
+
+        <!-- Leaflet card (hidden by default) -->
+        <div id="card-leaflet" style="display:none; width:100%; border:1px solid var(--border); border-radius:4px; overflow:hidden; background:#060d16;">
+          <div style="background:#17212c; padding:8px 13px; border-bottom:1px solid var(--border);
+            display:flex; align-items:center; justify-content:space-between;
+            font-family:var(--head); font-size:12px; font-weight:700; letter-spacing:.08em; color:#d7e2ea; text-transform:uppercase;">
+            <span>ISS Live Track — Leaflet / OSM</span>
+            <span id="lf-coords" style="font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400;letter-spacing:.06em"></span>
+          </div>
+          <div id="lf-map" style="width:100%; height:420px;"></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 12px; border-top:1px solid var(--border); background:#0b1420;">
+            <span id="lf-status" style="font-family:var(--mono);font-size:10px;color:var(--muted);">En attente de données…</span>
+            <span style="font-family:var(--mono);font-size:9px;color:var(--dim);">OpenStreetMap · Leaflet · wheretheiss.at · MAJ 8s</span>
           </div>
         </div>
 
@@ -895,25 +926,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // 2. MAP / LIVE TOGGLE
-  var btnMap   = $('btn-map');
-  var btnLive  = $('btn-live');
-  var cardMap  = $('card-map');
-  var cardLive = $('card-live');
+  // 2. MAP / LIVE / LEAFLET TOGGLE
+  var btnMap     = $('btn-map');
+  var btnLive    = $('btn-live');
+  var btnLeaflet = $('btn-leaflet');
+  var cardMap    = $('card-map');
+  var cardLive   = $('card-live');
+  var cardLeaflet= $('card-leaflet');
 
-  btnMap.addEventListener('click', function() {
-    btnMap.classList.add('active');
-    btnLive.classList.remove('active');
-    cardMap.style.display  = '';
-    cardLive.style.display = 'none';
-  });
+  function switchStage(active) {
+    [btnMap, btnLive, btnLeaflet].forEach(function(b) { b.classList.remove('active'); });
+    [cardMap, cardLive, cardLeaflet].forEach(function(c) { c.style.display = 'none'; });
+    if (active === 'map')     { btnMap.classList.add('active');     cardMap.style.display = ''; }
+    if (active === 'live')    { btnLive.classList.add('active');    cardLive.style.display = ''; }
+    if (active === 'leaflet') { btnLeaflet.classList.add('active'); cardLeaflet.style.display = ''; initLeaflet(); }
+  }
 
-  btnLive.addEventListener('click', function() {
-    btnLive.classList.add('active');
-    btnMap.classList.remove('active');
-    cardLive.style.display = '';
-    cardMap.style.display  = 'none';
-  });
+  btnMap.addEventListener('click',     function() { switchStage('map'); });
+  btnLive.addEventListener('click',    function() { switchStage('live'); });
+  btnLeaflet.addEventListener('click', function() { switchStage('leaflet'); });
 
   // 3. LIVE SOURCE SWITCH
   var btnSrcNasa = $('btn-src-nasa');
@@ -952,6 +983,134 @@ document.addEventListener('DOMContentLoaded', function() {
   setInterval(fetchEvents,    900000);
   setInterval(fetchCrew,      21600000);
 });
+
+/* ════════════════════════════════════════
+   LEAFLET ISS TRACKER
+════════════════════════════════════════ */
+(function() {
+  var lfMap = null;
+  var lfInited = false;
+  var lfMarker = null;
+  var lfTrail = [];          // [{lat,lng}] last N positions
+  var lfTrailLine = null;
+  var lfOrbitLine = null;
+  var lfInterval = null;
+  var TRAIL_MAX = 80;
+
+  /* ISS SVG icon — cyan dot with glow ring */
+  function makeIssIcon() {
+    var svg = [
+      '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">',
+      '  <circle cx="18" cy="18" r="14" fill="none" stroke="#00d2ff" stroke-width="1" stroke-opacity=".35"/>',
+      '  <circle cx="18" cy="18" r="8"  fill="none" stroke="#00d2ff" stroke-width="1.2" stroke-opacity=".6"/>',
+      '  <circle cx="18" cy="18" r="4"  fill="#00d2ff"/>',
+      '  <line x1="2"  y1="18" x2="10" y2="18" stroke="#00d2ff" stroke-width="1.2" stroke-opacity=".7"/>',
+      '  <line x1="26" y1="18" x2="34" y2="18" stroke="#00d2ff" stroke-width="1.2" stroke-opacity=".7"/>',
+      '  <line x1="18" y1="2"  x2="18" y2="10" stroke="#00d2ff" stroke-width="1.2" stroke-opacity=".7"/>',
+      '  <line x1="18" y1="26" x2="18" y2="34" stroke="#00d2ff" stroke-width="1.2" stroke-opacity=".7"/>',
+      '</svg>'
+    ].join('');
+    return L.divIcon({
+      html: svg,
+      className: 'lf-iss-icon',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      popupAnchor: [0, -20]
+    });
+  }
+
+  /* Compute a ±90-min ground track (Keplerian approximation) */
+  function groundTrack(lat, lon, alt) {
+    var R = 6371 + alt;
+    var period = 2 * Math.PI * Math.sqrt(Math.pow(R, 3) / 3.986e5); // seconds
+    var angRate = 360 / period; // °/s orbital
+    var earthRate = 360 / 86400; // °/s Earth rotation
+    var pts = [];
+    for (var t = -45 * 60; t <= 90 * 60; t += 30) {
+      var dLon = (angRate - earthRate) * t;
+      var lngVal = ((lon + dLon + 180) % 360 + 360) % 360 - 180;
+      pts.push([lat, lngVal]);
+    }
+    return pts;
+  }
+
+  function updateLeaflet(lat, lon, alt, speedKmh) {
+    if (!lfMap) return;
+    var latlng = [lat, lon];
+
+    /* marker */
+    lfMarker.setLatLng(latlng);
+    lfMarker.getPopup().setContent(
+      '<div style="font-family:\'Share Tech Mono\',monospace;font-size:11px;line-height:1.8;color:#c8d8e4">' +
+      '<b style="color:#00d2ff">ISS</b><br>' +
+      'Lat&nbsp;&nbsp;' + lat.toFixed(4) + '°<br>' +
+      'Lon&nbsp;&nbsp;' + lon.toFixed(4) + '°<br>' +
+      'Alt&nbsp;&nbsp;' + alt.toFixed(1) + ' km<br>' +
+      'Vit&nbsp;&nbsp;' + (speedKmh ? speedKmh.toFixed(0) + ' km/h' : '—') +
+      '</div>'
+    );
+
+    /* trail */
+    lfTrail.push({lat: lat, lng: lon});
+    if (lfTrail.length > TRAIL_MAX) lfTrail.shift();
+    if (lfTrailLine) lfMap.removeLayer(lfTrailLine);
+    lfTrailLine = L.polyline(lfTrail.map(function(p){ return [p.lat, p.lng]; }), {
+      color: '#00d2ff', weight: 2, opacity: 0.6, smoothFactor: 1
+    }).addTo(lfMap);
+
+    /* orbit prediction */
+    if (lfOrbitLine) lfMap.removeLayer(lfOrbitLine);
+    var track = groundTrack(lat, lon, alt);
+    lfOrbitLine = L.polyline(track, {
+      color: '#00d2ff', weight: 1.2, opacity: 0.28, dashArray: '5 4', smoothFactor: 2
+    }).addTo(lfMap);
+
+    /* HUD */
+    var coords = $('lf-coords');
+    if (coords) coords.textContent = lat.toFixed(4) + '° / ' + lon.toFixed(4) + '° — ' + alt.toFixed(1) + ' km';
+    var status = $('lf-status');
+    if (status) status.textContent = 'Position ISS mise à jour — ' + new Date().toLocaleTimeString('fr-FR');
+  }
+
+  async function lfFetch() {
+    try {
+      var r = await fetch('/api/iss-telemetry');
+      var d = await r.json();
+      if (d.geodetic) {
+        updateLeaflet(d.geodetic.lat, d.geodetic.lon, d.geodetic.alt, d.geodetic.speedKmh);
+      }
+    } catch(e) { /* silently ignore */ }
+  }
+
+  window.initLeaflet = function() {
+    if (lfInited) return;
+    lfInited = true;
+
+    lfMap = L.map('lf-map', {
+      center: [0, 0], zoom: 2,
+      zoomControl: true,
+      attributionControl: true,
+      worldCopyJump: true
+    });
+
+    /* Dark tile layer — CartoDB Dark Matter */
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 10,
+      minZoom: 1
+    }).addTo(lfMap);
+
+    /* ISS marker */
+    lfMarker = L.marker([0, 0], { icon: makeIssIcon() })
+      .addTo(lfMap)
+      .bindPopup('', { className: 'lf-popup', maxWidth: 180 });
+
+    /* First fetch then poll */
+    lfFetch();
+    lfInterval = setInterval(lfFetch, 8000);
+  };
+})();
 </script>
 </body>
 </html>
