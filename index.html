@@ -985,7 +985,7 @@ function getMissionPhase() {
     () => `LATITUDE <span>${fmtDeg(iss.lat,'N','S')}</span>`,
     () => `LONGITUDE <span>${fmtDeg(iss.lon,'E','W')}</span>`,
     () => `ALTITUDE <span>${fmt(iss.alt,1,'km')}</span>`,
-    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3.6).toFixed(2)+' km/s' : '—'}</span>`,
+    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3600).toFixed(2)+' km/s' : '—'}</span>`,
     () => `PHASE ORBITALE <span>${iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—'}</span>`,
     () => `ÉQUIPAGE <span>7 ASTRONAUTES</span>`,
     () => `ORBITE <span>LEO · INCL. 51.6°</span>`,
