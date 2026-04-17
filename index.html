@@ -968,32 +968,55 @@ function getMissionPhase() {
   return phase;
 }
 
-/* ── TICKER ── */
+/* ── TICKER ISS ── */
 (function () {
-  const LAUNCH = LAUNCH_UTC;
-  function met() {
-    const s = Math.max(0, Math.floor((Date.now() - LAUNCH) / 1000));
-    const d = Math.floor(s/86400), h = Math.floor((s%86400)/3600),
-          m = Math.floor((s%3600)/60), sec = s%60;
-    const p = v => String(v).padStart(2,'0');
-    return `${d}+${p(h)}:${p(m)}:${p(sec)}`;
+  const iss = { lat: null, lon: null, alt: null, spd: null, vis: null };
+
+  function utc() { return new Date().toISOString().slice(11,19) + ' UTC'; }
+  function fmt(v, dec, unit) { return v != null ? v.toFixed(dec) + ' ' + unit : '—'; }
+  function fmtDeg(v, pos, neg) {
+    if (v == null) return '—';
+    return Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
   }
+
   const items = [
-    () => `MET <span>${met()}</span>`,
-    () => `MISSION <span>ARTEMIS II</span>`,
-    () => `SOURCE POSITION <span>JPL HORIZONS</span>`,
-    () => `VÉHICULE <span>ORION MPCV</span>`,
-    () => `STATUT <span>EN VOL · NOMINAL</span>`,
-    () => `PHASE <span>${getMissionPhase()}</span>`,
-    () => `LANCEMENT <span>01 AVR 2026 22:35 UTC</span>`,
-    () => `ÉQUIPAGE <span>4 ASTRONAUTES</span>`,
+    () => `UTC <span>${utc()}</span>`,
+    () => `STATION <span>ISS · EXPÉDITION 74</span>`,
+    () => `LATITUDE <span>${fmtDeg(iss.lat,'N','S')}</span>`,
+    () => `LONGITUDE <span>${fmtDeg(iss.lon,'E','W')}</span>`,
+    () => `ALTITUDE <span>${fmt(iss.alt,1,'km')}</span>`,
+    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3.6).toFixed(2)+' km/s' : '—'}</span>`,
+    () => `PHASE ORBITALE <span>${iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—'}</span>`,
+    () => `ÉQUIPAGE <span>7 ASTRONAUTES</span>`,
+    () => `ORBITE <span>LEO · INCL. 51.6°</span>`,
+    () => `SOURCE <span>WHERETHEISS.AT / NORAD TLE</span>`,
   ];
+
   function render() {
     const doubled = [...items, ...items];
     document.getElementById('ticker-items').innerHTML =
       doubled.map(fn => `<div class="ticker-item">${fn()}</div>`).join('');
   }
-  render(); setInterval(render, 5000);
+
+  async function fetchISS() {
+    try {
+      const r = await fetch('/api/iss-telemetry');
+      const d = await r.json();
+      if (d.geodetic) {
+        iss.lat = d.geodetic.lat;
+        iss.lon = d.geodetic.lon;
+        iss.alt = d.geodetic.alt;
+        iss.spd = d.geodetic.speedKmh;
+        iss.vis = d.geodetic.visibility;
+      }
+    } catch(_) {}
+    render();
+  }
+
+  render();
+  fetchISS();
+  setInterval(render, 1000);      // UTC + labels refresh every second
+  setInterval(fetchISS, 10000);   // ISS position refresh every 10s
 })();
 
 var _hp = document.getElementById('hub-phase');
