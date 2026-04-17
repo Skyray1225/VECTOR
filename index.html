@@ -12,7 +12,7 @@
   --surface: #0b1523;
   --panel:   #0e1a2a;
   --border:  rgba(255,255,255,.07);
-  --border2: rgba(0,210,255,.12);
+  --border2: rgba(0,210,255,.15);
   --text:    #d4dfe8;
   --muted:   #5a7a90;
   --dim:     #374f61;
@@ -30,6 +30,9 @@ body {
   background: var(--bg); color: var(--text);
   font-family: var(--body); font-size: 14px; line-height: 1.6;
   min-height: 100vh; overflow-x: hidden;
+  /* subtle dot grid */
+  background-image: radial-gradient(rgba(0,210,255,.028) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* ═══════════════════════════════════════
@@ -40,12 +43,9 @@ body {
   background: #030810;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  gap: 0;
   transition: opacity .6s ease;
 }
 #boot-screen.fade-out { opacity: 0; pointer-events: none; }
-
-/* scanline overlay */
 #boot-screen::before {
   content: '';
   position: absolute; inset: 0; pointer-events: none;
@@ -56,15 +56,12 @@ body {
   );
   z-index: 1;
 }
-
 .boot-inner {
   position: relative; z-index: 2;
   display: flex; flex-direction: column;
   align-items: center; width: 100%; max-width: 580px;
   padding: 0 24px;
 }
-
-/* logo zone */
 .boot-logo-wrap {
   width: 100%; display: flex; justify-content: center;
   margin-bottom: 40px; opacity: 0;
@@ -76,8 +73,6 @@ body {
   width: 380px; max-width: 90vw; height: auto;
   filter: drop-shadow(0 0 28px rgba(0,170,220,.22));
 }
-
-/* divider */
 .boot-divider {
   width: 100%; height: 1px;
   background: linear-gradient(to right, transparent, rgba(0,210,255,.3), transparent);
@@ -85,12 +80,9 @@ body {
   transition: opacity .4s ease;
 }
 .boot-divider.visible { opacity: 1; }
-
-/* terminal log */
 .boot-log {
   width: 100%; font-family: var(--mono); font-size: 11px;
-  letter-spacing: .06em; line-height: 2;
-  color: var(--muted);
+  letter-spacing: .06em; line-height: 2; color: var(--muted);
   min-height: 160px;
 }
 .boot-line {
@@ -106,8 +98,6 @@ body {
 .bl-warn  { color: var(--warn); flex-shrink: 0; }
 .bl-msg   { color: var(--muted); }
 .bl-msg em { color: var(--text); font-style: normal; }
-
-/* cursor blink */
 .boot-cursor {
   display: inline-block; width: 7px; height: 13px;
   background: var(--accent); margin-left: 4px;
@@ -115,8 +105,6 @@ body {
   animation: cursor-blink .7s step-end infinite;
 }
 @keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-/* progress bar */
 .boot-progress-wrap {
   width: 100%; margin-top: 24px;
   display: flex; align-items: center; gap: 12px;
@@ -142,36 +130,38 @@ body {
 ═══════════════════════════════════════ */
 .topbar {
   display: flex; align-items: center;
-  height: 70px; padding: 0 20px;
-  background: #0d1520;
-  border-bottom: 1px solid var(--border);
+  height: 62px; padding: 0 24px;
+  background: rgba(9,17,32,.97);
+  border-bottom: 1px solid var(--border2);
+  box-shadow: 0 1px 0 rgba(0,210,255,.04), 0 4px 24px rgba(0,0,0,.4);
   position: fixed; top: 0; left: 0; right: 0; z-index: 100;
   gap: 0;
+  backdrop-filter: blur(8px);
 }
-.topbar-logo { height: 50px; width: auto; flex-shrink: 0; }
+.topbar-logo { height: 46px; width: auto; flex-shrink: 0; }
 .topbar-div {
-  width: 1px; height: 32px;
-  background: var(--border); margin: 0 18px;
+  width: 1px; height: 28px;
+  background: var(--border); margin: 0 20px;
 }
 .topbar-sys {
-  font-family: var(--mono); font-size: 10px; color: var(--muted);
-  letter-spacing: .1em; line-height: 1.5; text-transform: uppercase;
+  font-family: var(--mono); font-size: 9px; color: var(--dim);
+  letter-spacing: .14em; line-height: 1.6; text-transform: uppercase;
 }
-.topbar-sys strong { color: var(--text); font-weight: 400; }
+.topbar-sys strong { color: var(--muted); font-weight: 400; }
 .topbar-right {
   margin-left: auto;
-  display: flex; align-items: center; gap: 22px;
+  display: flex; align-items: center; gap: 20px;
 }
 .topbar-clock {
-  font-family: var(--mono); font-size: 13px; color: var(--muted);
-  letter-spacing: .08em;
+  font-family: var(--mono); font-size: 13px; color: var(--dim);
+  letter-spacing: .1em;
 }
 .topbar-clock span { color: var(--text); }
 .topbar-link {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
-  color: var(--muted); text-decoration: none; text-transform: uppercase;
-  padding: 4px 10px; border: 1px solid var(--border);
-  border-radius: 2px; transition: color .15s, border-color .15s;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
+  color: var(--dim); text-decoration: none; text-transform: uppercase;
+  padding: 5px 12px; border: 1px solid var(--border);
+  transition: color .15s, border-color .15s;
 }
 .topbar-link:hover { color: var(--accent); border-color: var(--border2); }
 
@@ -179,61 +169,206 @@ body {
    PAGE LAYOUT
 ═══════════════════════════════════════ */
 .page-wrap {
-  padding-top: 70px;
+  padding-top: 62px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* ═══════════════════════════════════════
-   IDENT BLOCK
+   STATUS STRIP  (replaces ident-block)
 ═══════════════════════════════════════ */
-.ident-block {
-  padding: 36px 24px 28px;
+.status-strip-bar {
+  padding: 9px 28px;
   border-bottom: 1px solid var(--border);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
-  gap: 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 20px;
+  background: rgba(0,0,0,.18);
 }
-.ident-label {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .22em;
-  color: var(--muted); text-transform: uppercase; margin-bottom: 6px;
+.ssb-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
+  color: var(--dim); text-transform: uppercase;
 }
-.ident-title {
-  font-family: var(--heading); font-size: 13px; font-weight: 400;
-  text-transform: uppercase; letter-spacing: .14em; color: var(--dim);
-}
-.sys-status {
-  display: flex; align-items: center; gap: 22px;
-  font-family: var(--mono); font-size: 10px; letter-spacing: .09em;
+.ssb-dots {
+  display: flex; align-items: center; gap: 20px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
   text-transform: uppercase;
 }
 .ss-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
 .ss-dot {
-  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
 }
-.ss-dot.ok   { background: var(--ok);   box-shadow: 0 0 6px rgba(76,255,171,.5); }
-.ss-dot.warn { background: var(--warn); box-shadow: 0 0 6px rgba(255,179,0,.4); }
+.ss-dot.ok   { background: var(--ok);   box-shadow: 0 0 5px rgba(76,255,171,.5); }
+.ss-dot.warn { background: var(--warn); box-shadow: 0 0 5px rgba(255,179,0,.4); }
 .ss-dot.off  { background: var(--dim); }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 .ss-dot.ok { animation: blink 2.4s ease-in-out infinite; }
 
 /* ═══════════════════════════════════════
+   ISS HERO CARD
+═══════════════════════════════════════ */
+.iss-hero {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: relative; overflow: hidden;
+}
+/* diagonal texture */
+.iss-hero::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    -55deg,
+    transparent 0, transparent 28px,
+    rgba(76,255,171,.008) 28px, rgba(76,255,171,.008) 29px
+  );
+}
+/* green left accent bar */
+.iss-hero::after {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--ok);
+  box-shadow: 2px 0 14px rgba(76,255,171,.28);
+}
+.iss-hero-inner {
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0;
+  padding: 26px 28px 26px 32px;
+}
+
+/* Left: emblem + meta */
+.iss-hero-left {
+  display: flex; align-items: center; gap: 22px;
+  padding-right: 32px;
+}
+.iss-hero-emblem {
+  width: 76px; height: 76px; object-fit: contain; flex-shrink: 0;
+  filter: drop-shadow(0 2px 14px rgba(0,210,255,.18));
+}
+.iss-hero-meta { display: flex; flex-direction: column; gap: 6px; }
+.iss-hero-id {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .24em;
+  color: var(--dim); text-transform: uppercase;
+}
+.iss-hero-name {
+  font-family: var(--heading); font-size: 38px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em; line-height: 1;
+  color: var(--text);
+}
+.iss-hero-sub {
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  color: var(--muted); text-transform: uppercase;
+}
+.iss-hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
+  color: var(--ok); text-transform: uppercase; margin-top: 2px;
+}
+.iss-hero-badge .bd {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--ok);
+  animation: blink 1.6s ease-in-out infinite;
+}
+
+/* Center: telemetry grid */
+.iss-hero-telem {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px 24px;
+  padding: 0 32px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.iss-tl-item { display: flex; flex-direction: column; gap: 4px; }
+.iss-tl-lbl {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  color: var(--muted); text-transform: uppercase;
+}
+.iss-tl-val {
+  font-family: var(--mono); font-size: 15px; color: var(--text);
+  letter-spacing: .05em;
+}
+
+/* Right: CTA */
+.iss-hero-cta {
+  display: flex; flex-direction: column; gap: 10px;
+  align-items: center; flex-shrink: 0;
+  padding-left: 32px;
+}
+.hero-cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 24px;
+  background: rgba(76,255,171,.06);
+  border: 1px solid rgba(76,255,171,.28);
+  color: var(--ok);
+  font-family: var(--heading); font-size: 14px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+  transition: background .15s, border-color .15s;
+  white-space: nowrap;
+}
+.hero-cta-btn:hover {
+  background: rgba(76,255,171,.13);
+  border-color: rgba(76,255,171,.5);
+}
+.hero-cta-btn svg { flex-shrink: 0; }
+.iss-hero-orbit {
+  font-family: var(--mono); font-size: 8px; letter-spacing: .12em;
+  color: var(--dim); text-transform: uppercase; text-align: center;
+  line-height: 1.7;
+}
+
+/* ═══════════════════════════════════════
+   TELEMETRY TICKER
+═══════════════════════════════════════ */
+.ticker-bar {
+  background: #040a14;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.ticker-label {
+  color: var(--accent); flex-shrink: 0;
+  padding: 8px 16px 8px 28px;
+  border-right: 1px solid var(--border2);
+  font-size: 8px; letter-spacing: .2em;
+  background: #040a14;
+}
+.ticker-scroll-zone {
+  flex: 1; overflow: hidden; min-width: 0;
+}
+.ticker-items {
+  display: flex; gap: 0;
+  animation: ticker-scroll 40s linear infinite;
+}
+.ticker-item {
+  color: var(--dim); white-space: nowrap; padding: 8px 28px;
+  border-right: 1px solid var(--border);
+}
+.ticker-item span { color: var(--muted); }
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ═══════════════════════════════════════
    SECTION HEADER
 ═══════════════════════════════════════ */
 .section-header {
-  padding: 20px 24px 14px;
-  display: flex; align-items: center; gap: 12px;
+  padding: 18px 28px 12px;
+  display: flex; align-items: center; gap: 14px;
   border-bottom: 1px solid var(--border);
 }
 .sh-label {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .18em;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .22em;
   text-transform: uppercase; color: var(--muted);
 }
 .sh-sep { flex: 1; height: 1px; background: var(--border); }
 .sh-count {
-  font-family: var(--mono); font-size: 10px; color: var(--dim);
-  letter-spacing: .08em;
+  font-family: var(--mono); font-size: 9px; color: var(--dim);
+  letter-spacing: .1em;
 }
 
 /* ═══════════════════════════════════════
@@ -244,14 +379,14 @@ body {
   border-collapse: collapse;
 }
 .mission-table th {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
-  text-transform: uppercase; color: var(--muted); font-weight: 400;
-  text-align: left; padding: 10px 16px;
+  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--dim); font-weight: 400;
+  text-align: left; padding: 9px 16px;
   border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,.18);
+  background: rgba(0,0,0,.22);
 }
-.mission-table th:first-child { padding-left: 24px; }
-.mission-table th:last-child  { padding-right: 24px; }
+.mission-table th:first-child { padding-left: 28px; }
+.mission-table th:last-child  { padding-right: 28px; }
 
 .mission-row {
   border-bottom: 1px solid var(--border);
@@ -259,40 +394,33 @@ body {
   transition: background .12s;
 }
 .mission-row.active { cursor: pointer; }
-.mission-row.active:hover { background: rgba(0,210,255,.035); }
+.mission-row.active:hover { background: rgba(0,210,255,.03); }
 
-.mission-row td {
-  padding: 0; vertical-align: middle;
-}
-/* ── status indicator strip ── */
-.td-status {
-  width: 3px; padding: 0 !important;
-}
+.mission-row td { padding: 0; vertical-align: middle; }
+
+.td-status { width: 3px; padding: 0 !important; }
 .status-strip {
-  width: 3px; height: 100%; min-height: 80px;
+  width: 3px; height: 100%; min-height: 72px;
   display: block;
 }
 .status-strip.active { background: var(--ok); box-shadow: 2px 0 8px rgba(76,255,171,.28); }
 .status-strip.future { background: var(--warn); }
 .status-strip.tbd    { background: var(--dim); }
 
-/* ── cells ── */
-.td-id    { width: 80px; padding: 20px 16px !important; }
-.td-name  { padding: 20px 16px !important; }
-.td-agency{ width: 140px; padding: 20px 16px !important; }
-.td-phase { width: 180px; padding: 20px 16px !important; }
-.td-date  { width: 160px; padding: 20px 16px !important; }
-.td-link  { width: 120px; padding: 20px 16px !important; text-align: right; padding-right: 24px !important; }
+.td-id    { width: 80px;  padding: 18px 16px !important; }
+.td-name  { padding: 18px 16px !important; }
+.td-agency{ width: 150px; padding: 18px 16px !important; }
+.td-phase { width: 190px; padding: 18px 16px !important; }
+.td-date  { width: 160px; padding: 18px 16px !important; }
+.td-link  { width: 130px; padding: 18px 16px !important; text-align: right; padding-right: 28px !important; }
 
 .cell-id {
-  font-family: var(--mono); font-size: 11px; letter-spacing: .12em;
+  font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
   color: var(--muted); text-transform: uppercase;
 }
-.cell-patch {
-  display: flex; align-items: center; gap: 14px;
-}
+.cell-patch { display: flex; align-items: center; gap: 14px; }
 .cell-patch img {
-  width: 38px; height: auto;
+  width: 36px; height: auto;
   filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
   flex-shrink: 0;
 }
@@ -301,128 +429,64 @@ body {
   text-transform: uppercase; letter-spacing: .04em; line-height: 1;
 }
 .cell-mission-sub {
-  font-family: var(--mono); font-size: 10px; color: var(--muted);
-  letter-spacing: .06em; margin-top: 4px;
-  text-transform: uppercase;
+  font-family: var(--mono); font-size: 9px; color: var(--muted);
+  letter-spacing: .06em; margin-top: 4px; text-transform: uppercase;
 }
 .cell-locked .cell-mission-name { color: var(--dim); }
 .cell-locked .cell-mission-sub  { opacity: .5; }
 .cell-locked img { opacity: .25; }
 
 .cell-agency {
-  font-family: var(--mono); font-size: 10px; color: var(--muted);
-  letter-spacing: .09em; text-transform: uppercase; line-height: 1.6;
+  font-family: var(--mono); font-size: 9px; color: var(--muted);
+  letter-spacing: .09em; text-transform: uppercase; line-height: 1.7;
 }
 .cell-agency strong { color: var(--text); font-weight: 400; display: block; }
 
 .cell-phase {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .08em;
   text-transform: uppercase; line-height: 1.8;
 }
 .phase-badge {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 3px 9px; border-radius: 2px;
-  font-size: 10px; letter-spacing: .12em;
+  padding: 3px 9px;
+  font-size: 9px; letter-spacing: .14em;
 }
-.phase-badge.ok   { color: var(--ok);   background: rgba(76,255,171,.08);  border: 1px solid rgba(76,255,171,.2); }
-.phase-badge.warn { color: var(--warn); background: rgba(255,179,0,.07);   border: 1px solid rgba(255,179,0,.2); }
+.phase-badge.ok   { color: var(--ok);   background: rgba(76,255,171,.07);  border: 1px solid rgba(76,255,171,.18); }
+.phase-badge.warn { color: var(--warn); background: rgba(255,179,0,.06);   border: 1px solid rgba(255,179,0,.18); }
 .phase-badge.off  { color: var(--dim);  background: rgba(255,255,255,.03); border: 1px solid var(--border); }
 .phase-badge .bd  { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .phase-badge.ok .bd { animation: blink 1.6s ease-in-out infinite; }
 
 .cell-date {
-  font-family: var(--mono); font-size: 11px; color: var(--muted);
+  font-family: var(--mono); font-size: 10px; color: var(--muted);
   letter-spacing: .08em; line-height: 1.8; text-transform: uppercase;
 }
 .cell-date strong { color: var(--text); font-weight: 400; display: block; }
 
 .row-link {
   display: inline-flex; align-items: center; gap: 7px;
-  padding: 7px 14px; border-radius: 2px;
-  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
+  padding: 7px 14px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
   text-transform: uppercase; text-decoration: none;
-  background: rgba(0,210,255,.06); border: 1px solid rgba(0,210,255,.25); color: var(--accent);
+  background: rgba(0,210,255,.05); border: 1px solid rgba(0,210,255,.22); color: var(--accent);
   transition: background .14s, border-color .14s;
   white-space: nowrap;
 }
-.row-link:hover { background: rgba(0,210,255,.13); border-color: var(--accent); }
+.row-link:hover { background: rgba(0,210,255,.12); border-color: var(--accent); }
 .row-link.disabled {
   color: var(--dim); border-color: var(--border);
   background: none; pointer-events: none;
 }
 
 /* ═══════════════════════════════════════
-   DETAIL PANEL (expandable, below table)
-═══════════════════════════════════════ */
-.detail-panel {
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  overflow: hidden; max-height: 0; transition: max-height .3s ease, padding .3s ease;
-}
-.detail-panel.open { max-height: 300px; padding: 20px 24px; }
-.detail-inner {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px 32px;
-}
-.detail-field { display: flex; flex-direction: column; gap: 4px; }
-.detail-field label {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .18em;
-  color: var(--muted); text-transform: uppercase;
-}
-.detail-field span {
-  font-family: var(--mono); font-size: 12px; color: var(--text);
-  letter-spacing: .06em;
-}
-.detail-desc {
-  font-size: 13px; color: #7a9ab0; line-height: 1.6;
-  grid-column: 1 / -1; padding-top: 6px;
-  border-top: 1px solid var(--border); margin-top: 6px;
-}
-
-/* ═══════════════════════════════════════
-   TELEMETRY TICKER
-═══════════════════════════════════════ */
-.ticker-bar {
-  background: #050b15;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0;
-  font-family: var(--mono); font-size: 10px; letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.ticker-label {
-  color: var(--accent); flex-shrink: 0;
-  padding: 8px 16px 8px 24px;
-  border-right: 1px solid var(--border2);
-  font-size: 9px; letter-spacing: .18em;
-  background: #050b15;
-}
-.ticker-scroll-zone {
-  flex: 1; overflow: hidden; min-width: 0;
-}
-.ticker-items {
-  display: flex; gap: 0;
-  animation: ticker-scroll 40s linear infinite;
-}
-.ticker-item {
-  color: var(--muted); white-space: nowrap; padding: 0 32px;
-  border-right: 1px solid var(--border);
-}
-.ticker-item span { color: var(--text); }
-@keyframes ticker-scroll {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* ═══════════════════════════════════════
    FOOTER
 ═══════════════════════════════════════ */
 footer {
-  padding: 18px 24px;
+  padding: 16px 28px;
   border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+  flex-wrap: wrap; gap: 10px;
+  font-family: var(--mono); font-size: 8px; letter-spacing: .12em;
   color: var(--dim); text-transform: uppercase;
 }
 footer a { color: var(--dim); text-decoration: none; }
@@ -434,133 +498,128 @@ footer a:hover { color: var(--muted); }
 @media (max-width: 900px) {
 
   /* Topbar */
-  .topbar { height: 56px; padding: 0 14px; }
-  .topbar-logo { height: 34px; }
-  .topbar-div { display: none; }
-  .topbar-sys { display: none; }
+  .topbar { height: 52px; padding: 0 14px; }
+  .topbar-logo { height: 32px; }
+  .topbar-div  { display: none; }
+  .topbar-sys  { display: none; }
   .topbar-right { gap: 10px; }
-  .topbar-clock { font-size: 12px; }
-  .topbar-link { font-size: 10px; padding: 5px 10px; }
+  .topbar-clock { font-size: 11px; }
+  .topbar-link  { font-size: 9px; padding: 5px 10px; }
 
   /* Page wrap */
-  .page-wrap { padding-top: 56px; max-width: 100%; padding-left: 0; padding-right: 0; }
+  .page-wrap { padding-top: 52px; max-width: 100%; }
 
-  /* Ident block */
-  .ident-block { grid-template-columns: 1fr; gap: 6px; padding: 12px 16px 10px; }
-  .sys-status { flex-wrap: wrap; gap: 8px; }
-  .ss-item { font-size: 10px; }
-  .ident-label { font-size: 9px; letter-spacing: .14em; }
+  /* Status strip */
+  .status-strip-bar { padding: 7px 14px; flex-wrap: wrap; gap: 8px; }
+  .ssb-dots { flex-wrap: wrap; gap: 10px; }
 
-  /* Section header */
-  .section-header { padding: 10px 16px 8px; }
-  .sh-label { font-size: 10px; }
+  /* ISS Hero — stacked */
+  .iss-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 16px 16px 18px 20px;
+  }
+  .iss-hero-left {
+    padding-right: 0;
+    padding-bottom: 16px;
+    gap: 16px;
+  }
+  .iss-hero-emblem { width: 58px; height: 58px; }
+  .iss-hero-name   { font-size: 28px; }
+  .iss-hero-telem {
+    grid-template-columns: repeat(2, 1fr);
+    border-left: none; border-right: none;
+    border-top: 1px solid var(--border);
+    padding: 14px 0 16px;
+    gap: 12px 16px;
+  }
+  .iss-tl-val { font-size: 13px; }
+  .iss-hero-cta {
+    border-top: 1px solid var(--border);
+    padding-left: 0; padding-top: 16px;
+    align-items: stretch;
+  }
+  .hero-cta-btn { justify-content: center; }
 
-  /* Ticker masqué */
+  /* Ticker hidden */
   .ticker-bar { display: none; }
 
-  /* Table masquée → cartes JS */
+  /* Section header */
+  .section-header { padding: 10px 14px 8px; }
+
+  /* Table hidden → cards */
   .mission-table { display: none !important; }
 
   /* ── Cartes mission mobile ── */
   #mob-mission-cards {
     display: flex; flex-direction: column;
-    gap: 12px; padding: 10px 12px 24px;
+    gap: 10px; padding: 10px 12px 24px;
   }
-
   .mob-card {
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--surface);
     border: 1px solid var(--border);
     overflow: hidden;
     position: relative;
   }
-  /* Bordure gauche colorée = indicateur de statut */
   .mob-card::before {
     content: ''; position: absolute;
-    left: 0; top: 0; bottom: 0; width: 4px;
+    left: 0; top: 0; bottom: 0; width: 3px;
   }
   .mob-card.card-active::before  { background: var(--ok); }
   .mob-card.card-future::before  { background: var(--warn); }
   .mob-card.card-tbd::before     { background: var(--dim); }
-
-  /* Haut de carte : patch + infos + badge statut */
   .mob-card-header {
     display: flex; align-items: center; gap: 14px;
-    padding: 16px 16px 12px 20px;
+    padding: 14px 14px 10px 18px;
   }
   .mob-card-patch {
-    width: 52px; height: auto; flex-shrink: 0;
+    width: 48px; height: auto; flex-shrink: 0;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0,0,0,.7));
   }
   .mob-card-patch.dim { opacity: .80; filter: grayscale(.45); }
   .mob-card-placeholder {
-    width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%;
+    width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%;
     border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
   }
   .mob-card-info { flex: 1; min-width: 0; }
   .mob-card-name {
-    font-family: var(--heading); font-size: 22px; font-weight: 700;
+    font-family: var(--heading); font-size: 20px; font-weight: 700;
     text-transform: uppercase; letter-spacing: .05em; line-height: 1.1;
     color: var(--text);
   }
   .mob-card-name.dim { color: var(--dim); }
   .mob-card-sub {
-    font-family: var(--mono); font-size: 9px; color: var(--muted);
+    font-family: var(--mono); font-size: 8px; color: var(--muted);
     letter-spacing: .08em; text-transform: uppercase; margin-top: 4px;
   }
   .mob-card-badge-row {
     display: flex; align-items: center; gap: 10px;
-    padding: 0 16px 0 20px; margin-bottom: 10px;
+    padding: 0 14px 0 18px; margin-bottom: 10px;
   }
   .mob-card-date-val {
-    font-family: var(--mono); font-size: 12px; color: var(--muted);
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
     letter-spacing: .06em; text-transform: uppercase;
   }
   .mob-card-date-val strong { color: var(--text); font-weight: 600; }
-
-  /* CTA button — pleine largeur pour la mission active */
-  .mob-card-cta {
-    margin: 0 16px 16px 20px;
-  }
+  .mob-card-cta { margin: 0 14px 14px 18px; }
   .mob-card-cta a.row-link {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 13px; border-radius: 5px; width: 100%;
-    background: rgba(0,210,255,.08); border: 1px solid rgba(0,210,255,.35);
-    color: var(--accent); font-family: var(--heading); font-size: 15px;
+    padding: 12px; width: 100%;
+    background: rgba(0,210,255,.07); border: 1px solid rgba(0,210,255,.3);
+    color: var(--accent); font-family: var(--heading); font-size: 14px;
     font-weight: 700; letter-spacing: .1em; text-decoration: none;
     text-transform: uppercase; transition: background .15s;
   }
-  .mob-card-cta a.row-link:active { background: rgba(0,210,255,.18); }
+  .mob-card-cta a.row-link:active { background: rgba(0,210,255,.16); }
   .mob-card-cta span.row-link.disabled {
     display: block; text-align: center; padding: 11px;
-    border: 1px solid var(--border); border-radius: 5px;
-    color: var(--dim); font-family: var(--heading); font-size: 13px;
+    border: 1px solid var(--border);
+    color: var(--dim); font-family: var(--heading); font-size: 12px;
     font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
   }
-
-  /* Phase live strip (active mission uniquement) */
-  .mob-card-phase-strip {
-    margin: 0 16px 12px 20px; padding: 8px 12px;
-    background: rgba(76,255,171,.05); border: 1px solid rgba(76,255,171,.12);
-    border-radius: 4px; cursor: pointer;
-  }
-  .mob-card-phase-label {
-    font-family: var(--mono); font-size: 9px; color: var(--muted);
-    letter-spacing: .1em; text-transform: uppercase; margin-bottom: 3px;
-  }
-  .mob-card-phase-val {
-    font-family: var(--heading); font-size: 14px; font-weight: 700;
-    letter-spacing: .08em; color: var(--ok); text-transform: uppercase;
-  }
-  .mob-card-phase-chevron {
-    float: right; color: var(--muted); font-size: 10px; margin-top: 2px;
-    transition: transform .2s;
-  }
-  .mob-card-phase-strip.open .mob-card-phase-chevron { transform: rotate(180deg); }
-
-  /* Detail panel */
   .mob-detail-panel {
     max-height: 0; overflow: hidden;
     transition: max-height .3s ease;
@@ -568,7 +627,7 @@ footer a:hover { color: var(--muted); }
   }
   .mob-detail-panel.open { max-height: 500px; }
   .mob-detail-inner {
-    padding: 14px 16px 16px 20px;
+    padding: 12px 14px 14px 18px;
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
   }
   .mob-detail-field label {
@@ -581,19 +640,20 @@ footer a:hover { color: var(--muted); }
     color: var(--text); letter-spacing: .04em; text-transform: uppercase;
   }
   .mob-detail-desc {
-    grid-column: 1 / -1; font-size: 13px; color: var(--muted);
+    grid-column: 1 / -1; font-size: 12px; color: var(--muted);
     line-height: 1.65; border-top: 1px solid var(--border);
     padding-top: 10px; margin-top: 2px;
   }
 
   /* Footer */
-  footer { flex-direction: column; align-items: flex-start; padding: 14px 16px; gap: 6px; font-size: 9px; }
+  footer { flex-direction: column; align-items: flex-start; padding: 12px 14px; gap: 5px; }
 }
 
 @media (max-width: 480px) {
   .topbar-clock { display: none; }
-  .mob-card-name { font-size: 20px; }
+  .mob-card-name { font-size: 18px; }
   .mob-detail-inner { grid-template-columns: 1fr; }
+  .iss-hero-telem { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
@@ -632,30 +692,88 @@ footer a:hover { color: var(--muted); }
 <!-- ═══════════ PAGE ═══════════ -->
 <div class="page-wrap">
 
-  <!-- IDENT -->
-  <div class="ident-block">
-    <div>
-      <div class="ident-label">VECTOR / MISSION REGISTRY v1.0</div>
-    </div>
-    <div class="sys-status">
+  <!-- STATUS STRIP -->
+  <div class="status-strip-bar">
+    <span class="ssb-label">VECTOR / MISSION REGISTRY v1.0</span>
+    <div class="ssb-dots">
       <div class="ss-item"><div class="ss-dot ok"></div>RÉSEAU EN LIGNE</div>
       <div class="ss-item"><div class="ss-dot warn"></div>2 MISSIONS PENDING</div>
     </div>
   </div>
 
+  <!-- ISS HERO CARD -->
+  <div class="iss-hero">
+    <div class="iss-hero-inner">
+
+      <!-- Left: emblem + meta -->
+      <div class="iss-hero-left">
+        <img class="iss-hero-emblem" src="/iss_emblem.png" alt="ISS">
+        <div class="iss-hero-meta">
+          <div class="iss-hero-id">ISS-001 · MISSION ACTIVE</div>
+          <div class="iss-hero-name">ISS</div>
+          <div class="iss-hero-sub">Station Spatiale Internationale</div>
+          <div class="iss-hero-badge"><span class="bd"></span>OPÉRATIONNELLE · EXPÉDITION 74</div>
+        </div>
+      </div>
+
+      <!-- Center: telemetry -->
+      <div class="iss-hero-telem">
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">LATITUDE</div>
+          <div class="iss-tl-val" id="h-lat">—</div>
+        </div>
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">LONGITUDE</div>
+          <div class="iss-tl-val" id="h-lon">—</div>
+        </div>
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">ALTITUDE</div>
+          <div class="iss-tl-val" id="h-alt">—</div>
+        </div>
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">VITESSE</div>
+          <div class="iss-tl-val" id="h-spd">—</div>
+        </div>
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">PHASE ORBITALE</div>
+          <div class="iss-tl-val" id="h-vis">—</div>
+        </div>
+        <div class="iss-tl-item">
+          <div class="iss-tl-lbl">ÉQUIPAGE</div>
+          <div class="iss-tl-val">7 ASTRONAUTES</div>
+        </div>
+      </div>
+
+      <!-- Right: CTA -->
+      <div class="iss-hero-cta">
+        <a href="/iss_mission_control.html" class="hero-cta-btn">
+          MISSION CONTROL
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+        <div class="iss-hero-orbit">
+          NASA · ESA · ROSCOSMOS · JAXA · CSA<br>
+          LEO · INCL. 51.6° · ~400 KM
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- TELEMETRY TICKER -->
   <div class="ticker-bar">
-    <div class="ticker-label">▶ LIVE</div>
+    <div class="ticker-label">▶ LIVE ISS</div>
     <div class="ticker-scroll-zone">
       <div class="ticker-items" id="ticker-items"></div>
     </div>
   </div>
 
-  <!-- SECTION HEADER -->
+  <!-- SECTION HEADER: PROGRAMME -->
   <div class="section-header">
-    <span class="sh-label">MISSION REGISTRY</span>
+    <span class="sh-label">PROGRAMME DE MISSIONS</span>
     <div class="sh-sep"></div>
-    <span class="sh-count" id="mission-count">4 ENTRÉES</span>
+    <span class="sh-count" id="mission-count">3 ENTRÉES</span>
   </div>
 
   <!-- MISSION TABLE -->
@@ -672,39 +790,6 @@ footer a:hover { color: var(--muted); }
       </tr>
     </thead>
     <tbody>
-
-      <!-- ISS -->
-      <tr class="mission-row active" onclick="location.href='/iss_mission_control.html'">
-        <td class="td-status"><span class="status-strip active"></span></td>
-        <td class="td-id"><div class="cell-id">ISS-001</div></td>
-        <td class="td-name">
-          <div class="cell-patch">
-            <img src="/iss_emblem.png" alt="">
-            <div>
-              <div class="cell-mission-name">ISS</div>
-              <div class="cell-mission-sub">STATION SPATIALE INTERNATIONALE</div>
-            </div>
-          </div>
-        </td>
-        <td class="td-agency">
-          <div class="cell-agency"><strong>NASA / ESA / ROSCOSMOS</strong>Programme ISS</div>
-        </td>
-        <td class="td-phase">
-          <div class="phase-badge ok"><div class="bd"></div>OPÉRATIONNELLE</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em">ORBITE BASSE TERRESTRE</div>
-        </td>
-        <td class="td-date">
-          <div class="cell-date"><strong>NOV 1998</strong>EN COURS</div>
-        </td>
-        <td class="td-link">
-          <a href="/iss_mission_control.html" class="row-link" onclick="event.stopPropagation()">
-            OUVRIR
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </a>
-        </td>
-      </tr>
 
       <!-- ARTEMIS III -->
       <tr class="mission-row">
@@ -724,7 +809,7 @@ footer a:hover { color: var(--muted); }
         </td>
         <td class="td-phase">
           <div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
         </td>
         <td class="td-date">
           <div class="cell-date"><strong>2027</strong>TBD</div>
@@ -752,7 +837,7 @@ footer a:hover { color: var(--muted); }
         </td>
         <td class="td-phase">
           <div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
         </td>
         <td class="td-date">
           <div class="cell-date"><strong>2028</strong>TBD</div>
@@ -768,11 +853,11 @@ footer a:hover { color: var(--muted); }
         <td class="td-id"><div class="cell-id" style="color:var(--dim)">TBD</div></td>
         <td class="td-name">
           <div class="cell-patch cell-locked">
-            <div style="width:38px;height:38px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div style="width:36px;height:36px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
             <div>
-              <div class="cell-mission-name" style="color:var(--dim);font-size:16px;letter-spacing:.1em">— EN DÉVELOPPEMENT —</div>
+              <div class="cell-mission-name" style="color:var(--dim);font-size:15px;letter-spacing:.1em">— EN DÉVELOPPEMENT —</div>
               <div class="cell-mission-sub" style="opacity:.4">VÉHICULE : TBD</div>
             </div>
           </div>
@@ -786,11 +871,11 @@ footer a:hover { color: var(--muted); }
     </tbody>
   </table>
 
-  <!-- MOBILE CARDS (injectées par JS, cachées sur desktop) -->
+  <!-- MOBILE CARDS (injectées par JS) -->
   <div id="mob-mission-cards" style="display:none"></div>
 
   <!-- ARCHIVES -->
-  <div class="section-header" style="margin-top:24px">
+  <div class="section-header" style="margin-top:20px">
     <span class="sh-label">ARCHIVES</span>
     <div class="sh-sep"></div>
     <span class="sh-count">1 MISSION</span>
@@ -812,7 +897,7 @@ footer a:hover { color: var(--muted); }
         <td class="td-agency"><div class="cell-agency" style="opacity:.5"><strong>NASA / CSA</strong>Programme Artemis</div></td>
         <td class="td-phase">
           <div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:5px;letter-spacing:.07em">01 AVR – 11 AVR 2026</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:5px;letter-spacing:.07em">01 AVR – 11 AVR 2026</div>
         </td>
         <td class="td-date"><div class="cell-date" style="opacity:.5"><strong>01 AVR 2026</strong>22:35 UTC</div></td>
         <td class="td-link"><span class="row-link disabled">ARCHIVÉ</span></td>
@@ -820,10 +905,9 @@ footer a:hover { color: var(--muted); }
     </tbody>
   </table>
 
-  <!-- FOOTER INFO ROW -->
+  <!-- FOOTER -->
   <footer>
     <span>VECTOR · VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION</span>
-    <span>CLIQUER SUR UNE LIGNE POUR AFFICHER LES DÉTAILS</span>
     <a href="/about.html">À PROPOS DU SYSTÈME</a>
   </footer>
 
@@ -849,19 +933,18 @@ footer a:hover { color: var(--muted); }
     { delay:  120, status:'ok',   msg: 'VECTOR CORE v1.0 — <em>DÉMARRAGE</em>' },
     { delay:  300, status:'ok',   msg: 'CHARGEMENT DES MODULES SYSTÈME' },
     { delay:  520, status:'ok',   msg: 'INTERFACE RÉSEAU — <em>INITIALISÉE</em>' },
-    { delay:  750, status:'ok',   msg: 'CONNEXION JPL HORIZONS — <em>OK</em>' },
-    { delay:  980, status:'ok',   msg: 'CONNEXION NASA DSN — <em>OK</em>' },
+    { delay:  750, status:'ok',   msg: 'CONNEXION ISS TELEMETRY — <em>OK</em>' },
+    { delay:  980, status:'ok',   msg: 'NORAD TLE FEED — <em>ACTIF</em>' },
     { delay: 1200, status:'ok',   msg: 'NOAA SWPC FEED — <em>ACTIF</em>' },
-    { delay: 1420, status:'ok',   msg: 'EPHÉMÉRIDES LUNE / SOLEIL — <em>CHARGÉES</em>' },
+    { delay: 1420, status:'ok',   msg: 'MISSION ACTIVE — <em>ISS EXPÉDITION 74</em>' },
     { delay: 1650, status:'warn', msg: 'MISSIONS EN DÉVELOPPEMENT — <em>2 NON DISPONIBLES</em>' },
-    { delay: 1880, status:'ok',   msg: 'MISSION ACTIVE DÉTECTÉE — <em>ARTEMIS II</em>' },
-    { delay: 2100, status:'ok',   msg: 'REGISTRE DE MISSIONS — <em>PRÊT</em>' },
+    { delay: 1880, status:'ok',   msg: 'REGISTRE DE MISSIONS — <em>PRÊT</em>' },
   ];
 
   const PROGRESS_STEPS = [
-    { at:  300, v: 10 }, { at:  520, v: 24 }, { at:  750, v: 38 },
-    { at:  980, v: 52 }, { at: 1200, v: 63 }, { at: 1420, v: 74 },
-    { at: 1650, v: 83 }, { at: 1880, v: 91 }, { at: 2100, v: 100 },
+    { at:  300, v: 12 }, { at:  520, v: 26 }, { at:  750, v: 42 },
+    { at:  980, v: 56 }, { at: 1200, v: 68 }, { at: 1420, v: 80 },
+    { at: 1650, v: 90 }, { at: 1880, v: 100 },
   ];
 
   function addLine(status, msg) {
@@ -874,7 +957,6 @@ footer a:hover { color: var(--muted); }
       <span class="${classMap[status]}">${statusMap[status]}</span>
       <span class="bl-msg">${msg}</span>`;
     logEl.appendChild(div);
-    // keep last 6 lines visible
     const lines = logEl.querySelectorAll('.boot-line');
     if (lines.length > 6) lines[0].remove();
   }
@@ -884,41 +966,30 @@ footer a:hover { color: var(--muted); }
     pct.textContent = v + '%';
   }
 
-  // show logo first
   setTimeout(() => { logoWrap.classList.add('visible'); }, 80);
   setTimeout(() => { divEl.classList.add('visible'); progress.classList.add('visible'); }, 300);
+  LINES.forEach(({ delay, status, msg }) => setTimeout(() => addLine(status, msg), delay));
+  PROGRESS_STEPS.forEach(({ at, v }) => setTimeout(() => setProgress(v), at));
 
-  // schedule lines
-  LINES.forEach(({ delay, status, msg }) => {
-    setTimeout(() => addLine(status, msg), delay);
-  });
-
-  // schedule progress
-  PROGRESS_STEPS.forEach(({ at, v }) => {
-    setTimeout(() => setProgress(v), at);
-  });
-
-  // add cursor after last line
   setTimeout(() => {
     const cursor = document.createElement('span');
     cursor.className = 'boot-cursor';
     logEl.appendChild(cursor);
-  }, 2200);
+  }, 2000);
 
-  // dismiss
   function dismiss() {
     screen.classList.add('fade-out');
     setTimeout(() => screen.remove(), 650);
     document.removeEventListener('keydown', dismiss);
     screen.removeEventListener('click', dismiss);
   }
-  setTimeout(dismiss, 3000);
+  setTimeout(dismiss, 2800);
   setTimeout(() => {
     screen.style.cursor = 'pointer';
     screen.title = 'Cliquer pour passer';
     screen.addEventListener('click', dismiss);
     document.addEventListener('keydown', dismiss);
-  }, 800);
+  }, 700);
 })();
 
 /* ── UTC CLOCK ── */
@@ -931,49 +1002,12 @@ footer a:hover { color: var(--muted); }
   tick(); setInterval(tick, 1000);
 })();
 
-/* ── DETAIL TOGGLE ── */
-function toggleDetail(id) {
-  const row   = document.getElementById(id);
-  const panel = document.getElementById('dp-' + id.replace('d-',''));
-  if (!row) return;
-  const open = row.style.display !== 'none';
-  // close all
-  document.querySelectorAll('.detail-row').forEach(r => r.style.display = 'none');
-  document.querySelectorAll('.detail-panel').forEach(p => p.classList.remove('open'));
-  if (!open) {
-    row.style.display = 'table-row';
-    requestAnimationFrame(() => panel && panel.classList.add('open'));
-  }
-}
-
-/* ── MISSION PHASE (same boundaries as mission control) ── */
-const LAUNCH_UTC = new Date('2026-04-01T22:35:00Z');
-const PHASE_BOUNDARIES = [
-  { met: 0,        label: 'ASCENSION' },
-  { met: 25.6167,  label: 'TRANSIT TRANS-LUNAIRE' },
-  { met: 102.9833, label: 'APPROCHE LUNAIRE' },
-  { met: 121.3889, label: 'SURVOL LUNAIRE' },
-  { met: 139.7833, label: 'RETOUR VERS LA TERRE' },
-  { met: 217.2167, label: 'SÉPARATION CM/SM' },
-  { met: 217.55,   label: 'RENTRÉE ATMOSPHÉRIQUE' },
-  { met: 217.7667, label: 'AMERRISSAGE' },
-];
-function getMissionPhase() {
-  const metH = (Date.now() - LAUNCH_UTC) / 3600000;
-  if (metH < 0) return 'PRÉ-LANCEMENT';
-  let phase = PHASE_BOUNDARIES[0].label;
-  for (const b of PHASE_BOUNDARIES) {
-    if (metH >= b.met) phase = b.label; else break;
-  }
-  return phase;
-}
-
-/* ── TICKER ISS ── */
+/* ── TICKER + ISS HERO ISS ── */
 (function () {
   const iss = { lat: null, lon: null, alt: null, spd: null, vis: null };
 
   function utc() { return new Date().toISOString().slice(11,19) + ' UTC'; }
-  function fmt(v, dec, unit) { return v != null ? v.toFixed(dec) + ' ' + unit : '—'; }
+  function fmt(v, dec, unit) { return v != null ? v.toFixed(dec) + '\u202f' + unit : '—'; }
   function fmtDeg(v, pos, neg) {
     if (v == null) return '—';
     return Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
@@ -985,12 +1019,25 @@ function getMissionPhase() {
     () => `LATITUDE <span>${fmtDeg(iss.lat,'N','S')}</span>`,
     () => `LONGITUDE <span>${fmtDeg(iss.lon,'E','W')}</span>`,
     () => `ALTITUDE <span>${fmt(iss.alt,1,'km')}</span>`,
-    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3600).toFixed(2)+' km/s' : '—'}</span>`,
+    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3600).toFixed(2)+'\u202fkm/s' : '—'}</span>`,
     () => `PHASE ORBITALE <span>${iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—'}</span>`,
     () => `ÉQUIPAGE <span>7 ASTRONAUTES</span>`,
     () => `ORBITE <span>LEO · INCL. 51.6°</span>`,
     () => `SOURCE <span>WHERETHEISS.AT / NORAD TLE</span>`,
   ];
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function renderHero() {
+    setText('h-lat', fmtDeg(iss.lat, 'N', 'S'));
+    setText('h-lon', fmtDeg(iss.lon, 'E', 'W'));
+    setText('h-alt', fmt(iss.alt, 1, 'km'));
+    setText('h-spd', iss.spd != null ? (iss.spd/3600).toFixed(2)+'\u202fkm/s' : '—');
+    setText('h-vis', iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—');
+  }
 
   function render() {
     const doubled = [...items, ...items];
@@ -1011,16 +1058,14 @@ function getMissionPhase() {
       }
     } catch(_) {}
     render();
+    renderHero();
   }
 
   render();
   fetchISS();
-  setInterval(render, 1000);      // UTC + labels refresh every second
-  setInterval(fetchISS, 10000);   // ISS position refresh every 10s
+  setInterval(render, 1000);
+  setInterval(fetchISS, 10000);
 })();
-
-var _hp = document.getElementById('hub-phase');
-if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textContent = getMissionPhase(); }, 60000); }
 
 /* ── MOBILE CARDS ── */
 (function buildMobileCards() {
@@ -1031,27 +1076,6 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
 
   const missions = [
     {
-      cardClass: 'card-active',
-      patch: '/iss_emblem.png',
-      patchDim: false,
-      name: 'ISS',
-      sub: 'STATION SPATIALE INTERNATIONALE',
-      nameDim: false,
-      badge: `<div class="phase-badge ok"><div class="bd"></div>OPÉRATIONNELLE</div>`,
-      date: '<strong>NOV 1998</strong> · EN COURS',
-      link: '<a href="/iss_mission_control.html" class="row-link">OUVRIR LE MISSION CONTROL →</a>',
-      phaseStrip: false,
-      detail: [
-        { label: 'AGENCES',        val: 'NASA / ESA / ROSCOSMOS / JAXA / CSA' },
-        { label: 'ORBITE',         val: '~400 KM · LEO' },
-        { label: 'ÉQUIPAGE',       val: '7 ASTRONAUTES (EXPEDX-72)' },
-        { label: 'MASSE',          val: '~420 000 KG' },
-        { label: 'DONNÉES POS.',   val: 'WHERETHEISS.AT / NORAD' },
-        { label: 'MISE À JOUR',    val: '8 S' },
-      ],
-      desc: 'Station spatiale en orbite basse terrestre opérée conjointement par 15 nations. En service continu depuis novembre 2000.'
-    },
-    {
       cardClass: 'card-future',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png',
       patchDim: true,
@@ -1061,9 +1085,8 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
       badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
       date: '<strong>2027</strong> · TBD',
       link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      phaseStrip: false,
       detail: null,
-      desc: 'Test de manœuvre et d\'amarrage avec le HLS (Starship/SpaceX ou Blue Moon/Blue Origin) en orbite lunaire. Prépare Artemis IV.'
+      desc: 'Premier alunissage humain du programme Artemis. Utilise le HLS (Starship ou Blue Moon) en orbite lunaire Gateway.'
     },
     {
       cardClass: 'card-future',
@@ -1075,7 +1098,6 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
       badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
       date: '<strong>2028</strong> · TBD',
       link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      phaseStrip: false,
       detail: null,
       desc: null
     },
@@ -1089,7 +1111,6 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
       badge: `<div class="phase-badge off">NON PLANIFIÉ</div>`,
       date: '<strong>—</strong> · TBD',
       link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      phaseStrip: false,
       detail: null,
       desc: null
     }
@@ -1097,11 +1118,10 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
 
   missions.forEach((m, i) => {
     const detailId = 'mob-dp-' + i;
-    const stripId  = 'mob-ps-' + i;
 
     const patchHtml = m.patch
       ? `<img class="mob-card-patch${m.patchDim ? ' dim' : ''}" src="${m.patch}" alt="">`
-      : `<div class="mob-card-placeholder"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
+      : `<div class="mob-card-placeholder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
 
     const detailFieldsHtml = m.detail
       ? m.detail.map(f => `<div class="mob-detail-field"><label>${f.label}</label><span>${f.val}</span></div>`).join('')
@@ -1115,13 +1135,6 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
     const detailHtml = hasDetail
       ? `<div id="${detailId}" class="mob-detail-panel">
            <div class="mob-detail-inner">${detailFieldsHtml}${detailDescHtml}</div>
-         </div>`
-      : '';
-
-    const phaseStripHtml = m.phaseStrip
-      ? `<div class="mob-card-phase-strip" id="${stripId}">
-           <div class="mob-card-phase-label">PHASE EN COURS <span class="mob-card-phase-chevron">▼</span></div>
-           <div class="mob-card-phase-val" id="mob-phase-val-${i}">${getMissionPhase()}</div>
          </div>`
       : '';
 
@@ -1139,31 +1152,12 @@ if (_hp) { _hp.textContent = getMissionPhase(); setInterval(() => { _hp.textCont
         ${m.badge}
         <div class="mob-card-date-val">${m.date}</div>
       </div>
-      ${phaseStripHtml}
       <div class="mob-card-cta">${m.link}</div>
       ${detailHtml}
     `;
 
-    // Toggle detail via phase strip click
-    if (m.phaseStrip && hasDetail) {
-      const strip = card.querySelector('#' + stripId);
-      strip && strip.addEventListener('click', () => {
-        const dp = card.querySelector('#' + detailId);
-        if (!dp) return;
-        const isOpen = dp.classList.contains('open');
-        strip.classList.toggle('open', !isOpen);
-        dp.classList.toggle('open', !isOpen);
-      });
-    }
-
     wrap.appendChild(card);
   });
-
-  // Update live phase on all active cards
-  setInterval(() => {
-    const el = document.getElementById('mob-phase-val-0');
-    if (el) el.textContent = getMissionPhase();
-  }, 60000);
 })();
 </script>
 </body>
