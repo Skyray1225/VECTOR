@@ -5,1044 +5,1123 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VECTOR — Mission Hub</title>
 <link rel="icon" type="image/png" href="/vector_favicon.png">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
+/* ══════════════════════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════════════════════ */
 :root {
-  --bg:      #070d18;
-  --surface: #0b1523;
-  --panel:   #0e1a2a;
-  --border:  rgba(255,255,255,.07);
-  --border2: rgba(0,210,255,.15);
-  --text:    #d4dfe8;
-  --muted:   #5a7a90;
-  --dim:     #374f61;
-  --accent:  #00d2ff;
-  --ok:      #4cffab;
-  --warn:    #ffb300;
-  --alert:   #ff4b4b;
-  --heading: 'Barlow Condensed', sans-serif;
-  --body:    'Barlow', sans-serif;
-  --mono:    'Share Tech Mono', monospace;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg); color: var(--text);
-  font-family: var(--body); font-size: 14px; line-height: 1.6;
-  min-height: 100vh; overflow-x: hidden;
-  /* subtle dot grid */
-  background-image: radial-gradient(rgba(0,210,255,.028) 1px, transparent 1px);
-  background-size: 28px 28px;
+  --bg:      #020a15;
+  --s0:      #040d1b;
+  --s1:      #071224;
+  --s2:      #0a1830;
+  --border:  rgba(255,255,255,.055);
+  --ba:      rgba(0,220,255,.14);   /* cyan border */
+  --bg2:     rgba(0,255,157,.12);   /* green border */
+  --text:    #b8cdd8;
+  --muted:   #38566a;
+  --dim:     #152637;
+  --accent:  #00dcff;
+  --green:   #00ff9d;
+  --amber:   #ffb300;
+  --red:     #ff3535;
+  --fh: 'Rajdhani', sans-serif;
+  --fd: 'Share Tech Mono', monospace;
+  --fc: 'Orbitron', monospace;
 }
 
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   RESET + BASE
+══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(rgba(0,220,255,.018) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--text);
+  font-family: var(--fd);
+  font-size: 13px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════
    BOOT SCREEN
-═══════════════════════════════════════ */
-#boot-screen {
-  position: fixed; inset: 0; z-index: 9999;
-  background: #030810;
+══════════════════════════════════════════════════════════════ */
+#boot {
+  position: fixed; inset: 0; z-index: 9000;
+  background: #010710;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  transition: opacity .6s ease;
+  transition: opacity .5s ease;
 }
-#boot-screen.fade-out { opacity: 0; pointer-events: none; }
-#boot-screen::before {
+#boot.out { opacity: 0; pointer-events: none; }
+
+/* horizontal scan lines */
+#boot::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    transparent 0px, transparent 3px,
-    rgba(0,0,0,.07) 3px, rgba(0,0,0,.07) 4px
+    transparent 0px, transparent 2px,
+    rgba(0,0,0,.12) 2px, rgba(0,0,0,.12) 3px
   );
-  z-index: 1;
 }
-.boot-inner {
-  position: relative; z-index: 2;
+
+.boot-wrap {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 520px;
+  padding: 0 28px;
   display: flex; flex-direction: column;
-  align-items: center; width: 100%; max-width: 580px;
-  padding: 0 24px;
+  align-items: center; gap: 0;
 }
-.boot-logo-wrap {
-  width: 100%; display: flex; justify-content: center;
-  margin-bottom: 40px; opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity .7s ease, transform .7s ease;
+
+.boot-logo {
+  width: 320px; max-width: 80vw; height: auto;
+  filter: drop-shadow(0 0 32px rgba(0,180,255,.3));
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity .6s ease, transform .6s ease;
 }
-.boot-logo-wrap.visible { opacity: 1; transform: translateY(0); }
-.boot-logo-img {
-  width: 380px; max-width: 90vw; height: auto;
-  filter: drop-shadow(0 0 28px rgba(0,170,220,.22));
+.boot-logo.vis { opacity: 1; transform: translateY(0); }
+
+.boot-rule {
+  width: 100%; height: 1px; margin: 28px 0 22px;
+  background: linear-gradient(to right,
+    transparent, rgba(0,220,255,.28) 40%, rgba(0,255,157,.2) 60%, transparent);
+  opacity: 0; transition: opacity .3s ease;
 }
-.boot-divider {
-  width: 100%; height: 1px;
-  background: linear-gradient(to right, transparent, rgba(0,210,255,.3), transparent);
-  margin-bottom: 28px; opacity: 0;
-  transition: opacity .4s ease;
+.boot-rule.vis { opacity: 1; }
+
+.boot-terminal {
+  width: 100%;
+  font-family: var(--fd); font-size: 10.5px;
+  letter-spacing: .05em; line-height: 1.9;
+  color: var(--muted);
+  min-height: 140px;
 }
-.boot-divider.visible { opacity: 1; }
-.boot-log {
-  width: 100%; font-family: var(--mono); font-size: 11px;
-  letter-spacing: .06em; line-height: 2; color: var(--muted);
-  min-height: 160px;
+.bline {
+  display: flex; gap: 10px; opacity: 0;
+  animation: bline-in .15s ease forwards;
 }
-.boot-line {
-  display: flex; gap: 12px; opacity: 0;
-  animation: line-appear .18s ease forwards;
-}
-@keyframes line-appear {
-  from { opacity: 0; transform: translateX(-4px); }
+@keyframes bline-in {
+  from { opacity: 0; transform: translateX(-3px); }
   to   { opacity: 1; transform: translateX(0); }
 }
-.bl-time  { color: var(--dim); flex-shrink: 0; }
-.bl-ok    { color: var(--ok); flex-shrink: 0; }
-.bl-warn  { color: var(--warn); flex-shrink: 0; }
-.bl-msg   { color: var(--muted); }
-.bl-msg em { color: var(--text); font-style: normal; }
+.bt { color: var(--dim); }
+.bok { color: var(--green); }
+.bwn { color: var(--amber); }
+.bm  { color: var(--muted); }
+.bm em { color: var(--text); font-style: normal; }
+
 .boot-cursor {
-  display: inline-block; width: 7px; height: 13px;
-  background: var(--accent); margin-left: 4px;
+  display: inline-block; width: 6px; height: 12px;
+  background: var(--accent); margin-left: 3px;
   vertical-align: middle;
-  animation: cursor-blink .7s step-end infinite;
+  animation: bcursor .65s step-end infinite;
 }
-@keyframes cursor-blink { 0%,100%{opacity:1} 50%{opacity:0} }
-.boot-progress-wrap {
-  width: 100%; margin-top: 24px;
-  display: flex; align-items: center; gap: 12px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .15em;
+@keyframes bcursor { 0%,100%{opacity:1} 50%{opacity:0} }
+
+.boot-bar-wrap {
+  width: 100%; margin-top: 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .18em;
   color: var(--dim); text-transform: uppercase;
   opacity: 0; transition: opacity .3s ease;
 }
-.boot-progress-wrap.visible { opacity: 1; }
+.boot-bar-wrap.vis { opacity: 1; }
 .boot-bar {
-  flex: 1; height: 2px; background: rgba(255,255,255,.06);
-  border-radius: 1px; overflow: hidden;
+  flex: 1; height: 1px; background: rgba(255,255,255,.05);
+  overflow: hidden;
 }
 .boot-bar-fill {
   height: 100%; width: 0%;
-  background: var(--accent);
-  box-shadow: 0 0 6px rgba(0,210,255,.5);
-  transition: width .18s linear;
+  background: linear-gradient(to right, var(--accent), var(--green));
+  box-shadow: 0 0 8px rgba(0,220,255,.4);
+  transition: width .15s linear;
 }
-.boot-pct { flex-shrink: 0; min-width: 32px; text-align: right; color: var(--accent); }
+.boot-pct { color: var(--accent); min-width: 30px; text-align: right; }
 
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    TOPBAR
-═══════════════════════════════════════ */
+══════════════════════════════════════════════════════════════ */
 .topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 56px;
+  background: rgba(2,10,21,.96);
+  border-bottom: 1px solid var(--ba);
   display: flex; align-items: center;
-  height: 62px; padding: 0 24px;
-  background: rgba(9,17,32,.97);
-  border-bottom: 1px solid var(--border2);
-  box-shadow: 0 1px 0 rgba(0,210,255,.04), 0 4px 24px rgba(0,0,0,.4);
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  gap: 0;
-  backdrop-filter: blur(8px);
+  padding: 0 24px; gap: 0;
+  backdrop-filter: blur(12px);
 }
-.topbar-logo { height: 46px; width: auto; flex-shrink: 0; }
-.topbar-div {
-  width: 1px; height: 28px;
-  background: var(--border); margin: 0 20px;
+
+.topbar-logo { height: 40px; width: auto; flex-shrink: 0; }
+
+.topbar-pipe {
+  width: 1px; height: 26px;
+  background: var(--border); margin: 0 20px; flex-shrink: 0;
 }
+
 .topbar-sys {
-  font-family: var(--mono); font-size: 9px; color: var(--dim);
-  letter-spacing: .14em; line-height: 1.6; text-transform: uppercase;
+  font-family: var(--fd); font-size: 8.5px;
+  letter-spacing: .18em; line-height: 1.7;
+  color: var(--dim); text-transform: uppercase;
 }
-.topbar-sys strong { color: var(--muted); font-weight: 400; }
+.topbar-sys b { color: var(--muted); font-weight: 400; }
+
 .topbar-right {
   margin-left: auto;
-  display: flex; align-items: center; gap: 20px;
+  display: flex; align-items: center; gap: 18px;
 }
+
 .topbar-clock {
-  font-family: var(--mono); font-size: 13px; color: var(--dim);
+  font-family: var(--fc);
+  font-size: 14px; font-weight: 400;
   letter-spacing: .1em;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(0,220,255,.35);
 }
-.topbar-clock span { color: var(--text); }
-.topbar-link {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
-  color: var(--dim); text-decoration: none; text-transform: uppercase;
-  padding: 5px 12px; border: 1px solid var(--border);
+
+.topbar-btn {
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .16em;
+  text-transform: uppercase; text-decoration: none;
+  color: var(--muted); padding: 5px 12px;
+  border: 1px solid var(--border);
   transition: color .15s, border-color .15s;
 }
-.topbar-link:hover { color: var(--accent); border-color: var(--border2); }
+.topbar-btn:hover { color: var(--accent); border-color: var(--ba); }
 
-/* ═══════════════════════════════════════
-   PAGE LAYOUT
-═══════════════════════════════════════ */
-.page-wrap {
-  padding-top: 62px;
-  max-width: 1200px;
+/* ══════════════════════════════════════════════════════════════
+   PAGE WRAP
+══════════════════════════════════════════════════════════════ */
+.pw {
+  padding-top: 56px;
+  max-width: 1240px;
   margin: 0 auto;
 }
 
-/* ═══════════════════════════════════════
-   STATUS STRIP  (replaces ident-block)
-═══════════════════════════════════════ */
-.status-strip-bar {
-  padding: 9px 28px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 20px;
-  background: rgba(0,0,0,.18);
+/* ══════════════════════════════════════════════════════════════
+   ISS — ACQUISITION BAR
+══════════════════════════════════════════════════════════════ */
+.iss-acq {
+  height: 30px;
+  background: rgba(0,255,157,.04);
+  border-bottom: 1px solid rgba(0,255,157,.1);
+  display: flex; align-items: center;
+  padding: 0 28px; gap: 10px;
+  font-family: var(--fd); font-size: 8.5px;
+  letter-spacing: .16em; text-transform: uppercase;
 }
-.ssb-label {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .2em;
-  color: var(--dim); text-transform: uppercase;
+.acq-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px rgba(0,255,157,.7);
+  flex-shrink: 0;
+  animation: pulse 1.8s ease-in-out infinite;
 }
-.ssb-dots {
-  display: flex; align-items: center; gap: 20px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.ss-item { display: flex; align-items: center; gap: 7px; color: var(--muted); }
-.ss-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-}
-.ss-dot.ok   { background: var(--ok);   box-shadow: 0 0 5px rgba(76,255,171,.5); }
-.ss-dot.warn { background: var(--warn); box-shadow: 0 0 5px rgba(255,179,0,.4); }
-.ss-dot.off  { background: var(--dim); }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
-.ss-dot.ok { animation: blink 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.acq-text { color: var(--green); }
+.acq-sep  { color: var(--dim); margin: 0 4px; }
+.acq-sub  { color: var(--muted); }
+.acq-right { margin-left: auto; color: var(--muted); }
+.acq-right span { color: var(--dim); }
 
-/* ═══════════════════════════════════════
-   ISS HERO CARD
-═══════════════════════════════════════ */
-.iss-hero {
+/* ══════════════════════════════════════════════════════════════
+   ISS HERO FRAME
+══════════════════════════════════════════════════════════════ */
+.iss-frame {
+  position: relative;
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
-  position: relative; overflow: hidden;
+  background: var(--s0);
+  overflow: hidden;
 }
-/* diagonal texture */
-.iss-hero::before {
+
+/* CRT scan line overlay */
+.iss-frame::before {
   content: '';
-  position: absolute; inset: 0; pointer-events: none;
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
   background: repeating-linear-gradient(
-    -55deg,
-    transparent 0, transparent 28px,
-    rgba(76,255,171,.008) 28px, rgba(76,255,171,.008) 29px
+    to bottom,
+    transparent 0px, transparent 3px,
+    rgba(0,0,0,.06) 3px, rgba(0,0,0,.06) 4px
   );
 }
-/* green left accent bar */
-.iss-hero::after {
-  content: '';
-  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-  background: var(--ok);
-  box-shadow: 2px 0 14px rgba(76,255,171,.28);
+
+/* targeting brackets — top-left */
+.iss-bracket-tl,
+.iss-bracket-br {
+  position: absolute; z-index: 2; pointer-events: none;
 }
-.iss-hero-inner {
+.iss-bracket-tl {
+  top: 10px; left: 10px;
+  width: 18px; height: 18px;
+  border-top: 1px solid rgba(0,255,157,.5);
+  border-left: 1px solid rgba(0,255,157,.5);
+}
+.iss-bracket-br {
+  bottom: 10px; right: 10px;
+  width: 18px; height: 18px;
+  border-bottom: 1px solid rgba(0,255,157,.5);
+  border-right: 1px solid rgba(0,255,157,.5);
+}
+
+.iss-body {
   position: relative; z-index: 1;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
+  grid-template-columns: 280px 1fr auto;
   gap: 0;
-  padding: 26px 28px 26px 32px;
+  padding: 28px 28px 28px 28px;
 }
 
-/* Left: emblem + meta */
-.iss-hero-left {
-  display: flex; align-items: center; gap: 22px;
-  padding-right: 32px;
-}
-.iss-hero-emblem {
-  width: 76px; height: 76px; object-fit: contain; flex-shrink: 0;
-  filter: drop-shadow(0 2px 14px rgba(0,210,255,.18));
-}
-.iss-hero-meta { display: flex; flex-direction: column; gap: 6px; }
-.iss-hero-id {
-  font-family: var(--mono); font-size: 8px; letter-spacing: .24em;
-  color: var(--dim); text-transform: uppercase;
-}
-.iss-hero-name {
-  font-family: var(--heading); font-size: 38px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .05em; line-height: 1;
-  color: var(--text);
-}
-.iss-hero-sub {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
-  color: var(--muted); text-transform: uppercase;
-}
-.iss-hero-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .14em;
-  color: var(--ok); text-transform: uppercase; margin-top: 2px;
-}
-.iss-hero-badge .bd {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--ok);
-  animation: blink 1.6s ease-in-out infinite;
-}
-
-/* Center: telemetry grid */
-.iss-hero-telem {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px 24px;
-  padding: 0 32px;
-  border-left: 1px solid var(--border);
+/* ── Left column ── */
+.iss-ident {
+  display: flex; align-items: center; gap: 20px;
+  padding-right: 28px;
   border-right: 1px solid var(--border);
 }
-.iss-tl-item { display: flex; flex-direction: column; gap: 4px; }
-.iss-tl-lbl {
-  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+
+.iss-emblem {
+  width: 80px; height: 80px;
+  object-fit: contain; flex-shrink: 0;
+  filter: drop-shadow(0 0 16px rgba(0,220,255,.15));
+}
+
+.iss-meta { display: flex; flex-direction: column; gap: 7px; }
+
+.iss-meta-id {
+  font-family: var(--fd); font-size: 8px; letter-spacing: .24em;
+  color: var(--dim); text-transform: uppercase;
+}
+
+.iss-meta-name {
+  font-family: var(--fh); font-size: 42px; font-weight: 700;
+  letter-spacing: .04em; line-height: 1;
+  color: #e2edf3;
+  text-transform: uppercase;
+}
+
+.iss-meta-sub {
+  font-family: var(--fd); font-size: 8px; letter-spacing: .14em;
+  color: var(--muted); text-transform: uppercase; line-height: 1.5;
+}
+
+.iss-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .14em;
+  color: var(--green); text-transform: uppercase;
+}
+.iss-status .sd {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 5px rgba(0,255,157,.6);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+/* ── Center column — telemetry ── */
+.iss-telem {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  padding: 0 28px;
+}
+
+.iss-tl {
+  padding: 8px 14px 8px 0;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 5px;
+}
+.iss-tl:nth-child(3n) {
+  border-right: none;
+  padding-right: 0;
+}
+.iss-tl:nth-child(n+4) {
+  border-top: 1px solid var(--border);
+}
+
+.iss-tl-label {
+  font-family: var(--fd); font-size: 7.5px; letter-spacing: .22em;
   color: var(--muted); text-transform: uppercase;
 }
 .iss-tl-val {
-  font-family: var(--mono); font-size: 15px; color: var(--text);
-  letter-spacing: .05em;
+  font-family: var(--fd); font-size: 19px; letter-spacing: .04em;
+  color: var(--text);
+  transition: color .4s ease;
+}
+.iss-tl-val.flash { color: var(--green); }
+
+/* ── Right column — CTA ── */
+.iss-cta {
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: flex-end;
+  gap: 14px;
+  padding-left: 28px;
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
-/* Right: CTA */
-.iss-hero-cta {
-  display: flex; flex-direction: column; gap: 10px;
-  align-items: center; flex-shrink: 0;
-  padding-left: 32px;
-}
-.hero-cta-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 13px 24px;
-  background: rgba(76,255,171,.06);
-  border: 1px solid rgba(76,255,171,.28);
-  color: var(--ok);
-  font-family: var(--heading); font-size: 14px; font-weight: 700;
-  letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+.iss-access {
+  display: flex; flex-direction: column; gap: 0;
+  text-decoration: none;
+  border: 1px solid rgba(0,255,157,.3);
+  background: rgba(0,255,157,.05);
   transition: background .15s, border-color .15s;
+  padding: 0;
+  overflow: hidden;
+}
+.iss-access:hover {
+  background: rgba(0,255,157,.11);
+  border-color: rgba(0,255,157,.55);
+}
+.iss-access-pre {
+  padding: 5px 18px;
+  font-family: var(--fd); font-size: 7.5px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--muted);
+  border-bottom: 1px solid rgba(0,255,157,.14);
+  background: rgba(0,0,0,.2);
+}
+.iss-access-label {
+  padding: 11px 18px;
+  font-family: var(--fh); font-size: 16px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; color: var(--green);
+  display: flex; align-items: center; gap: 10px;
   white-space: nowrap;
 }
-.hero-cta-btn:hover {
-  background: rgba(76,255,171,.13);
-  border-color: rgba(76,255,171,.5);
-}
-.hero-cta-btn svg { flex-shrink: 0; }
-.iss-hero-orbit {
-  font-family: var(--mono); font-size: 8px; letter-spacing: .12em;
-  color: var(--dim); text-transform: uppercase; text-align: center;
-  line-height: 1.7;
+.iss-access-label svg { flex-shrink: 0; }
+
+.iss-orbit-data {
+  font-family: var(--fd); font-size: 8px; letter-spacing: .12em;
+  color: var(--muted); text-transform: uppercase;
+  text-align: right; line-height: 2;
 }
 
-/* ═══════════════════════════════════════
-   TELEMETRY TICKER
-═══════════════════════════════════════ */
-.ticker-bar {
-  background: #040a14;
+/* ══════════════════════════════════════════════════════════════
+   TICKER
+══════════════════════════════════════════════════════════════ */
+.ticker {
+  height: 30px;
+  background: #02070f;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
-  text-transform: uppercase;
+  overflow: hidden;
 }
-.ticker-label {
-  color: var(--accent); flex-shrink: 0;
-  padding: 8px 16px 8px 28px;
-  border-right: 1px solid var(--border2);
-  font-size: 8px; letter-spacing: .2em;
-  background: #040a14;
+.ticker-tag {
+  flex-shrink: 0;
+  padding: 0 16px 0 24px;
+  font-family: var(--fd); font-size: 8px; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--accent);
+  border-right: 1px solid var(--ba);
+  height: 100%; display: flex; align-items: center;
+  background: rgba(0,220,255,.04);
 }
-.ticker-scroll-zone {
-  flex: 1; overflow: hidden; min-width: 0;
+.ticker-scroll { flex: 1; overflow: hidden; }
+.ticker-inner {
+  display: flex;
+  animation: scroll 42s linear infinite;
+  white-space: nowrap;
 }
-.ticker-items {
-  display: flex; gap: 0;
-  animation: ticker-scroll 40s linear infinite;
-}
-.ticker-item {
-  color: var(--dim); white-space: nowrap; padding: 8px 28px;
-  border-right: 1px solid var(--border);
-}
-.ticker-item span { color: var(--muted); }
-@keyframes ticker-scroll {
+@keyframes scroll {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
-/* ═══════════════════════════════════════
-   SECTION HEADER
-═══════════════════════════════════════ */
-.section-header {
-  padding: 18px 28px 12px;
-  display: flex; align-items: center; gap: 14px;
-  border-bottom: 1px solid var(--border);
-}
-.sh-label {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .22em;
+.t-item {
+  display: inline-flex; align-items: center; gap: 0;
+  padding: 0 24px;
+  border-right: 1px solid var(--border);
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .12em;
   text-transform: uppercase; color: var(--muted);
+  height: 30px;
 }
-.sh-sep { flex: 1; height: 1px; background: var(--border); }
-.sh-count {
-  font-family: var(--mono); font-size: 9px; color: var(--dim);
-  letter-spacing: .1em;
-}
+.t-item span { color: var(--text); margin-left: 5px; }
 
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
+   SECTION DIVIDER
+══════════════════════════════════════════════════════════════ */
+.sdiv {
+  height: 38px;
+  background: rgba(0,0,0,.25);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px; gap: 12px;
+}
+.sdiv-mark {
+  font-family: var(--fd); font-size: 9.5px; color: var(--accent);
+  letter-spacing: .05em; flex-shrink: 0;
+}
+.sdiv-label {
+  font-family: var(--fh); font-size: 12px; font-weight: 600;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+  flex-shrink: 0;
+}
+.sdiv-line { flex: 1; height: 1px; background: var(--border); }
+.sdiv-count {
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .14em;
+  color: var(--dim); text-transform: uppercase; flex-shrink: 0;
+}
+.sdiv-mt { margin-top: 20px; }
+
+/* ══════════════════════════════════════════════════════════════
    MISSION TABLE
-═══════════════════════════════════════ */
-.mission-table {
+══════════════════════════════════════════════════════════════ */
+.mtable {
   width: 100%;
   border-collapse: collapse;
 }
-.mission-table th {
-  font-family: var(--mono); font-size: 8px; letter-spacing: .2em;
+.mtable th {
+  font-family: var(--fd); font-size: 7.5px; letter-spacing: .2em;
   text-transform: uppercase; color: var(--dim); font-weight: 400;
-  text-align: left; padding: 9px 16px;
+  text-align: left; padding: 8px 14px;
   border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,.22);
+  background: rgba(0,0,0,.3);
 }
-.mission-table th:first-child { padding-left: 28px; }
-.mission-table th:last-child  { padding-right: 28px; }
+.mtable th:first-child { padding-left: 28px; }
+.mtable th:last-child  { padding-right: 28px; }
 
-.mission-row {
+.mrow {
   border-bottom: 1px solid var(--border);
   cursor: default;
   transition: background .12s;
 }
-.mission-row.active { cursor: pointer; }
-.mission-row.active:hover { background: rgba(0,210,255,.03); }
+.mrow.clickable { cursor: pointer; }
+.mrow.clickable:hover { background: rgba(0,220,255,.025); }
+.mrow td { padding: 0; vertical-align: middle; }
 
-.mission-row td { padding: 0; vertical-align: middle; }
-
-.td-status { width: 3px; padding: 0 !important; }
-.status-strip {
-  width: 3px; height: 100%; min-height: 72px;
-  display: block;
+/* left status strip */
+.td-strip { width: 3px; padding: 0 !important; }
+.strip {
+  display: block; width: 3px; min-height: 78px;
 }
-.status-strip.active { background: var(--ok); box-shadow: 2px 0 8px rgba(76,255,171,.28); }
-.status-strip.future { background: var(--warn); }
-.status-strip.tbd    { background: var(--dim); }
+.strip-active { background: var(--green); box-shadow: 2px 0 10px rgba(0,255,157,.25); }
+.strip-future { background: var(--amber); }
+.strip-off    { background: var(--dim); }
 
-.td-id    { width: 80px;  padding: 18px 16px !important; }
-.td-name  { padding: 18px 16px !important; }
-.td-agency{ width: 150px; padding: 18px 16px !important; }
-.td-phase { width: 190px; padding: 18px 16px !important; }
-.td-date  { width: 160px; padding: 18px 16px !important; }
-.td-link  { width: 130px; padding: 18px 16px !important; text-align: right; padding-right: 28px !important; }
+/* cells */
+.td-id    { width: 74px;  padding: 18px 14px !important; }
+.td-name  { padding: 18px 14px !important; }
+.td-ag    { width: 148px; padding: 18px 14px !important; }
+.td-ph    { width: 185px; padding: 18px 14px !important; }
+.td-dt    { width: 155px; padding: 18px 14px !important; }
+.td-lnk   { width: 130px; padding: 18px 14px !important; text-align: right; padding-right: 28px !important; }
 
-.cell-id {
-  font-family: var(--mono); font-size: 10px; letter-spacing: .14em;
+.c-id {
+  font-family: var(--fd); font-size: 9.5px; letter-spacing: .14em;
   color: var(--muted); text-transform: uppercase;
 }
-.cell-patch { display: flex; align-items: center; gap: 14px; }
-.cell-patch img {
-  width: 36px; height: auto;
-  filter: drop-shadow(0 1px 4px rgba(0,0,0,.6));
-  flex-shrink: 0;
+.c-id.dim { color: var(--dim); }
+
+.c-patch { display: flex; align-items: center; gap: 14px; }
+.c-patch img {
+  width: 36px; height: auto; flex-shrink: 0;
+  filter: drop-shadow(0 1px 4px rgba(0,0,0,.7));
 }
-.cell-mission-name {
-  font-family: var(--heading); font-size: 22px; font-weight: 700;
+.c-name {
+  font-family: var(--fh); font-size: 24px; font-weight: 700;
   text-transform: uppercase; letter-spacing: .04em; line-height: 1;
+  color: var(--text);
 }
-.cell-mission-sub {
-  font-family: var(--mono); font-size: 9px; color: var(--muted);
-  letter-spacing: .06em; margin-top: 4px; text-transform: uppercase;
+.c-name.dim { color: var(--dim); }
+.c-sub {
+  font-family: var(--fd); font-size: 8.5px; color: var(--muted);
+  letter-spacing: .08em; margin-top: 4px; text-transform: uppercase;
 }
-.cell-locked .cell-mission-name { color: var(--dim); }
-.cell-locked .cell-mission-sub  { opacity: .5; }
-.cell-locked img { opacity: .25; }
+.c-sub.dim { opacity: .45; }
+.locked img { opacity: .2; }
 
-.cell-agency {
-  font-family: var(--mono); font-size: 9px; color: var(--muted);
-  letter-spacing: .09em; text-transform: uppercase; line-height: 1.7;
+.c-ag {
+  font-family: var(--fd); font-size: 8.5px; color: var(--muted);
+  letter-spacing: .08em; text-transform: uppercase; line-height: 1.7;
 }
-.cell-agency strong { color: var(--text); font-weight: 400; display: block; }
+.c-ag b { color: var(--text); font-weight: 400; display: block; }
 
-.cell-phase {
-  font-family: var(--mono); font-size: 9px; letter-spacing: .08em;
-  text-transform: uppercase; line-height: 1.8;
+.c-ph { font-family: var(--fd); font-size: 8.5px; line-height: 1.7; text-transform: uppercase; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 8px;
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .14em;
 }
-.phase-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 3px 9px;
-  font-size: 9px; letter-spacing: .14em;
+.badge.ok   { color: var(--green); background: rgba(0,255,157,.06); border: 1px solid rgba(0,255,157,.18); }
+.badge.warn { color: var(--amber); background: rgba(255,179,0,.05);  border: 1px solid rgba(255,179,0,.18); }
+.badge.off  { color: var(--dim);   background: rgba(255,255,255,.02); border: 1px solid var(--border); }
+.badge .bd  { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.badge.ok .bd { animation: pulse 1.6s ease-in-out infinite; }
+.badge-sub {
+  font-family: var(--fd); font-size: 7.5px; color: var(--dim);
+  letter-spacing: .08em; margin-top: 4px;
 }
-.phase-badge.ok   { color: var(--ok);   background: rgba(76,255,171,.07);  border: 1px solid rgba(76,255,171,.18); }
-.phase-badge.warn { color: var(--warn); background: rgba(255,179,0,.06);   border: 1px solid rgba(255,179,0,.18); }
-.phase-badge.off  { color: var(--dim);  background: rgba(255,255,255,.03); border: 1px solid var(--border); }
-.phase-badge .bd  { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-.phase-badge.ok .bd { animation: blink 1.6s ease-in-out infinite; }
 
-.cell-date {
-  font-family: var(--mono); font-size: 10px; color: var(--muted);
+.c-dt {
+  font-family: var(--fd); font-size: 10px; color: var(--muted);
   letter-spacing: .08em; line-height: 1.8; text-transform: uppercase;
 }
-.cell-date strong { color: var(--text); font-weight: 400; display: block; }
+.c-dt b { color: var(--text); font-weight: 400; display: block; }
 
-.row-link {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 7px 14px;
-  font-family: var(--mono); font-size: 9px; letter-spacing: .12em;
+.lnk {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  font-family: var(--fd); font-size: 8.5px; letter-spacing: .12em;
   text-transform: uppercase; text-decoration: none;
-  background: rgba(0,210,255,.05); border: 1px solid rgba(0,210,255,.22); color: var(--accent);
-  transition: background .14s, border-color .14s;
+  border: 1px solid rgba(0,220,255,.2);
+  background: rgba(0,220,255,.04); color: var(--accent);
+  transition: background .13s, border-color .13s;
   white-space: nowrap;
 }
-.row-link:hover { background: rgba(0,210,255,.12); border-color: var(--accent); }
-.row-link.disabled {
+.lnk:hover { background: rgba(0,220,255,.1); border-color: var(--accent); }
+.lnk.dis {
   color: var(--dim); border-color: var(--border);
   background: none; pointer-events: none;
 }
 
-/* ═══════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    FOOTER
-═══════════════════════════════════════ */
-footer {
-  padding: 16px 28px;
+══════════════════════════════════════════════════════════════ */
+.foot {
+  height: 40px;
   border-top: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 10px;
-  font-family: var(--mono); font-size: 8px; letter-spacing: .12em;
-  color: var(--dim); text-transform: uppercase;
+  padding: 0 28px;
+  font-family: var(--fd); font-size: 8px;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--dim);
 }
-footer a { color: var(--dim); text-decoration: none; }
-footer a:hover { color: var(--muted); }
+.foot a { color: var(--dim); text-decoration: none; transition: color .15s; }
+.foot a:hover { color: var(--muted); }
 
-/* ══════════════════════════════════════════════════════════
-   MOBILE — max-width: 900px
-══════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   MOBILE  ≤ 900px
+══════════════════════════════════════════════════════════════ */
 @media (max-width: 900px) {
-
-  /* Topbar */
-  .topbar { height: 52px; padding: 0 14px; }
-  .topbar-logo { height: 32px; }
-  .topbar-div  { display: none; }
+  .topbar { height: 50px; padding: 0 14px; }
+  .topbar-logo { height: 34px; }
+  .topbar-pipe { display: none; }
   .topbar-sys  { display: none; }
   .topbar-right { gap: 10px; }
-  .topbar-clock { font-size: 11px; }
-  .topbar-link  { font-size: 9px; padding: 5px 10px; }
+  .topbar-clock { font-size: 12px; }
 
-  /* Page wrap */
-  .page-wrap { padding-top: 52px; max-width: 100%; }
+  .pw { padding-top: 50px; max-width: 100%; }
 
-  /* Status strip */
-  .status-strip-bar { padding: 7px 14px; flex-wrap: wrap; gap: 8px; }
-  .ssb-dots { flex-wrap: wrap; gap: 10px; }
+  /* acq bar */
+  .iss-acq { padding: 0 16px; gap: 7px; font-size: 8px; }
+  .acq-right { display: none; }
 
-  /* ISS Hero — stacked */
-  .iss-hero-inner {
+  /* hero — stack */
+  .iss-body {
     grid-template-columns: 1fr;
-    gap: 0;
-    padding: 16px 16px 18px 20px;
+    gap: 0; padding: 18px 18px 20px 18px;
   }
-  .iss-hero-left {
-    padding-right: 0;
-    padding-bottom: 16px;
+  .iss-ident {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-right: 0; padding-bottom: 16px; margin-bottom: 0;
     gap: 16px;
   }
-  .iss-hero-emblem { width: 58px; height: 58px; }
-  .iss-hero-name   { font-size: 28px; }
-  .iss-hero-telem {
+  .iss-emblem { width: 62px; height: 62px; }
+  .iss-meta-name { font-size: 32px; }
+  .iss-telem {
     grid-template-columns: repeat(2, 1fr);
-    border-left: none; border-right: none;
-    border-top: 1px solid var(--border);
     padding: 14px 0 16px;
-    gap: 12px 16px;
   }
-  .iss-tl-val { font-size: 13px; }
-  .iss-hero-cta {
+  .iss-tl {
+    border-right: 1px solid var(--border) !important;
+    border-top: none !important;
+    padding-right: 12px !important;
+    padding-left: 12px;
+  }
+  .iss-tl:nth-child(2n) {
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+  .iss-tl:nth-child(n+3) { border-top: 1px solid var(--border) !important; }
+  .iss-tl-val { font-size: 15px; }
+  .iss-cta {
+    border-left: none;
     border-top: 1px solid var(--border);
     padding-left: 0; padding-top: 16px;
-    align-items: stretch;
+    flex-direction: row; flex-wrap: wrap;
+    align-items: center; justify-content: space-between;
   }
-  .hero-cta-btn { justify-content: center; }
+  .iss-access { flex: 1; }
+  .iss-orbit-data { font-size: 7.5px; text-align: left; }
 
-  /* Ticker hidden */
-  .ticker-bar { display: none; }
+  /* ticker */
+  .ticker { display: none; }
 
-  /* Section header */
-  .section-header { padding: 10px 14px 8px; }
+  /* section dividers */
+  .sdiv { padding: 0 14px; }
 
-  /* Table hidden → cards */
-  .mission-table { display: none !important; }
+  /* table → hide, show cards */
+  .mtable { display: none !important; }
 
-  /* ── Cartes mission mobile ── */
-  #mob-mission-cards {
-    display: flex; flex-direction: column;
-    gap: 10px; padding: 10px 12px 24px;
+  #mob-cards {
+    display: flex !important;
+    flex-direction: column; gap: 10px;
+    padding: 10px 12px 24px;
   }
-  .mob-card {
-    border-radius: 6px;
-    background: var(--surface);
+
+  .mcard {
+    background: var(--s0);
     border: 1px solid var(--border);
-    overflow: hidden;
-    position: relative;
+    position: relative; overflow: hidden;
   }
-  .mob-card::before {
+  .mcard::before {
     content: ''; position: absolute;
     left: 0; top: 0; bottom: 0; width: 3px;
   }
-  .mob-card.card-active::before  { background: var(--ok); }
-  .mob-card.card-future::before  { background: var(--warn); }
-  .mob-card.card-tbd::before     { background: var(--dim); }
-  .mob-card-header {
+  .mcard.future::before { background: var(--amber); }
+  .mcard.tbd::before    { background: var(--dim); }
+
+  .mcard-head {
     display: flex; align-items: center; gap: 14px;
     padding: 14px 14px 10px 18px;
   }
-  .mob-card-patch {
-    width: 48px; height: auto; flex-shrink: 0;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,.7));
+  .mcard-patch {
+    width: 44px; height: auto; flex-shrink: 0;
+    filter: drop-shadow(0 1px 6px rgba(0,0,0,.7));
   }
-  .mob-card-patch.dim { opacity: .80; filter: grayscale(.45); }
-  .mob-card-placeholder {
-    width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%;
-    border: 1px solid var(--border);
+  .mcard-patch.dim { opacity: .7; filter: grayscale(.5); }
+  .mcard-placeholder {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border: 1px solid var(--border); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
   }
-  .mob-card-info { flex: 1; min-width: 0; }
-  .mob-card-name {
-    font-family: var(--heading); font-size: 20px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .05em; line-height: 1.1;
+  .mcard-info { flex: 1; min-width: 0; }
+  .mcard-name {
+    font-family: var(--fh); font-size: 20px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em; line-height: 1;
     color: var(--text);
   }
-  .mob-card-name.dim { color: var(--dim); }
-  .mob-card-sub {
-    font-family: var(--mono); font-size: 8px; color: var(--muted);
+  .mcard-name.dim { color: var(--dim); }
+  .mcard-sub {
+    font-family: var(--fd); font-size: 8px; color: var(--muted);
     letter-spacing: .08em; text-transform: uppercase; margin-top: 4px;
   }
-  .mob-card-badge-row {
+  .mcard-badges {
     display: flex; align-items: center; gap: 10px;
-    padding: 0 14px 0 18px; margin-bottom: 10px;
+    padding: 0 14px 10px 18px;
   }
-  .mob-card-date-val {
-    font-family: var(--mono); font-size: 11px; color: var(--muted);
+  .mcard-date {
+    font-family: var(--fd); font-size: 10px; color: var(--muted);
     letter-spacing: .06em; text-transform: uppercase;
   }
-  .mob-card-date-val strong { color: var(--text); font-weight: 600; }
-  .mob-card-cta { margin: 0 14px 14px 18px; }
-  .mob-card-cta a.row-link {
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 12px; width: 100%;
-    background: rgba(0,210,255,.07); border: 1px solid rgba(0,210,255,.3);
-    color: var(--accent); font-family: var(--heading); font-size: 14px;
-    font-weight: 700; letter-spacing: .1em; text-decoration: none;
-    text-transform: uppercase; transition: background .15s;
+  .mcard-date b { color: var(--text); font-weight: 400; }
+  .mcard-cta {
+    margin: 0 14px 14px 18px;
+    display: flex;
   }
-  .mob-card-cta a.row-link:active { background: rgba(0,210,255,.16); }
-  .mob-card-cta span.row-link.disabled {
-    display: block; text-align: center; padding: 11px;
-    border: 1px solid var(--border);
-    color: var(--dim); font-family: var(--heading); font-size: 12px;
-    font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  .mcard-cta .lnk {
+    flex: 1; justify-content: center; padding: 11px;
+    font-family: var(--fh); font-size: 13px; font-weight: 600;
+    letter-spacing: .12em;
   }
-  .mob-detail-panel {
-    max-height: 0; overflow: hidden;
-    transition: max-height .3s ease;
-    border-top: 1px solid var(--border);
-  }
-  .mob-detail-panel.open { max-height: 500px; }
-  .mob-detail-inner {
-    padding: 12px 14px 14px 18px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px;
-  }
-  .mob-detail-field label {
-    font-family: var(--mono); font-size: 8px; color: var(--muted);
-    letter-spacing: .1em; text-transform: uppercase; display: block;
-    margin-bottom: 2px;
-  }
-  .mob-detail-field span {
-    font-family: var(--heading); font-size: 13px; font-weight: 700;
-    color: var(--text); letter-spacing: .04em; text-transform: uppercase;
-  }
-  .mob-detail-desc {
-    grid-column: 1 / -1; font-size: 12px; color: var(--muted);
-    line-height: 1.65; border-top: 1px solid var(--border);
-    padding-top: 10px; margin-top: 2px;
+  .mcard-desc {
+    margin: 0 14px 14px 18px;
+    font-family: var(--fd); font-size: 9px; color: var(--muted);
+    letter-spacing: .04em; line-height: 1.7;
+    border-top: 1px solid var(--border); padding-top: 10px;
   }
 
-  /* Footer */
-  footer { flex-direction: column; align-items: flex-start; padding: 12px 14px; gap: 5px; }
+  .foot { flex-direction: column; height: auto; align-items: flex-start;
+          padding: 12px 14px; gap: 4px; }
 }
 
 @media (max-width: 480px) {
   .topbar-clock { display: none; }
-  .mob-card-name { font-size: 18px; }
-  .mob-detail-inner { grid-template-columns: 1fr; }
-  .iss-hero-telem { grid-template-columns: repeat(2, 1fr); }
+  .iss-meta-name { font-size: 28px; }
+  .iss-tl-val { font-size: 14px; }
+  .mcard-name { font-size: 18px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════ BOOT SCREEN ═══════════ -->
-<div id="boot-screen">
-  <div class="boot-inner">
-    <div class="boot-logo-wrap" id="boot-logo">
-      <img class="boot-logo-img" src="/vector_logo.png" alt="VECTOR">
-    </div>
-    <div class="boot-divider" id="boot-div"></div>
-    <div class="boot-log" id="boot-log"></div>
-    <div class="boot-progress-wrap" id="boot-progress">
-      INITIALISATION
-      <div class="boot-bar"><div class="boot-bar-fill" id="boot-fill"></div></div>
-      <div class="boot-pct" id="boot-pct">0%</div>
+<!-- ═══════════════════ BOOT ═══════════════════ -->
+<div id="boot">
+  <div class="boot-wrap">
+    <img class="boot-logo" id="blogo" src="/vector_logo.png" alt="VECTOR">
+    <div class="boot-rule" id="brule"></div>
+    <div class="boot-terminal" id="bterm"></div>
+    <div class="boot-bar-wrap" id="bbar">
+      INITIALISATION SYSTÈME
+      <div class="boot-bar"><div class="boot-bar-fill" id="bfill"></div></div>
+      <div class="boot-pct" id="bpct">0%</div>
     </div>
   </div>
 </div>
 
-<!-- ═══════════ TOPBAR ═══════════ -->
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
 <div class="topbar">
   <a href="/"><img class="topbar-logo" src="/vector_logo.png" alt="VECTOR"></a>
-  <div class="topbar-div"></div>
+  <div class="topbar-pipe"></div>
   <div class="topbar-sys">
     VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION<br>
-    <strong>MISSION HUB</strong>
+    <b>MISSION HUB · CONTROL SYSTEM</b>
   </div>
   <div class="topbar-right">
-    <div class="topbar-clock">UTC &nbsp;<span id="hub-clock">--:--:--</span></div>
-    <a href="/about.html" class="topbar-link">À propos</a>
+    <div class="topbar-clock" id="hub-clock">--:--:--</div>
+    <a href="/about.html" class="topbar-btn">À propos</a>
   </div>
 </div>
 
-<!-- ═══════════ PAGE ═══════════ -->
-<div class="page-wrap">
+<!-- ═══════════════════ PAGE ═══════════════════ -->
+<div class="pw">
 
-  <!-- STATUS STRIP -->
-  <div class="status-strip-bar">
-    <span class="ssb-label">VECTOR / MISSION REGISTRY v1.0</span>
-    <div class="ssb-dots">
-      <div class="ss-item"><div class="ss-dot ok"></div>RÉSEAU EN LIGNE</div>
-      <div class="ss-item"><div class="ss-dot warn"></div>2 MISSIONS PENDING</div>
-    </div>
+  <!-- ── ISS ACQUISITION BAR ── -->
+  <div class="iss-acq">
+    <div class="acq-dot"></div>
+    <span class="acq-text">ACQ CONFIRMÉE</span>
+    <span class="acq-sep">·</span>
+    <span class="acq-sub">STATION SPATIALE INTERNATIONALE · NORAD 25544</span>
+    <span class="acq-sep">·</span>
+    <span class="acq-sub">EXPÉDITION 74</span>
+    <div class="acq-right">MISE À JOUR · <span>10 S</span></div>
   </div>
 
-  <!-- ISS HERO CARD -->
-  <div class="iss-hero">
-    <div class="iss-hero-inner">
+  <!-- ── ISS HERO ── -->
+  <div class="iss-frame">
+    <div class="iss-bracket-tl"></div>
+    <div class="iss-bracket-br"></div>
 
-      <!-- Left: emblem + meta -->
-      <div class="iss-hero-left">
-        <img class="iss-hero-emblem" src="/iss_emblem.png" alt="ISS">
-        <div class="iss-hero-meta">
-          <div class="iss-hero-id">ISS-001 · MISSION ACTIVE</div>
-          <div class="iss-hero-name">ISS</div>
-          <div class="iss-hero-sub">Station Spatiale Internationale</div>
-          <div class="iss-hero-badge"><span class="bd"></span>OPÉRATIONNELLE · EXPÉDITION 74</div>
+    <div class="iss-body">
+
+      <!-- Left: ident -->
+      <div class="iss-ident">
+        <img class="iss-emblem" src="/iss_emblem.png" alt="ISS">
+        <div class="iss-meta">
+          <div class="iss-meta-id">ISS-001 · MISSION ACTIVE</div>
+          <div class="iss-meta-name">ISS</div>
+          <div class="iss-meta-sub">Station Spatiale Internationale<br>NASA · ESA · ROSCOSMOS · JAXA · CSA</div>
+          <div class="iss-status">
+            <div class="sd"></div>
+            OPÉRATIONNELLE
+          </div>
         </div>
       </div>
 
-      <!-- Center: telemetry -->
-      <div class="iss-hero-telem">
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">LATITUDE</div>
+      <!-- Center: telemetry readouts -->
+      <div class="iss-telem">
+        <div class="iss-tl">
+          <div class="iss-tl-label">LATITUDE</div>
           <div class="iss-tl-val" id="h-lat">—</div>
         </div>
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">LONGITUDE</div>
+        <div class="iss-tl">
+          <div class="iss-tl-label">LONGITUDE</div>
           <div class="iss-tl-val" id="h-lon">—</div>
         </div>
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">ALTITUDE</div>
+        <div class="iss-tl">
+          <div class="iss-tl-label">ALTITUDE</div>
           <div class="iss-tl-val" id="h-alt">—</div>
         </div>
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">VITESSE</div>
+        <div class="iss-tl">
+          <div class="iss-tl-label">VITESSE ORBITALE</div>
           <div class="iss-tl-val" id="h-spd">—</div>
         </div>
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">PHASE ORBITALE</div>
+        <div class="iss-tl">
+          <div class="iss-tl-label">PHASE</div>
           <div class="iss-tl-val" id="h-vis">—</div>
         </div>
-        <div class="iss-tl-item">
-          <div class="iss-tl-lbl">ÉQUIPAGE</div>
-          <div class="iss-tl-val">7 ASTRONAUTES</div>
+        <div class="iss-tl">
+          <div class="iss-tl-label">ÉQUIPAGE</div>
+          <div class="iss-tl-val">7 PERS.</div>
         </div>
       </div>
 
       <!-- Right: CTA -->
-      <div class="iss-hero-cta">
-        <a href="/iss_mission_control.html" class="hero-cta-btn">
-          MISSION CONTROL
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-          </svg>
+      <div class="iss-cta">
+        <a href="/iss_mission_control.html" class="iss-access">
+          <div class="iss-access-pre">◈ ACCÈS SYSTÈME · LIVE</div>
+          <div class="iss-access-label">
+            MISSION CONTROL
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </div>
         </a>
-        <div class="iss-hero-orbit">
-          NASA · ESA · ROSCOSMOS · JAXA · CSA<br>
-          LEO · INCL. 51.6° · ~400 KM
+        <div class="iss-orbit-data">
+          LEO · INC. 51.6°<br>
+          ALT. ~400 KM<br>
+          PÉRIODE 92 MIN
         </div>
       </div>
 
     </div>
   </div>
 
-  <!-- TELEMETRY TICKER -->
-  <div class="ticker-bar">
-    <div class="ticker-label">▶ LIVE ISS</div>
-    <div class="ticker-scroll-zone">
-      <div class="ticker-items" id="ticker-items"></div>
+  <!-- ── TICKER ── -->
+  <div class="ticker">
+    <div class="ticker-tag">◆ LIVE ISS</div>
+    <div class="ticker-scroll">
+      <div class="ticker-inner" id="ticker-items"></div>
     </div>
   </div>
 
-  <!-- SECTION HEADER: PROGRAMME -->
-  <div class="section-header">
-    <span class="sh-label">PROGRAMME DE MISSIONS</span>
-    <div class="sh-sep"></div>
-    <span class="sh-count" id="mission-count">3 ENTRÉES</span>
+  <!-- ── SECTION: PROGRAMME ── -->
+  <div class="sdiv">
+    <span class="sdiv-mark">//</span>
+    <span class="sdiv-label">Programme de Missions</span>
+    <div class="sdiv-line"></div>
+    <span class="sdiv-count" id="mission-count">3 ENTRÉES</span>
   </div>
 
   <!-- MISSION TABLE -->
-  <table class="mission-table">
+  <table class="mtable">
     <thead>
       <tr>
         <th style="width:3px;padding:0"></th>
         <th class="td-id">ID</th>
         <th class="td-name">DÉSIGNATION</th>
-        <th class="td-agency">AGENCE / VÉHICULE</th>
-        <th class="td-phase">STATUT</th>
-        <th class="td-date">LANCEMENT</th>
-        <th class="td-link">ACCÈS</th>
+        <th class="td-ag">AGENCE</th>
+        <th class="td-ph">STATUT</th>
+        <th class="td-dt">LANCEMENT</th>
+        <th class="td-lnk">ACCÈS</th>
       </tr>
     </thead>
     <tbody>
 
       <!-- ARTEMIS III -->
-      <tr class="mission-row">
-        <td class="td-status"><span class="status-strip future"></span></td>
-        <td class="td-id"><div class="cell-id" style="color:var(--dim)">ATM-003</div></td>
+      <tr class="mrow">
+        <td class="td-strip"><span class="strip strip-future"></span></td>
+        <td class="td-id"><div class="c-id dim">ATM-003</div></td>
         <td class="td-name">
-          <div class="cell-patch cell-locked">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png" alt="" style="filter:grayscale(.45) opacity(.80)">
+          <div class="c-patch locked">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png" alt="" style="filter:grayscale(.5) opacity(.7)">
             <div>
-              <div class="cell-mission-name" style="color:var(--dim)">ARTEMIS III</div>
-              <div class="cell-mission-sub">SLS BLOCK 1B · ORION / HLS</div>
+              <div class="c-name dim">ARTEMIS III</div>
+              <div class="c-sub dim">SLS BLOCK 1B · ORION / HLS</div>
             </div>
           </div>
         </td>
-        <td class="td-agency">
-          <div class="cell-agency"><strong>NASA</strong>Programme Artemis</div>
+        <td class="td-ag"><div class="c-ag"><b>NASA</b>Programme Artemis</div></td>
+        <td class="td-ph">
+          <div class="badge warn"><div class="bd"></div>PLANIFIÉ</div>
+          <div class="badge-sub">PRÉ-LANCEMENT</div>
         </td>
-        <td class="td-phase">
-          <div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
-        </td>
-        <td class="td-date">
-          <div class="cell-date"><strong>2027</strong>TBD</div>
-        </td>
-        <td class="td-link">
-          <span class="row-link disabled">INDISPONIBLE</span>
-        </td>
+        <td class="td-dt"><div class="c-dt"><b>2027</b>TBD</div></td>
+        <td class="td-lnk"><span class="lnk dis">INDISPONIBLE</span></td>
       </tr>
 
       <!-- ARTEMIS IV -->
-      <tr class="mission-row">
-        <td class="td-status"><span class="status-strip future"></span></td>
-        <td class="td-id"><div class="cell-id" style="color:var(--dim)">ATM-004</div></td>
+      <tr class="mrow">
+        <td class="td-strip"><span class="strip strip-future"></span></td>
+        <td class="td-id"><div class="c-id dim">ATM-004</div></td>
         <td class="td-name">
-          <div class="cell-patch cell-locked">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png" alt="" style="filter:grayscale(.45) opacity(.80)">
+          <div class="c-patch locked">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png" alt="" style="filter:grayscale(.5) opacity(.7)">
             <div>
-              <div class="cell-mission-name" style="color:var(--dim)">ARTEMIS IV</div>
-              <div class="cell-mission-sub">SLS BLOCK 1B · ORION / HLS</div>
+              <div class="c-name dim">ARTEMIS IV</div>
+              <div class="c-sub dim">SLS BLOCK 1B · ORION / HLS</div>
             </div>
           </div>
         </td>
-        <td class="td-agency">
-          <div class="cell-agency"><strong>NASA</strong>Programme Artemis</div>
+        <td class="td-ag"><div class="c-ag"><b>NASA</b>Programme Artemis</div></td>
+        <td class="td-ph">
+          <div class="badge warn"><div class="bd"></div>PLANIFIÉ</div>
+          <div class="badge-sub">PRÉ-LANCEMENT</div>
         </td>
-        <td class="td-phase">
-          <div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:5px;letter-spacing:.07em">PRÉ-LANCEMENT</div>
-        </td>
-        <td class="td-date">
-          <div class="cell-date"><strong>2028</strong>TBD</div>
-        </td>
-        <td class="td-link">
-          <span class="row-link disabled">INDISPONIBLE</span>
-        </td>
+        <td class="td-dt"><div class="c-dt"><b>2028</b>TBD</div></td>
+        <td class="td-lnk"><span class="lnk dis">INDISPONIBLE</span></td>
       </tr>
 
       <!-- PLACEHOLDER -->
-      <tr class="mission-row">
-        <td class="td-status"><span class="status-strip tbd"></span></td>
-        <td class="td-id"><div class="cell-id" style="color:var(--dim)">TBD</div></td>
+      <tr class="mrow">
+        <td class="td-strip"><span class="strip strip-off"></span></td>
+        <td class="td-id"><div class="c-id dim">TBD</div></td>
         <td class="td-name">
-          <div class="cell-patch cell-locked">
-            <div style="width:36px;height:36px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div class="c-patch locked">
+            <div style="width:36px;height:36px;border:1px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(90,120,144,.35)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
             <div>
-              <div class="cell-mission-name" style="color:var(--dim);font-size:15px;letter-spacing:.1em">— EN DÉVELOPPEMENT —</div>
-              <div class="cell-mission-sub" style="opacity:.4">VÉHICULE : TBD</div>
+              <div class="c-name dim" style="font-size:15px;letter-spacing:.1em">— EN DÉVELOPPEMENT —</div>
+              <div class="c-sub dim">VÉHICULE : TBD</div>
             </div>
           </div>
         </td>
-        <td class="td-agency"><div class="cell-agency" style="opacity:.35"><strong>TBD</strong>—</div></td>
-        <td class="td-phase"><div class="phase-badge off">NON PLANIFIÉ</div></td>
-        <td class="td-date"><div class="cell-date" style="opacity:.35"><strong>—</strong>TBD</div></td>
-        <td class="td-link"><span class="row-link disabled">INDISPONIBLE</span></td>
+        <td class="td-ag"><div class="c-ag" style="opacity:.35"><b>TBD</b>—</div></td>
+        <td class="td-ph"><div class="badge off">NON PLANIFIÉ</div></td>
+        <td class="td-dt"><div class="c-dt" style="opacity:.35"><b>—</b>TBD</div></td>
+        <td class="td-lnk"><span class="lnk dis">INDISPONIBLE</span></td>
       </tr>
 
     </tbody>
   </table>
 
-  <!-- MOBILE CARDS (injectées par JS) -->
-  <div id="mob-mission-cards" style="display:none"></div>
+  <!-- MOBILE CARDS -->
+  <div id="mob-cards" style="display:none"></div>
 
-  <!-- ARCHIVES -->
-  <div class="section-header" style="margin-top:20px">
-    <span class="sh-label">ARCHIVES</span>
-    <div class="sh-sep"></div>
-    <span class="sh-count">1 MISSION</span>
+  <!-- ── SECTION: ARCHIVES ── -->
+  <div class="sdiv sdiv-mt">
+    <span class="sdiv-mark">//</span>
+    <span class="sdiv-label">Archive</span>
+    <div class="sdiv-line"></div>
+    <span class="sdiv-count">1 MISSION</span>
   </div>
-  <table class="mission-table">
+
+  <table class="mtable">
     <tbody>
-      <tr class="mission-row">
-        <td class="td-status"><span class="status-strip tbd"></span></td>
-        <td class="td-id"><div class="cell-id" style="color:var(--dim)">ATM-002</div></td>
+      <tr class="mrow">
+        <td class="td-strip"><span class="strip strip-off"></span></td>
+        <td class="td-id"><div class="c-id dim">ATM-002</div></td>
         <td class="td-name">
-          <div class="cell-patch cell-locked">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="" style="opacity:.35;filter:grayscale(.6)">
+          <div class="c-patch locked">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Artemis_II_patch.svg/250px-Artemis_II_patch.svg.png" alt="" style="opacity:.3;filter:grayscale(.7)">
             <div>
-              <div class="cell-mission-name" style="color:var(--dim)">ARTEMIS II</div>
-              <div class="cell-mission-sub">SLS BLOCK 1 · ORION MPCV</div>
+              <div class="c-name dim">ARTEMIS II</div>
+              <div class="c-sub dim">SLS BLOCK 1 · ORION MPCV</div>
             </div>
           </div>
         </td>
-        <td class="td-agency"><div class="cell-agency" style="opacity:.5"><strong>NASA / CSA</strong>Programme Artemis</div></td>
-        <td class="td-phase">
-          <div class="phase-badge off"><div class="bd"></div>TERMINÉ</div>
-          <div style="font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:5px;letter-spacing:.07em">01 AVR – 11 AVR 2026</div>
+        <td class="td-ag"><div class="c-ag" style="opacity:.5"><b>NASA / CSA</b>Programme Artemis</div></td>
+        <td class="td-ph">
+          <div class="badge off"><div class="bd"></div>TERMINÉ</div>
+          <div class="badge-sub" style="color:var(--dim)">01 AVR – 11 AVR 2026</div>
         </td>
-        <td class="td-date"><div class="cell-date" style="opacity:.5"><strong>01 AVR 2026</strong>22:35 UTC</div></td>
-        <td class="td-link"><span class="row-link disabled">ARCHIVÉ</span></td>
+        <td class="td-dt"><div class="c-dt" style="opacity:.5"><b>01 AVR 2026</b>22:35 UTC</div></td>
+        <td class="td-lnk"><span class="lnk dis">ARCHIVÉ</span></td>
       </tr>
     </tbody>
   </table>
 
   <!-- FOOTER -->
-  <footer>
-    <span>VECTOR · VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION</span>
+  <div class="foot">
+    <span>VECTOR · VEHICLE EPHEMERIS &amp; TELEMETRY OBSERVATION · 2026</span>
     <a href="/about.html">À PROPOS DU SYSTÈME</a>
-  </footer>
+  </div>
 
-</div><!-- /page-wrap -->
+</div><!-- /pw -->
 
 <script>
-/* ── BOOT SEQUENCE ── */
+/* ─────────────────────────────────────────────────────
+   BOOT
+───────────────────────────────────────────────────── */
 (function () {
-  const screen   = document.getElementById('boot-screen');
-  const logEl    = document.getElementById('boot-log');
-  const fill     = document.getElementById('boot-fill');
-  const pct      = document.getElementById('boot-pct');
-  const progress = document.getElementById('boot-progress');
-  const logoWrap = document.getElementById('boot-logo');
-  const divEl    = document.getElementById('boot-div');
+  const boot   = document.getElementById('boot');
+  const term   = document.getElementById('bterm');
+  const fill   = document.getElementById('bfill');
+  const pct    = document.getElementById('bpct');
+  const barW   = document.getElementById('bbar');
+  const logo   = document.getElementById('blogo');
+  const rule   = document.getElementById('brule');
 
   const now = () => {
-    const d = new Date(), p = v => String(v).padStart(2,'0');
+    const d = new Date(), p = v => String(v).padStart(2, '0');
     return `${p(d.getUTCHours())}:${p(d.getUTCMinutes())}:${p(d.getUTCSeconds())}`;
   };
 
   const LINES = [
-    { delay:  120, status:'ok',   msg: 'VECTOR CORE v1.0 — <em>DÉMARRAGE</em>' },
-    { delay:  300, status:'ok',   msg: 'CHARGEMENT DES MODULES SYSTÈME' },
-    { delay:  520, status:'ok',   msg: 'INTERFACE RÉSEAU — <em>INITIALISÉE</em>' },
-    { delay:  750, status:'ok',   msg: 'CONNEXION ISS TELEMETRY — <em>OK</em>' },
-    { delay:  980, status:'ok',   msg: 'NORAD TLE FEED — <em>ACTIF</em>' },
-    { delay: 1200, status:'ok',   msg: 'NOAA SWPC FEED — <em>ACTIF</em>' },
-    { delay: 1420, status:'ok',   msg: 'MISSION ACTIVE — <em>ISS EXPÉDITION 74</em>' },
-    { delay: 1650, status:'warn', msg: 'MISSIONS EN DÉVELOPPEMENT — <em>2 NON DISPONIBLES</em>' },
-    { delay: 1880, status:'ok',   msg: 'REGISTRE DE MISSIONS — <em>PRÊT</em>' },
+    { d:  100, s:'ok',   m: 'VECTOR CORE v1.0 — <em>DÉMARRAGE</em>' },
+    { d:  280, s:'ok',   m: 'MODULES SYSTÈME — <em>CHARGÉS</em>' },
+    { d:  460, s:'ok',   m: 'INTERFACE RÉSEAU — <em>INITIALISÉE</em>' },
+    { d:  640, s:'ok',   m: 'ISS TELEMETRY STREAM — <em>CONNECTÉ</em>' },
+    { d:  820, s:'ok',   m: 'NORAD TLE FEED — <em>ACTIF</em>' },
+    { d: 1000, s:'ok',   m: 'STATION SPATIALE INTERNATIONALE — <em>ACQUISITION CONFIRMÉE</em>' },
+    { d: 1180, s:'warn', m: 'MISSIONS PLANIFIÉES — <em>2 SYSTÈMES NON DISPONIBLES</em>' },
+    { d: 1360, s:'ok',   m: 'REGISTRE DE MISSIONS — <em>PRÊT</em>' },
   ];
 
-  const PROGRESS_STEPS = [
-    { at:  300, v: 12 }, { at:  520, v: 26 }, { at:  750, v: 42 },
-    { at:  980, v: 56 }, { at: 1200, v: 68 }, { at: 1420, v: 80 },
-    { at: 1650, v: 90 }, { at: 1880, v: 100 },
+  const STEPS = [
+    { a: 280,  v: 14 }, { a: 460,  v: 28 }, { a: 640,  v: 44 },
+    { a: 820,  v: 60 }, { a: 1000, v: 74 }, { a: 1180, v: 87 },
+    { a: 1360, v: 100 },
   ];
 
-  function addLine(status, msg) {
+  function addLine(s, m) {
     const div = document.createElement('div');
-    div.className = 'boot-line';
-    const statusMap = { ok: '[ OK ]', warn: '[WARN]' };
-    const classMap  = { ok: 'bl-ok', warn: 'bl-warn' };
-    div.innerHTML = `
-      <span class="bl-time">${now()}</span>
-      <span class="${classMap[status]}">${statusMap[status]}</span>
-      <span class="bl-msg">${msg}</span>`;
-    logEl.appendChild(div);
-    const lines = logEl.querySelectorAll('.boot-line');
-    if (lines.length > 6) lines[0].remove();
+    div.className = 'bline';
+    div.innerHTML = `<span class="bt">${now()}</span><span class="${s === 'ok' ? 'bok' : 'bwn'}">${s === 'ok' ? '[  OK  ]' : '[ WARN ]'}</span><span class="bm">${m}</span>`;
+    term.appendChild(div);
+    const all = term.querySelectorAll('.bline');
+    if (all.length > 6) all[0].remove();
   }
 
-  function setProgress(v) {
-    fill.style.width = v + '%';
-    pct.textContent = v + '%';
-  }
+  function setP(v) { fill.style.width = v + '%'; pct.textContent = v + '%'; }
 
-  setTimeout(() => { logoWrap.classList.add('visible'); }, 80);
-  setTimeout(() => { divEl.classList.add('visible'); progress.classList.add('visible'); }, 300);
-  LINES.forEach(({ delay, status, msg }) => setTimeout(() => addLine(status, msg), delay));
-  PROGRESS_STEPS.forEach(({ at, v }) => setTimeout(() => setProgress(v), at));
+  setTimeout(() => { logo.classList.add('vis'); }, 60);
+  setTimeout(() => { rule.classList.add('vis'); barW.classList.add('vis'); }, 280);
+  LINES.forEach(({ d, s, m }) => setTimeout(() => addLine(s, m), d));
+  STEPS.forEach(({ a, v }) => setTimeout(() => setP(v), a));
 
   setTimeout(() => {
-    const cursor = document.createElement('span');
-    cursor.className = 'boot-cursor';
-    logEl.appendChild(cursor);
-  }, 2000);
+    const cur = document.createElement('span');
+    cur.className = 'boot-cursor';
+    term.appendChild(cur);
+  }, 1460);
 
   function dismiss() {
-    screen.classList.add('fade-out');
-    setTimeout(() => screen.remove(), 650);
+    boot.classList.add('out');
+    setTimeout(() => boot.remove(), 520);
     document.removeEventListener('keydown', dismiss);
-    screen.removeEventListener('click', dismiss);
+    boot.removeEventListener('click', dismiss);
   }
-  setTimeout(dismiss, 2800);
+  setTimeout(dismiss, 2400);
   setTimeout(() => {
-    screen.style.cursor = 'pointer';
-    screen.title = 'Cliquer pour passer';
-    screen.addEventListener('click', dismiss);
+    boot.style.cursor = 'pointer';
+    boot.title = 'Cliquer pour passer';
+    boot.addEventListener('click', dismiss);
     document.addEventListener('keydown', dismiss);
-  }, 700);
+  }, 600);
 })();
 
-/* ── UTC CLOCK ── */
+/* ─────────────────────────────────────────────────────
+   UTC CLOCK  (Orbitron font via CSS, no extra work needed)
+───────────────────────────────────────────────────── */
 (function () {
   const el = document.getElementById('hub-clock');
   function tick() {
-    const n = new Date(), p = v => String(v).padStart(2,'0');
+    const n = new Date(), p = v => String(v).padStart(2, '0');
     el.textContent = `${p(n.getUTCHours())}:${p(n.getUTCMinutes())}:${p(n.getUTCSeconds())}`;
   }
   tick(); setInterval(tick, 1000);
 })();
 
-/* ── TICKER + ISS HERO ISS ── */
+/* ─────────────────────────────────────────────────────
+   ISS LIVE DATA — ticker + hero
+───────────────────────────────────────────────────── */
 (function () {
   const iss = { lat: null, lon: null, alt: null, spd: null, vis: null };
 
-  function utc() { return new Date().toISOString().slice(11,19) + ' UTC'; }
-  function fmt(v, dec, unit) { return v != null ? v.toFixed(dec) + '\u202f' + unit : '—'; }
-  function fmtDeg(v, pos, neg) {
-    if (v == null) return '—';
-    return Math.abs(v).toFixed(2) + '° ' + (v >= 0 ? pos : neg);
-  }
+  const utc    = () => new Date().toISOString().slice(11, 19) + ' UTC';
+  const fmt    = (v, d, u) => v != null ? v.toFixed(d) + '\u202f' + u : '—';
+  const fmtDeg = (v, p, n) => v != null ? Math.abs(v).toFixed(2) + '°\u202f' + (v >= 0 ? p : n) : '—';
 
   const items = [
-    () => `UTC <span>${utc()}</span>`,
-    () => `STATION <span>ISS · EXPÉDITION 74</span>`,
-    () => `LATITUDE <span>${fmtDeg(iss.lat,'N','S')}</span>`,
-    () => `LONGITUDE <span>${fmtDeg(iss.lon,'E','W')}</span>`,
-    () => `ALTITUDE <span>${fmt(iss.alt,1,'km')}</span>`,
-    () => `VITESSE <span>${iss.spd != null ? (iss.spd/3600).toFixed(2)+'\u202fkm/s' : '—'}</span>`,
-    () => `PHASE ORBITALE <span>${iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—'}</span>`,
-    () => `ÉQUIPAGE <span>7 ASTRONAUTES</span>`,
-    () => `ORBITE <span>LEO · INCL. 51.6°</span>`,
-    () => `SOURCE <span>WHERETHEISS.AT / NORAD TLE</span>`,
+    () => `UTC<span>${utc()}</span>`,
+    () => `STATION<span>ISS · EXP. 74</span>`,
+    () => `LATITUDE<span>${fmtDeg(iss.lat, 'N', 'S')}</span>`,
+    () => `LONGITUDE<span>${fmtDeg(iss.lon, 'E', 'W')}</span>`,
+    () => `ALTITUDE<span>${fmt(iss.alt, 1, 'km')}</span>`,
+    () => `VITESSE<span>${iss.spd != null ? (iss.spd / 3600).toFixed(3) + '\u202fkm/s' : '—'}</span>`,
+    () => `PHASE<span>${iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—'}</span>`,
+    () => `ORBITE<span>LEO · 51.6°</span>`,
+    () => `SOURCE<span>WHERETHEISS.AT / TLE</span>`,
   ];
 
-  function setText(id, val) {
+  function setEl(id, val) {
     const el = document.getElementById(id);
-    if (el) el.textContent = val;
+    if (!el) return;
+    if (el.textContent !== val) {
+      el.textContent = val;
+      el.classList.remove('flash');
+      void el.offsetWidth; // reflow to restart animation
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 500);
+    }
   }
 
   function renderHero() {
-    setText('h-lat', fmtDeg(iss.lat, 'N', 'S'));
-    setText('h-lon', fmtDeg(iss.lon, 'E', 'W'));
-    setText('h-alt', fmt(iss.alt, 1, 'km'));
-    setText('h-spd', iss.spd != null ? (iss.spd/3600).toFixed(2)+'\u202fkm/s' : '—');
-    setText('h-vis', iss.vis === 'daylight' ? 'JOUR ORBITAL' : iss.vis === 'eclipsed' ? 'NUIT ORBITALE' : '—');
+    setEl('h-lat', fmtDeg(iss.lat, 'N', 'S'));
+    setEl('h-lon', fmtDeg(iss.lon, 'E', 'W'));
+    setEl('h-alt', fmt(iss.alt, 1, 'km'));
+    setEl('h-spd', iss.spd != null ? (iss.spd / 3600).toFixed(3) + '\u202fkm/s' : '—');
+    setEl('h-vis', iss.vis === 'daylight' ? 'JOUR' : iss.vis === 'eclipsed' ? 'NUIT' : '—');
   }
 
-  function render() {
+  function renderTicker() {
     const doubled = [...items, ...items];
     document.getElementById('ticker-items').innerHTML =
-      doubled.map(fn => `<div class="ticker-item">${fn()}</div>`).join('');
+      doubled.map(fn => `<div class="t-item">${fn()}</div>`).join('');
   }
 
   async function fetchISS() {
@@ -1056,106 +1135,80 @@ footer a:hover { color: var(--muted); }
         iss.spd = d.geodetic.speedKmh;
         iss.vis = d.geodetic.visibility;
       }
-    } catch(_) {}
-    render();
+    } catch (_) {}
+    renderTicker();
     renderHero();
   }
 
-  render();
+  renderTicker();
   fetchISS();
-  setInterval(render, 1000);
+  setInterval(renderTicker, 1000);
   setInterval(fetchISS, 10000);
 })();
 
-/* ── MOBILE CARDS ── */
-(function buildMobileCards() {
+/* ─────────────────────────────────────────────────────
+   MOBILE CARDS
+───────────────────────────────────────────────────── */
+(function () {
   if (window.innerWidth > 900) return;
-  const wrap = document.getElementById('mob-mission-cards');
+  const wrap = document.getElementById('mob-cards');
   if (!wrap) return;
   wrap.style.display = 'flex';
 
   const missions = [
     {
-      cardClass: 'card-future',
+      cls: 'future',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png',
-      patchDim: true,
-      name: 'ARTEMIS III',
-      sub: 'SLS BLOCK 1B · ORION / HLS',
-      nameDim: true,
-      badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
-      date: '<strong>2027</strong> · TBD',
-      link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      detail: null,
-      desc: 'Premier alunissage humain du programme Artemis. Utilise le HLS (Starship ou Blue Moon) en orbite lunaire Gateway.'
+      dim: true,
+      name: 'ARTEMIS III', sub: 'SLS BLOCK 1B · ORION / HLS', nameDim: true,
+      badge: `<div class="badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
+      date: '<b>2027</b> · TBD',
+      cta: '<span class="lnk dis">INDISPONIBLE</span>',
+      desc: 'Premier alunissage humain du programme Artemis. Utilise le HLS en orbite lunaire Gateway.'
     },
     {
-      cardClass: 'card-future',
+      cls: 'future',
       patch: 'https://upload.wikimedia.org/wikipedia/commons/6/60/Artemis_Logo_NASA.png',
-      patchDim: true,
-      name: 'ARTEMIS IV',
-      sub: 'SLS BLOCK 1B · ORION / HLS',
-      nameDim: true,
-      badge: `<div class="phase-badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
-      date: '<strong>2028</strong> · TBD',
-      link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      detail: null,
+      dim: true,
+      name: 'ARTEMIS IV', sub: 'SLS BLOCK 1B · ORION / HLS', nameDim: true,
+      badge: `<div class="badge warn"><div class="bd"></div>PLANIFIÉ</div>`,
+      date: '<b>2028</b> · TBD',
+      cta: '<span class="lnk dis">INDISPONIBLE</span>',
       desc: null
     },
     {
-      cardClass: 'card-tbd',
-      patch: null,
-      patchDim: true,
-      name: '— EN DÉVELOPPEMENT —',
-      sub: 'VÉHICULE : TBD',
-      nameDim: true,
-      badge: `<div class="phase-badge off">NON PLANIFIÉ</div>`,
-      date: '<strong>—</strong> · TBD',
-      link: '<span class="row-link disabled">INDISPONIBLE</span>',
-      detail: null,
+      cls: 'tbd',
+      patch: null, dim: true,
+      name: '— EN DÉVELOPPEMENT —', sub: 'VÉHICULE : TBD', nameDim: true,
+      badge: `<div class="badge off">NON PLANIFIÉ</div>`,
+      date: '<b>—</b> · TBD',
+      cta: '<span class="lnk dis">INDISPONIBLE</span>',
       desc: null
     }
   ];
 
-  missions.forEach((m, i) => {
-    const detailId = 'mob-dp-' + i;
-
+  missions.forEach(m => {
     const patchHtml = m.patch
-      ? `<img class="mob-card-patch${m.patchDim ? ' dim' : ''}" src="${m.patch}" alt="">`
-      : `<div class="mob-card-placeholder"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(90,122,144,.4)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>`;
-
-    const detailFieldsHtml = m.detail
-      ? m.detail.map(f => `<div class="mob-detail-field"><label>${f.label}</label><span>${f.val}</span></div>`).join('')
-      : '';
-
-    const detailDescHtml = m.desc
-      ? `<div class="mob-detail-desc">${m.desc}</div>`
-      : '';
-
-    const hasDetail = m.detail || m.desc;
-    const detailHtml = hasDetail
-      ? `<div id="${detailId}" class="mob-detail-panel">
-           <div class="mob-detail-inner">${detailFieldsHtml}${detailDescHtml}</div>
-         </div>`
-      : '';
+      ? `<img class="mcard-patch${m.dim ? ' dim' : ''}" src="${m.patch}" alt="">`
+      : `<div class="mcard-placeholder"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(90,120,144,.35)" stroke-width="1.5"><circle cx="12" cy="12" r="10"/></svg></div>`;
 
     const card = document.createElement('div');
-    card.className = `mob-card ${m.cardClass}`;
+    card.className = `mcard ${m.cls}`;
     card.innerHTML = `
-      <div class="mob-card-header">
+      <div class="mcard-head">
         ${patchHtml}
-        <div class="mob-card-info">
-          <div class="mob-card-name${m.nameDim ? ' dim' : ''}">${m.name}</div>
-          <div class="mob-card-sub">${m.sub}</div>
+        <div class="mcard-info">
+          <div class="mcard-name${m.nameDim ? ' dim' : ''}">${m.name}</div>
+          <div class="mcard-sub">${m.sub}</div>
         </div>
       </div>
-      <div class="mob-card-badge-row">
+      <div class="mcard-badges">
         ${m.badge}
-        <div class="mob-card-date-val">${m.date}</div>
+        <div class="mcard-date">${m.date}</div>
       </div>
-      <div class="mob-card-cta">${m.link}</div>
-      ${detailHtml}
+      <div class="mcard-cta">${m.cta}</div>
+      ${m.desc ? `<div class="mcard-desc">${m.desc}</div>` : ''}
     `;
-
     wrap.appendChild(card);
   });
 })();
