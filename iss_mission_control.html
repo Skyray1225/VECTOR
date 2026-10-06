@@ -1657,10 +1657,9 @@ document.addEventListener('DOMContentLoaded', function() {
       worldCopyJump: true
     });
 
-    /* Dark tile layer — CartoDB Dark Matter */
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/attributions">CARTO</a>',
-      subdomains: 'abcd',
+    /* Dark tile layer — Esri World Dark Gray (no API key; CARTO now requires one) */
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors',
       maxZoom: 10,
       minZoom: 1
     }).addTo(lfMap);
