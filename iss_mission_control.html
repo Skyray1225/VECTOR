@@ -1406,59 +1406,76 @@ document.addEventListener('DOMContentLoaded', function() {
   var lfInterval = null;
   var lfTermLayer = null;    // day/night terminator polygon
 
-  /* ── Day/Night terminator — SunCalc + binary search per longitude ───────
-     For each longitude (-180→180, step 2°):
-       use SunCalc.getPosition to check sun altitude at south/north poles.
-       If they differ in sign, binary-search for the latitude where altitude=0.
-     The polygon is then: [night-pole, -180] + sorted terminator pts + [night-pole, 180].
-     Night pole = whichever pole has negative sun altitude.
+  /* ── Day/Night terminator — spherical cap around the antisolar point ────
+     Region where sun altitude < h0 is a cap centred on the antisolar point
+     with angular radius 90° + h0. Its boundary is traced by bearing (1° step),
+     longitudes are unwrapped, and if the cap contains a pole the ring is
+     closed through that pole. Stacked caps for h0 = 0, -6, -12, -18°
+     (civil / nautical / astronomical twilight) give a soft gradient.
   ── */
-  function lfTermLatAtLon(date, lon) {
-    if (typeof SunCalc === 'undefined') return null;
-    var altS = SunCalc.getPosition(date, -89, lon).altitude;
-    var altN = SunCalc.getPosition(date,  89, lon).altitude;
-    // No crossing if both poles are same phase
-    if ((altS >= 0) === (altN >= 0)) return null;
-    // Binary search: lo = night side, hi = day side
-    var lo = altS < 0 ? -89 : 89;
-    var hi = altS < 0 ?  89 : -89;
-    if (lo > hi) { var tmp = lo; lo = hi; hi = tmp; }
-    for (var i = 0; i < 20; i++) {
-      var mid = (lo + hi) / 2;
-      if (SunCalc.getPosition(date, mid, lon).altitude < 0) lo = mid;
-      else hi = mid;
-    }
-    return (lo + hi) / 2;
+  var DEG = Math.PI / 180;
+
+  /* Subsolar point (low-precision solar ephemeris, < 0.1°) */
+  function lfSubsolar(date) {
+    var d = date.getTime() / 86400000 + 2440587.5 - 2451545.0;
+    var g = (357.529 + 0.98560028 * d) * DEG;
+    var q = 280.459 + 0.98564736 * d;
+    var L = (q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG;
+    var e = (23.439 - 0.00000036 * d) * DEG;
+    var ra  = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L)) / DEG;
+    var dec = Math.asin(Math.sin(e) * Math.sin(L)) / DEG;
+    var gmst = (18.697374558 + 24.06570982441908 * d) * 15;
+    var lon = ((ra - gmst) % 360 + 540) % 360 - 180;
+    return { lat: dec, lon: lon };
   }
 
-  function lfBuildTermPoly(date) {
-    if (typeof SunCalc === 'undefined') return null;
-    var pts = [];
-    for (var lon = -178; lon <= 178; lon += 2) {
-      var lat = lfTermLatAtLon(date, lon);
-      if (lat !== null) pts.push([lat, lon]);
+  function lfNightPoly(sub, h0) {
+    var aLat = -sub.lat * DEG;
+    var aLon = (sub.lon + 180) * DEG;
+    var r = (90 + h0) * DEG;
+    var pts = [], prevLon = null;
+    for (var b = 0; b < 360; b++) {
+      var br = b * DEG;
+      var lat = Math.asin(Math.sin(aLat) * Math.cos(r) + Math.cos(aLat) * Math.sin(r) * Math.cos(br));
+      var lon = aLon + Math.atan2(Math.sin(br) * Math.sin(r) * Math.cos(aLat),
+                                  Math.cos(r) - Math.sin(aLat) * Math.sin(lat));
+      lon = lon / DEG;
+      if (prevLon !== null) {
+        while (lon - prevLon > 180) lon -= 360;
+        while (lon - prevLon < -180) lon += 360;
+      }
+      pts.push([lat / DEG, lon]);
+      prevLon = lon;
     }
-    if (pts.length < 4) return null;
-    // Night pole: whichever pole has sun below horizon
-    var pole = SunCalc.getPosition(date, -90, 0).altitude < 0 ? -90 : 90;
-    return [[pole, -180]].concat(pts, [[pole, 180]]);
+    // Cap contains a pole → longitudes wrap a full turn; close through that pole
+    var span = pts[pts.length - 1][1] - pts[0][1];
+    if (Math.abs(span) > 180) {
+      var pole = aLat > 0 ? 90 : -90;
+      pts.push([pole, pts[pts.length - 1][1]], [pole, pts[0][1]]);
+    }
+    return pts;
   }
+
+  var LF_TWILIGHT = [0, -6, -12, -18];
 
   function lfUpdateTerminator() {
     if (!lfMap) return;
-    var poly = lfBuildTermPoly(new Date());
+    var sub = lfSubsolar(new Date());
     if (lfTermLayer) { lfMap.removeLayer(lfTermLayer); lfTermLayer = null; }
-    if (!poly) return;
-    var style = {
-      color: '#1a3f60', weight: 1, opacity: 0.8,
-      fillColor: '#04111f', fillOpacity: 0.58,
-      smoothFactor: 2, interactive: false,
-    };
-    // Main copy + one adjacent copy on each side (±360°)
-    var layers = [-360, 0, 360].map(function(offset) {
-      return L.polygon(poly.map(function(pt) {
-        return [pt[0], pt[1] + offset];
-      }), style);
+    var layers = [];
+    LF_TWILIGHT.forEach(function(h0) {
+      var poly = lfNightPoly(sub, h0);
+      var style = {
+        stroke: h0 === 0, color: '#2a6a96', weight: 1, opacity: 0.45,
+        fillColor: '#020a14', fillOpacity: 0.2,
+        smoothFactor: 1, interactive: false,
+      };
+      // Main copy + adjacent copies (±360°, ±720°) so wrapped views stay shaded
+      [-720, -360, 0, 360, 720].forEach(function(offset) {
+        layers.push(L.polygon(poly.map(function(pt) {
+          return [pt[0], pt[1] + offset];
+        }), style));
+      });
     });
     lfTermLayer = L.layerGroup(layers).addTo(lfMap);
   }
