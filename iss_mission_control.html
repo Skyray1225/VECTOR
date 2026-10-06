@@ -161,7 +161,7 @@ header { display: flex; align-items: center; justify-content: space-between; gap
 #lf-map .leaflet-control-attribution a { color: #4a6070 !important; }
 #lf-map .leaflet-control-zoom a { background: #0e1a2a !important; color: #7aa0b8 !important; border-color: rgba(255,255,255,.08) !important; }
 #lf-map .leaflet-control-zoom a:hover { background: #162436 !important; color: #00d2ff !important; }
-.lf-iss-icon { filter: drop-shadow(0 0 6px rgba(0,210,255,.9)); }
+.lf-iss-icon img { filter: drop-shadow(0 0 1.5px rgba(0,0,0,.95)) drop-shadow(0 0 5px rgba(0,210,255,.45)); }
 .lf-orbit-path { stroke: #00d2ff; stroke-width: 1.5; stroke-opacity: .55; fill: none; stroke-dasharray: 4 3; }
 .lf-popup .leaflet-popup-content-wrapper { background: #0b1523; border: 1px solid #2b3a4a; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,.6); padding: 0; }
 .lf-popup .leaflet-popup-content { margin: 10px 14px; }
@@ -1481,17 +1481,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   var TRAIL_MAX = 80;
 
-  /* ISS SVG icon — wrapper div carries the rotation (more reliable than SVG transform) */
+  /* ISS icon — white silhouette (assets/iss-silhouette.svg). In the artwork the
+     module stack points up-right (45°), so rotate by bearing − 45° to fly along track.
+     Wrapper div carries the rotation (more reliable than SVG transform). */
   function makeIssIcon(bearingDeg) {
-    var rot = (bearingDeg || 0).toFixed(1);
-    var inner =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">' +
-      '<circle cx="20" cy="20" r="16" fill="none" stroke="#00d2ff" stroke-width="0.8" stroke-opacity=".25"/>' +
-      '<line x1="2"  y1="20" x2="11" y2="20" stroke="#00d2ff" stroke-width="1.4" stroke-opacity=".7"/>' +
-      '<line x1="29" y1="20" x2="38" y2="20" stroke="#00d2ff" stroke-width="1.4" stroke-opacity=".7"/>' +
-      '<circle cx="20" cy="20" r="4" fill="#00d2ff"/>' +
-      '<polygon points="20,5 16.5,13 23.5,13" fill="#00d2ff" fill-opacity=".9"/>' +
-      '</svg>';
+    var rot = ((bearingDeg || 0) - 45).toFixed(1);
+    var inner = '<img src="assets/iss-silhouette.svg" width="40" height="40" alt="ISS" style="display:block">';
     var html = '<div style="width:40px;height:40px;transform:rotate(' + rot + 'deg);transform-origin:20px 20px">' + inner + '</div>';
     return L.divIcon({
       html: html,
