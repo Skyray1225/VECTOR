@@ -1657,9 +1657,15 @@ document.addEventListener('DOMContentLoaded', function() {
       worldCopyJump: true
     });
 
-    /* Dark tile layer — Esri World Dark Gray (no API key; CARTO now requires one) */
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors',
+    /* Dark tile layer — CartoDB Dark Matter via /api/tiles (proxy adds CARTO_API_KEY);
+       Esri World Dark Gray when opened from file: (no serverless API) */
+    var lfLocal = location.protocol === 'file:';
+    L.tileLayer(lfLocal
+      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+      : '/api/tiles?z={z}&x={x}&y={y}&r={r}', {
+      attribution: lfLocal
+        ? 'Tiles © Esri — Esri, HERE, Garmin, © OpenStreetMap contributors'
+        : '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 10,
       minZoom: 1
     }).addTo(lfMap);
